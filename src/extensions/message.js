@@ -142,9 +142,6 @@ module.exports = Structures.extend('Message', Message => {
 				this.member = await this.guild.members.fetch(this.author, false).catch(() => null);
 				if(!this.member) return null;
 			};
-			if(this.channel.type === "text" && !this.guild.members.cache.get(this.author.id)){
-				await this.guild.members.fetch(this.client.user.id, true).catch(() => {});
-			}
 			if(this.guild && this.guild.commands && this.guild.commands === this.channel.id && !this.member.permissions.has("MANAGE_MESSAGES") && !this.client.isOwner(this.author)) return this.command.onBlock(this, "channel");
 			// Only Checks.
 			if(this.command.dmOnly && this.guild) return this.command.onBlock(this, "dmOnly");
@@ -166,6 +163,10 @@ module.exports = Structures.extend('Message', Message => {
 			if(this.guild && this.command.clientGuildPermissions){
 				const missing = this.guild.me.permissions.missing(this.command.clientGuildPermissions);
 				if(missing.length !== 0) return this.command.onBlock(this, "clientPermissions", {missing})
+			};
+			if(this.guild && this.command.userPermissions){
+				const missing = this.channel.permissionsFor(this.member).missing(this.command.userPermissions);
+				if(missing.length !== 0) return this.command.onBlock(this, "userPermissions", {missing})
 			};
 			if(this.guild && this.command.userGuildPermissions){
 				const missing = this.member.permissions.missing(this.command.userGuildPermissions);
