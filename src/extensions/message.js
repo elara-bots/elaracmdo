@@ -164,14 +164,6 @@ module.exports = Structures.extend('Message', Message => {
 				const missing = this.guild.me.permissions.missing(this.command.clientGuildPermissions);
 				if(missing.length !== 0) return this.command.onBlock(this, "clientPermissions", {missing})
 			};
-			if(this.guild && this.command.userPermissions){
-				const missing = this.channel.permissionsFor(this.member).missing(this.command.userPermissions);
-				if(missing.length !== 0) return this.command.onBlock(this, "userPermissions", {missing})
-			};
-			if(this.guild && this.command.userGuildPermissions){
-				const missing = this.member.permissions.missing(this.command.userGuildPermissions);
-				if(missing.length !== 0) return this.command.onBlock(this, "userPermissions", {missing})
-			};
 
 			// Throttle the command
 			const throttle = this.command.throttle(this.author.id);
