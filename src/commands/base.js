@@ -263,8 +263,11 @@ class Command {
 		if(this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
 
 		if(message.channel.type === 'text' && this.userPermissions) {
-			const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
-			if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${permissions[missing[0]]}\` permission` : `Command (\`${this.name}\`) requires you to have the following permissions\n${missing.map(pm => `\`${permissions[pm]}\``).join(", ")}`
+            let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
+            if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${permissions[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${permissions[c]}\``).join("\n")}`
+            const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
+            
+            if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${permissions[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${permissions[pm]}\``).join("\n")}`
 		}
 		return true;
 	}
@@ -303,11 +306,15 @@ class Command {
 		if(CommandCooldown.has(message.author.id)) return null;
 		CommandCooldown.add(message.author.id)
 		setTimeout(() => CommandCooldown.delete(message.author.id), 5000)
-	
+        const send = (content, data = []) => {
+            if(!message.guild) return message.error(content);
+            if(message.channel.permissionsFor(message.client.user).has("EMBED_LINKS")) return message.error(content);
+            return message.channel.send(`I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${permissions[c]}\``).join("\n") : ["EMBED_LINKS"].map(c => `▫ \`${c}\``).join("\n")}`)
+        }
 		switch(reason) {
-			case 'guildOnly': return message.error(`Command (\`${this.name}\`) can only be used in servers.`); 
-			case 'nsfw': return message.error(`Command (\`${this.name}\`) can only be used in channels marked as NSFW`);
-			case 'permission': return message.error(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
+			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
+			case 'nsfw': return send(`Command (\`${this.name}\`) can only be used in channels marked as NSFW`);
+			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
 			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has("EMBED_LINKS") ? 
 			message.error(data.missing.length === 1 ? `I need ${permissions[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${permissions[p]}\``).join("\n")}`) : 
 			message.channel.send(`${message.client.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.`)
@@ -335,7 +342,7 @@ class Command {
 				description: `You can't use commands in this channel.\n**Go to <#${message.guild.commands}> to use commands!**`,
 				timestamp: new Date()
 			})}).then(m => m.delete({timeout: 10000}).catch(o => {}))
-			case "GlobalDisable": return message.error(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
+			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
 			case "blacklist": default: return null;
 		}
 	}
