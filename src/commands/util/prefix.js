@@ -37,8 +37,8 @@ module.exports = class NCommand extends Command {
       if(!change) return message.custom(`My prefix is: \`${message.guild.commandPrefix}\` or \`@${message.client.user.tag}\``);
       if(["reset", "clear", "default", db.prefix].includes(change.toLowerCase())){
         db.prefix = "";
-        message.guild.commandPrefix = "";
-        message.guild._commandPrefix = "";
+        message.guild.commandPrefix = this.client.commandPrefix;
+        message.guild._commandPrefix = this.client.commandPrefix;
         db.save().catch(() => {});
         return message.success(`The prefix is now: \`${message.client.commandPrefix}\` or \`@${message.client.user.tag}\``);
       };
