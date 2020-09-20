@@ -257,7 +257,19 @@ module.exports = Structures.extend('Message', Message => {
 				}
 			}
 		}
-
+		/**
+		@returns {Promise<Message>}
+		*/
+		publish(){
+		 if(this.channel.type !== "news") throw new Error(`You can only crosspost messages in a news channel!`)
+		  require("superagent")
+		   .post(`https://discord.com/api/v6/channels/${this.channel.id}/messages/${this.id}/crosspost`)
+		   .set(`Authorization`, `Bot ${this.client.token}`)
+	           .then(res => res.body)
+		   .catch(err => {
+		   	throw new Error(`Crosspost error: ${err.stack}`);
+		   })
+		}
 		/**
 		 * Responds to the command message
 		 * @param {Object} [options] - Options for the response
