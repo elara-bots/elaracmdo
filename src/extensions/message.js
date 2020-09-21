@@ -142,7 +142,7 @@ module.exports = Structures.extend('Message', Message => {
 				this.member = await this.guild.members.fetch(this.author, false).catch(() => null);
 				if(!this.member) return null;
 			};
-			if(this.guild && this.guild.commands && this.guild.commands === this.channel.id && !this.member.permissions.has("MANAGE_MESSAGES") && !this.client.isOwner(this.author)) return this.command.onBlock(this, "channel");
+			if(this.guild && this.guild.commands && this.guild.commands !== this.channel.id && !this.member.permissions.has("MANAGE_MESSAGES") && !this.client.isOwner(this.author)) return this.command.onBlock(this, "channel");
 			// Only Checks.
 			if(this.command.dmOnly && this.guild) return this.command.onBlock(this, "dmOnly");
 			if(this.command.guildOnly && !this.guild) return this.command.onBlock(this, 'guildOnly');
