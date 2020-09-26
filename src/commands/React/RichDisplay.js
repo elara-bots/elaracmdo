@@ -206,7 +206,7 @@ class RichDisplay {
 			color: message.client.util.colors.red
 		}});
 		for await (const emoji of emojis){
-			waitmsg.react(emoji).catch(() => {});
+			if(!waitmsg.deleted) waitmsg.react(emoji).catch(() => {});
 		}
 		setTimeout(async () => {
 			const msg = waitmsg.editable ? await waitmsg.edit('', { embed: this.pages[options.startPage || 0] }) : await message.channel.send(this.pages[options.startPage || 0]);
