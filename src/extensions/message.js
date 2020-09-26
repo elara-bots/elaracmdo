@@ -139,7 +139,7 @@ module.exports = Structures.extend('Message', Message => {
 			if(functions.blacklist(this.client, this) === true) return this.command.onBlock(this, "blacklist");
 			if((this.client.GlobalCmds || []).includes(this.command.name) && !this.client.isOwner(this.author.id)) return this.command.onBlock(this, "GlobalDisable");
 			if(this.channel.type === "text" && !this.guild.members.cache.get(this.author.id)) {
-				this.member = await this.guild.members.fetch(this.author, false).catch(() => null);
+				this.member = await this.guild.members.fetch(this.author, true).catch(() => null);
 				if(!this.member) return null;
 			};
 			if(this.guild && this.guild.commands && this.guild.commands !== this.channel.id && !this.member.permissions.has("MANAGE_MESSAGES") && !this.client.isOwner(this.author)) return this.command.onBlock(this, "channel");
