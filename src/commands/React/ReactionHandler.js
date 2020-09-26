@@ -114,7 +114,7 @@ class ReactionHandler extends ReactionCollector {
 		// else return this.stop();
 
 		this.on('collect', (reaction, user) => {
-			if(this.message.channel.permissionsFor(this.client.user.id).has("MANAGE_MESSAGES")){
+			if(this.message.channel.permissionsFor(this.client.user.id).has("MANAGE_MESSAGES") && !this.message.deleted){
 			reaction.users.cache.filter(m => m.id !== this.client.user.id).forEach(m => {
 				reaction.users.remove(m.id).catch(() => {});
 			})
@@ -124,7 +124,9 @@ class ReactionHandler extends ReactionCollector {
 		setTimeout(() => {this.emit("end")}, this.time || 120000)
 		this.on('end', () => {
 			if (this.reactionsDone && !this.message.deleted) this.message.reactions.removeAll();
-				setTimeout(async () => {this.message.edit({
+				setTimeout(async () => {
+					
+			if(!this.message.deleted) this.message.edit({
 					embed: {
 						author: {
 							name: message.guild ? message.guild.name : message.author.tag,
@@ -140,7 +142,7 @@ class ReactionHandler extends ReactionCollector {
 						}
 					}
 				}).then(async () => {
-				await this.message.delete({ timeout: 20000, reason: "Auto" });
+				if(!this.message.deleted) this.message.delete({ timeout: 20000, reason: "Auto" });
 				})
 			}, 5000)
 			})
@@ -323,7 +325,7 @@ class ReactionHandler extends ReactionCollector {
 	 * @returns {void}
 	 */
 	update() {
-		this.message.edit('', { embed: this.display.pages[this.currentPage] });
+		if(!this.message.deleted) this.message.edit('', { embed: this.display.pages[this.currentPage] });
 	}
 
 	/**
@@ -337,7 +339,7 @@ class ReactionHandler extends ReactionCollector {
 		if (this.message.deleted) return this.stop();
 		if (this.ended) return this.message.reactions.clear();
 		for (const e of emojis){
-			this.message.react(e).catch(() => null);
+			if(!this.message.deleted) this.message.react(e).catch(() => null);
 		}
 		this.reactionsDone = true;
 		return null;
