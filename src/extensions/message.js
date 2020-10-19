@@ -135,6 +135,16 @@ module.exports = Structures.extend('Message', Message => {
 		async run() { // eslint-disable-line complexity
 			if(this.author.bot) return null;
 			if(this.webhookID) return null; // This should never run if it's a webhook.
+			const ignoreGuilds = [
+			        "264445053596991498", // top.gg
+              			"110373943822540800", // discord.bots.gg
+              			"568567800910839811", // discordextremelist.xyz
+              			"439866052684283905", // discord.boats
+              			"387812458661937152", // botlist.space
+              			"374071874222686211", // botsfordiscord.com
+              			"450100127256936458", // discordbotlist.com
+			]
+			if(this.guild && ignoreGuilds.includes(this.guild.id)) return null; 
 			if(this.client.main && !this.client.isSupport(this.author)) return this.command.onBlock(this, "maintenance");
 			if(functions.blacklist(this.client, this) === true) return this.command.onBlock(this, "blacklist");
 			if((this.client.GlobalCmds || []).includes(this.command.name) && !this.client.isOwner(this.author.id)) return this.command.onBlock(this, "GlobalDisable");
