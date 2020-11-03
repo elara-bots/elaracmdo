@@ -144,7 +144,7 @@ module.exports = Structures.extend('Message', Message => {
               			"374071874222686211", // botsfordiscord.com
               			"450100127256936458", // discordbotlist.com
 			]
-			if(this.guild && ignoreGuilds.includes(this.guild.id)) return null; 
+			if(this.guild && ignoreGuilds.includes(this.guild.id)) return this.guild.members.cache.has(this.author.id) ? this.guild.members.cache.delete(this.author.id) : null; 
 			if(this.client.main && !this.client.isSupport(this.author)) return this.command.onBlock(this, "maintenance");
 			if(functions.blacklist(this.client, this) === true) return this.command.onBlock(this, "blacklist");
 			if((this.client.GlobalCmds || []).includes(this.command.name) && !this.client.isOwner(this.author.id)) return this.command.onBlock(this, "GlobalDisable");
