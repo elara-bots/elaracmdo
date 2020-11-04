@@ -513,7 +513,7 @@ module.exports = Structures.extend('Message', Message => {
 					this.responses[id].push(response);
 				}
 			} else if(responses) {
-				const id = responses.channel.type === "dm" ? "dm" : responses.channel.id
+				const id = responses.channel ? responses.channel.type === "dm" ? "dm" : responses.channel.id : "dm"
 				this.responses[id] = [responses];
 				this.responsePositions[id] = -1;
 			}
