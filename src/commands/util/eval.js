@@ -61,11 +61,11 @@ async run(message, args) {
 		};
 		let hrDiff;
 		try {
-			let sync = ["-a", "-s", "-async", "--async", "{async}"]
+			let sync = ["-a", "-async", "--async", "{async}"]
 			let c = sync.filter(c => msg.content.toLowerCase().includes(c.toLowerCase()));
 			const hrStart = process.hrtime();
 			args.script = args.script.replace(/-ignore|-i/gi, "")
-			this.lastResult = eval(c.length !== 0 ? `(async () => {\n${args.script.replace(/-async|-a|-s|--async|{async}/gi, "")}\n})();` : args.script);
+			this.lastResult = eval(c.length !== 0 ? `(async () => {\n${args.script.replace(/-async|-a|--async|{async}/gi, "")}\n})();` : args.script);
 			if(this.lastResult instanceof Promise && typeof this.lastResult === "object"){
 				this.lastResult = await this.lastResult;
 			}
