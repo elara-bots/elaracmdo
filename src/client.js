@@ -40,7 +40,7 @@ class CommandoClient extends Client {
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
 		this.util = util
-        this.GlobalCmds = []; 
+        	this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => guild ? guild.color ? guild.color : this.util.colors.default : this.util.colors.default
@@ -168,6 +168,7 @@ class CommandoClient extends Client {
 	 * @returns {boolean}
 	 */
 	isOwner(user) {
+		try{
 		if(!this.options.owner) return false;
 		user = this.users.resolve(user);
 		if(!user) throw new RangeError('Unable to resolve user.');
@@ -175,6 +176,9 @@ class CommandoClient extends Client {
 		if(this.options.owner instanceof Array) return this.options.owner.includes(user.id);
 		if(this.options.owner instanceof Set) return this.options.owner.has(user.id);
 		throw new RangeError('The client\'s "owner" option is an unknown value.');
+		}catch(err){
+	 	   return false;
+		}
 	}
 	/**
 	 * Checks whether a user is an support-user of the bot (in {@link CommandoClientOptions#support})
@@ -183,6 +187,7 @@ class CommandoClient extends Client {
 	 */
 
 	isSupport(user){
+		try{
 		if(!this.options.support) return false;
 		user = this.users.resolve(user);
 		if(!user) throw new RangeError(`[isSupport] - Unable to resolve user.`);
@@ -191,6 +196,9 @@ class CommandoClient extends Client {
 		if(typeof this.options.support === "string") return user.id === this.options.support;
 		if(this.options.support instanceof Array) return this.options.support.includes(user.id);
 		return false;	
+		}catch(err){
+		return false;
+		}
 	};
 	getPrefix(guild){
 		return guild ? guild.commandPrefix : this.commandPrefix;
