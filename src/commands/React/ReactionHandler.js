@@ -114,7 +114,7 @@ class ReactionHandler extends ReactionCollector {
 		// else return this.stop();
 
 		this.on('collect', (reaction, user) => {
-			if(this.message.channel.permissionsFor(this.client.user.id).has("MANAGE_MESSAGES") && !this.message.deleted){
+			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has("MANAGE_MESSAGES") && !this.message.deleted){
 			reaction.users.cache.filter(m => m.id !== this.client.user.id).forEach(m => {
 				reaction.users.remove(m.id).catch(() => {});
 			})
@@ -123,7 +123,7 @@ class ReactionHandler extends ReactionCollector {
 		});
 		setTimeout(() => {this.emit("end")}, this.time || 120000)
 		this.on('end', () => {
-			if (this.reactionsDone && !this.message.deleted) this.message.reactions.removeAll();
+			if (this.reactionsDone && !this.message.deleted && this.message.guild) this.message.reactions.removeAll();
 				setTimeout(async () => {
 					
 			if(!this.message.deleted) this.message.edit({
