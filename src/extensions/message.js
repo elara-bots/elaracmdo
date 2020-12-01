@@ -144,14 +144,11 @@ module.exports = Structures.extend('Message', Message => {
               			"374071874222686211", // botsfordiscord.com
               			"450100127256936458", // discordbotlist.com
 			]
-			if(this.guild && ignoreGuilds.includes(this.guild.id)) return this.guild.members.cache.has(this.author.id) ? this.guild.members.cache.delete(this.author.id) : null; 
+			if(this.guild && ignoreGuilds.includes(this.guild.id)) return null; 
 			if(this.client.main && !this.client.isSupport(this.author)) return this.command.onBlock(this, "maintenance");
 			if(functions.blacklist(this.client, this) === true) return this.command.onBlock(this, "blacklist");
 			if((this.client.GlobalCmds || []).includes(this.command.name) && !this.client.isOwner(this.author.id)) return this.command.onBlock(this, "GlobalDisable");
-			if(this.channel.type === "text" && !this.guild.members.cache.get(this.author.id)) {
-				this.member = await this.guild.members.fetch(this.author, true).catch(() => null);
-				if(!this.member) return null;
-			};
+			if(this.channel.type === "text" && !this.guild.members.cache.get(this.author.id)) return null;
 			if(this.guild && this.guild.commands && this.guild.commands !== this.channel.id && !this.member.permissions.has("MANAGE_MESSAGES") && !this.client.isOwner(this.author)) return this.command.onBlock(this, "channel");
 			// Only Checks.
 			if(this.command.dmOnly && this.guild) return this.command.onBlock(this, "dmOnly");
