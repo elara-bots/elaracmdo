@@ -1,15 +1,16 @@
 const {MessageEmbed} = require('discord.js'),
-	  {Command, util: {escapeRegex}} = require('elaracmdo'),
-	  util = require('util'),
+      {Command, util: {escapeRegex}} = require('elaracmdo'),
+      util = require('util'),
       time = [];
 require("moment-duration-format")
+
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
-		super(client, {
+	super(client, {
             name: 'eval',
             aliases: [`e`, `ev`, `eva`, `code`],
-			group: 'owner',
-			memberName: 'eval',
+	    group: 'owner',
+	    memberName: 'eval',
 			description: 'Executes JavaScript code.',
 			details: 'Only the bot owner(s) may use this command.',
 			ownerOnly: true,
@@ -64,11 +65,10 @@ async run(message, args) {
 			let sync = ["-a", "-async", "--async", "{async}"]
 			let c = sync.filter(c => msg.content.toLowerCase().includes(c.toLowerCase()));
 			const hrStart = process.hrtime();
+			if (args.script.startsWith('```js') && args.script.endsWith('```')) args.script = args.script.replace('```js', '').replace('```', '');
 			args.script = args.script.replace(/-ignore|-i/gi, "")
 			this.lastResult = eval(c.length !== 0 ? `(async () => {\n${args.script.replace(/-async|-a|--async|{async}/gi, "")}\n})();` : args.script);
-			if(this.lastResult instanceof Promise && typeof this.lastResult === "object"){
-				this.lastResult = await this.lastResult;
-			}
+			if(this.lastResult instanceof Promise && typeof this.lastResult === "object") this.lastResult = await this.lastResult;
 			if(this.lastResult === undefined && msg.content.toLowerCase().match(/-ignore|-i/gi)) return null;
 			hrDiff = process.hrtime(hrStart);
 		} catch(err) {
