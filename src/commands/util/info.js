@@ -26,7 +26,7 @@ module.exports = class BotinfoCommand extends Command {
                 a(`Invite`, await this.client.generateInvite(1543892167)),
                 a(`Support`, this.client.options.invite),
                 a(`GitHub`, `https://github.com/elara-bots`),
-                a(`Feedback`, `https://services.superchiefyt.xyz/account/feedback`),
+                a(`Feedback`, `https://my.elara.services/account/feedback`),
             ],
             botID = "455166272339181589",
             emojis = {
