@@ -354,12 +354,10 @@ declare module 'elaracmdo' {
 			channel: string;
 			role: string;
 			bots: string;
-			embed: boolean;
 			msg: string;
 		};
 		leaves: {
 			channel: string;
-			embed: boolean;
 			msg: string;
 		};
 		starboard: {
@@ -399,6 +397,7 @@ declare module 'elaracmdo' {
 		misc: {
 			disabled: string[];
 			maintenance: boolean;
+			cooldown: string[];
 		};
 		dms: {
 			enabled: boolean;
