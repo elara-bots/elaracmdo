@@ -386,7 +386,7 @@ class Command {
 	 */
 	throttle(userID) {
 		if(!this.throttling || this.client.isOwner(userID)) return null;
-
+		if(this.client.config && this.client.config.ignore && this.client.config.ignore.cooldown && Array.isArray(this.client.config.ignore.cooldown) && this.client.config.ignore.cooldown.includes(userID)) return null;
 		let throttle = this._throttles.get(userID);
 		if(!throttle) {
 			throttle = {
