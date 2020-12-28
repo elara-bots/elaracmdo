@@ -1,27 +1,5 @@
 const { Structures } = require('discord.js');
-const Command = require('../commands/base'),
-      tiers = {
-	0: {
-		total: 100,
-		animated: 50,
-		normal: 50
-	},
-	1: {
-		total: 200,
-		animated: 100,
-		normal: 100
-	},
-	2: {
-		total: 300,
-		animated: 150,
-		normal: 150
-	},
-	3: {
-		total: 500,
-		animated: 250,
-		normal: 250
-	}
-};
+const Command = require('../commands/base')
 
 module.exports = Structures.extend('Guild', Guild => {
 	/**
