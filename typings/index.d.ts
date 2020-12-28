@@ -151,10 +151,10 @@ declare module 'elaracmdo' {
 		public constructor(message: Message, command?: Command, argString?: string, patternMatches?: string[]);
 
 		private deleteRemainingResponses(): void;
-		private editCurrentResponse(id: string, options?: {}): Promise<Message | Message[]>;
-		private editResponse(response: Message | Message[], options?: {}): Promise<Message | Message[]>;
-		private finalize(responses: Message | Message[]): void;
-		private respond(options?: {}): Message | Message[];
+		private editCurrentResponse(id: string, options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
+		private editResponse(response: CommandoMessage | CommandoMessage[], options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
+		private finalize(responses: CommandoMessage | CommandoMessage[]): void;
+		private respond(options?: {}): CommandoMessage | CommandoMessage[];
 		public typing(): boolean;
 
 		public argString: string;
@@ -171,13 +171,13 @@ declare module 'elaracmdo' {
 		public readonly editable: boolean;
 		public readonly editedAt: Date;
 		public readonly editedTimestamp: number;
-		public readonly edits: Message[];
+		public readonly edits: CommandoMessage[];
 		public readonly embeds: MessageEmbed[];
 		public readonly guild: CommandoGuild;
 		public readonly id: string;
 		public readonly member: GuildMember;
 		public readonly mentions: MessageMentions;
-		public message: Message;
+		public message: CommandoMessage;
 		public readonly nonce: string;
 		public patternMatches: string[];
 		public readonly pinnable: boolean;
@@ -190,23 +190,24 @@ declare module 'elaracmdo' {
 		public readonly webhookID: string;
 
 		public anyUsage(command?: string, prefix?: string, user?: User): string;
-		public delete(timeout?: number): Promise<Message>;
-		public direct(content: StringResolvable, options?: MessageOptions): Promise<Message | Message[]>;
-		public edit(content: StringResolvable): Promise<Message>
-		public embed(embed: MessageEmbed | {}, content?: StringResolvable, options?: MessageOptions): Promise<Message | Message[]>;
-		public success(content: string, text: string, options: MessageOptions): Promise<Message | Message[]>;
-		public error(content: string, text: string, options: MessageOptions): Promise<Message | Message[]>;
-		public custom(content: string, text: string, options: MessageOptions): Promise<Message | Message[]>;
-		public boop(options: SayOpt, message_options: MessageOptions): Promise<Message|Message[]>;
+		public delete(timeout?: number): Promise<CommandoMessage>;
+		public del(options?: {timeout?: number, reason?: string}): Promise<CommandoMessage>;
+		public direct(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public edit(content: StringResolvable): Promise<CommandoMessage>
+		public embed(embed: MessageEmbed | {}, content?: StringResolvable, options?: MessageOptions): Promise<Message | CommandoMessage[]>;
+		public success(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public error(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public custom(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public boop(options: SayOpt, message_options: MessageOptions): Promise<CommandoMessage|CommandoMessage[]>;
 		public fetchWebhook(): Promise<Webhook>;
 		public parseArgs(): string | string[];
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
-		public pin(): Promise<Message>
+		public pin(): Promise<CommandoMessage>
 		public react(emoji: string | Emoji | ReactionEmoji): Promise<MessageReaction>;
-		public reply(content: StringResolvable, options?: MessageOptions): Promise<Message | Message[]>;
-		public run(): Promise<Message | Message[]>;
-		public say(content: StringResolvable, options?: MessageOptions): Promise<Message | Message[]>;
-		public unpin(): Promise<Message>;
+		public reply(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public run(): Promise<CommandoMessage | CommandoMessage[]>;
+		public say(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public unpin(): Promise<CommandoMessage>;
 		public usage(argString?: string, prefix?: string, user?: User): string;
 	}
 	export type SayOpt = {
