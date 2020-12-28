@@ -76,8 +76,31 @@ module.exports = Structures.extend('Message', Message => {
 			this.argString = argString;
 			this.patternMatches = patternMatches;
 			return this;
-		}
+    }
+    /**
+     * @typedef {Object} DelOptions
+     * @property {?number} [timeout=0] - Time to wait for it to delete.
+     * @property {?string} [reason=""] - The reason for deleting the message.
+     */
+    /**
+     * @param {?DelOptions} options 
+     */
+		async del(options = {timeout: 0, reason: ""}){
+        if(!this.deleted) return Promise.resolve(`The message was deleted.`);
 
+	 	    if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
+    		const { timeout = 0, reason } = options;
+        if (timeout <= 0) {	
+            return await this.channel.messages.delete(this.id, reason).then(() => this);	
+        } else {	
+            return new Promise(resolve => {	
+                this.client.setTimeout(() => {	
+                  if(this.deleted) return resolve(`The message was already deleted.`); 
+                  resolve(this.del({ reason }));	
+                }, timeout);	
+            });	
+        }
+		}
 		/**
 		 * Creates a usage string for the message's command
 		 * @param {string} [argString] - A string of arguments for the command
@@ -269,13 +292,7 @@ module.exports = Structures.extend('Message', Message => {
 		*/
 		publish(){
 		 if(this.channel.type !== "news") throw new Error(`You can only crosspost messages in a news channel!`)
-		  require("superagent")
-		   .post(`https://discord.com/api/v6/channels/${this.channel.id}/messages/${this.id}/crosspost`)
-		   .set(`Authorization`, `Bot ${this.client.token}`)
-	           .then(res => res.body)
-		   .catch(err => {
-		   	throw new Error(`Crosspost error: ${err.stack}`);
-		   })
+		  return this.crosspost();
 		}
 		/**
 		 * Responds to the command message
