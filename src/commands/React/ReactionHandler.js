@@ -142,7 +142,7 @@ class ReactionHandler extends ReactionCollector {
 						}
 					}
 				}).then(async () => {
-				if(!this.message.deleted) this.message.delete({ timeout: 20000, reason: "Auto" });
+				if(!this.message.deleted) this.message.del({ timeout: 20000, reason: "Auto" });
 				})
 			}, 5000)
 			})
