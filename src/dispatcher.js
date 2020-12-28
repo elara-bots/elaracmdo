@@ -130,7 +130,7 @@ class CommandDispatcher {
 					if(!cmdMsg.command.isEnabledIn(message.guild)) {
 						if(!cmdMsg.command.unknown) {
 							let embed = {title: `Command (${cmdMsg.command.name}) is disabled!`, color: 0x36393E, author: {name: message.guild.name, icon_url: message.guild.iconURL()}}
-							responses = await cmdMsg.channel.send({embed: embed}).then(msg => {setTimeout(() => {msg.delete().catch(() => {}); cmdMsg.delete().catch(() => {})}, 10000)});
+							responses = await cmdMsg.channel.send({embed: embed}).then(msg => {setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000)});
 						}
 					} else if(!oldMessage || typeof oldCmdMsg !== 'undefined') {
 						responses = await cmdMsg.run();
@@ -276,7 +276,6 @@ class CommandDispatcher {
 			pattern = new RegExp(`(^<@!?${this.client.user.id}>\\s+)([^\\s]+)`, 'i');
 		}
 		this._commandPatterns[prefix] = pattern;
-		this.client.emit('debug', `Built command pattern for prefix "${prefix}": ${pattern}`);
 		return pattern;
 	}
 }
