@@ -365,7 +365,7 @@ module.exports = Structures.extend('Message', Message => {
 				return Promise.all(promises);
 			} else {
 				if(response instanceof Array) { // eslint-disable-line no-lonely-if
-					for(let i = response.length - 1; i > 0; i--) response[i].delete();
+					for(let i = response.length - 1; i > 0; i--) response[i].del();
 					return response[0].edit(`${prepend}${content}`, options);
 				} else {
 					return response.edit(`${prepend}${content}`, options);
@@ -543,9 +543,9 @@ module.exports = Structures.extend('Message', Message => {
 				for(let i = this.responsePositions[id] + 1; i < responses.length; i++) {
 					const response = responses[i];
 					if(response instanceof Array) {
-						for(const resp of response) resp.delete();
+						for(const resp of response) resp.del();
 					} else {
-						response.delete();
+						response.del();
 					}
 				}
 			}
