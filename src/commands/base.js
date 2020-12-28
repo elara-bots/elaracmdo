@@ -333,7 +333,7 @@ class Command {
 					text: `Requested by: @${message.author.tag}`,
 					icon_url: message.author.displayAvatarURL({dynamic: true})
 				}
-			}).then(m => m.delete({timeout: 10000}).catch(o => {}));
+			}).then(m => m.del({timeout: 10000}).catch(o => {}));
 			case "channel": return message.channel.send(message.author.toString(), {embed: new MessageEmbed({
 				title: `INFO`,
 				author: {name: message.guild.name, icon_url: message.guild.iconURL({dynamic: true}), url: message.client.options.invite},
@@ -341,7 +341,7 @@ class Command {
 				footer: {text: `This message will be deleted in 10s`, icon_url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
 				description: `You can't use commands in this channel.\n**Go to <#${message.guild.commands}> to use commands!**`,
 				timestamp: new Date()
-			})}).then(m => m.delete({timeout: 10000}).catch(o => {}))
+			})}).then(m => m.del({timeout: 10000}).catch(o => {}))
 			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
 			case "blacklist": default: return null;
 		}
