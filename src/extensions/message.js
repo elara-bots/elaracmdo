@@ -85,13 +85,13 @@ module.exports = Structures.extend('Message', Message => {
     /**
      * @param {?DelOptions} options 
      */
-		async del(options = {timeout: 0, reason: ""}){
-        if(!this.deleted) return Promise.resolve(`The message was deleted.`);
+	 del(options = {timeout: 0, reason: ""}){
+        if(this.deleted) return Promise.resolve(`The message was deleted.`);
 
 	 	    if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
     		const { timeout = 0, reason } = options;
         if (timeout <= 0) {	
-            return await this.channel.messages.delete(this.id, reason).then(() => this);	
+            return this.channel.messages.delete(this.id, reason).then(() => this);	
         } else {	
             return new Promise(resolve => {	
                 this.client.setTimeout(() => {	
