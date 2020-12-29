@@ -36,7 +36,7 @@ module.exports = class BotinfoCommand extends Command {
                 "dboats": "<:dboats:735559399614971904>",
                 "dbl": "<:dbl:735559805699096576>",
                 "bfd": "<:bfd:735559564153454734>",
-                "blist": "<:blist:741978140074836059>"
+                "blist": "<:blist:793373886573707295>"
             },
 
             botlists = [
