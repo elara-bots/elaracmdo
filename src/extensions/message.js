@@ -86,21 +86,20 @@ module.exports = Structures.extend('Message', Message => {
      * @param {?DelOptions} options 
      */
 	 del(options = {timeout: 0, reason: ""}){
-        if(this.deleted) return Promise.resolve(`The message was deleted.`);
-
-	 	    if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
+        	if(this.deleted) return Promise.resolve(`The message was deleted.`);
+		if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
     		const { timeout = 0, reason } = options;
-        if (timeout <= 0) {	
-            return this.channel.messages.delete(this.id, reason).then(() => this);	
-        } else {	
-            return new Promise(resolve => {	
-                this.client.setTimeout(() => {	
-                  if(this.deleted) return resolve(`The message was already deleted.`); 
-                  resolve(this.del({ reason }));	
-                }, timeout);	
-            });	
-        }
-		}
+        	if (timeout <= 0) {	
+                   return this.channel.messages.delete(this.id, reason).then(() => this);	
+        	} else {	
+            	   return new Promise(resolve => {	
+                	this.client.setTimeout(() => {	
+                  		if(this.deleted) return resolve(`The message was already deleted.`); 
+                  		resolve(this.del({ reason }));	
+                	}, timeout);	
+            	   });	
+       		}
+	}
 		/**
 		 * Creates a usage string for the message's command
 		 * @param {string} [argString] - A string of arguments for the command
