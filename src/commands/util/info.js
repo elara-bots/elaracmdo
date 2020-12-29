@@ -36,6 +36,7 @@ module.exports = class BotinfoCommand extends Command {
                 "dboats": "<:dboats:735559399614971904>",
                 "dbl": "<:dbl:735559805699096576>",
                 "bfd": "<:bfd:735559564153454734>",
+                "blist": "<:blist:741978140074836059>"
             },
 
             botlists = [
@@ -44,7 +45,8 @@ module.exports = class BotinfoCommand extends Command {
                 `${emojis.dbots} ${a(`Discord Bots`, `https://discord.bots.gg/bots/${botID}`)}`,
                 `${emojis.del} ${a(`Discord Extreme List`, `https://discordextremelist.xyz/en-US/bots/${botID}`)}`,
                 `${emojis.bfd} ${a(`Bots For Discord`, `https://botsfordiscord.com/bot/${botID}`)}`,
-                `${emojis.dbl} ${a(`Discord Bot List`, `https://discordbotlist.com/bots/${botID}`)}`
+                `${emojis.dbl} ${a(`Discord Bot List`, `https://discordbotlist.com/bots/${botID}`)}`,
+                `${emojis.blist} ${a(`Blist`, `https://blist.xyz/bot/${botID}`)}`,
             ]
         let user = this.client.user;
         let embed = new Discord.MessageEmbed()
