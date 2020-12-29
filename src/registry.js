@@ -67,10 +67,8 @@ class CommandoRegistry {
 		const existing = this.groups.get(group.id);
 		if(existing) {
 			existing.name = group.name;
-			this.client.emit('debug', `Group ${group.id} is already registered; renamed it to "${group.name}".`);
 		} else {
 			this.groups.set(group.id, group);
-			this.client.emit('debug', `Registered group ${group.id}.`);
 		}
 
 		return this;
@@ -137,7 +135,6 @@ class CommandoRegistry {
 		group.commands.set(command.name, command);
 		this.commands.set(command.name, command);
 		if(command.unknown) this.unknownCommand = command;
-		this.client.emit('debug', `Registered command ${group.id}:${command.memberName}.`);
 
 		return this;
 	}
@@ -203,7 +200,6 @@ class CommandoRegistry {
 
 		// Add the type
 		this.types.set(type.id, type);
-		this.client.emit('debug', `Registered argument type ${type.id}.`);
 
 		return this;
 	}
@@ -374,7 +370,6 @@ class CommandoRegistry {
 		this.commands.set(command.name, command);
 		if(this.unknownCommand === oldCommand) this.unknownCommand = null;
 		if(command.unknown) this.unknownCommand = command;
-		this.client.emit('debug', `Reregistered command ${command.groupID}:${command.memberName}.`);
 	}
 
 	/**
@@ -385,7 +380,6 @@ class CommandoRegistry {
 		this.commands.delete(command.name);
 		command.group.commands.delete(command.name);
 		if(this.unknownCommand === command) this.unknownCommand = null;
-		this.client.emit('debug', `Unregistered command ${command.groupID}:${command.memberName}.`);
 	}
 
 	/**
