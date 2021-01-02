@@ -101,13 +101,13 @@ class Command {
 		 * Name of the command within the group
 		 * @type {string}
 		 */
-		this.memberName = info.memberName;
+		this.memberName = info.memberName || this.name || info.name;
 
 		/**
 		 * Short description of the command
 		 * @type {string}
 		 */
-		this.description = info.description;
+		this.description = info.description || "No Description Set";
 
 		/**
 		 * Usage format string of the command
@@ -147,24 +147,24 @@ class Command {
 		 * Permissions required by the client to use the command.
 		 * @type {?PermissionResolvable[]}
 		 */
-		this.clientPermissions = info.clientPermissions || null;
+		this.clientPermissions = info.clientPermissions || [];
 
 		/**
 		 * Permissions required by the client to use the command.
 		 * @type {?PermissionResolvable[]}
 		 */
-		this.clientGuildPermissions = info.clientGuildPermissions || null;
+		this.clientGuildPermissions = info.clientGuildPermissions || [];
 
 		/**
 		 * Permissions required by the member to use the command.
 		 * @type {?PermissionResolvable[]}
 		 */
-		this.userGuildPermissions = info.userGuildPermissions || null;
+		this.userGuildPermissions = info.userGuildPermissions || [];
 		/**
 		 * Permissions required by the user to use the command.
 		 * @type {?PermissionResolvable[]}
 		 */
-		this.userPermissions = info.userPermissions || null;
+		this.userPermissions = info.userPermissions || [];
 
 		/**
 		 * Whether the command can only be used in NSFW channels
