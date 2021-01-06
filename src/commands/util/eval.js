@@ -9,8 +9,8 @@ module.exports = class EvalCommand extends Command {
 	super(client, {
             name: 'eval',
             aliases: [`e`, `ev`, `eva`, `code`],
-	    group: 'owner',
-	    memberName: 'eval',
+	    	group: 'owner',
+	    	memberName: 'eval',
 			description: 'Executes JavaScript code.',
 			details: 'Only the bot owner(s) may use this command.',
 			ownerOnly: true,
@@ -30,21 +30,27 @@ module.exports = class EvalCommand extends Command {
 	}
 
 async run(message, args) {
-	args.script = args.script.replace(new RegExp(this.client.token, "g"), "Fuck Off, Muppet.")
-	  const bot = message.client, 
-			  msg = message, 
-			  client = message.client, 
-			  lastResult = this.lastResult, 
-			  f = client.f,  
-			  guild = (id) => this.client.guilds.cache.get(id),
-			  string = (thing, spacing = 2) => {
-				return JSON.stringify(thing, null, spacing)
-			  }, 
-			  code = (thing, options = {code: "json", split: true, string: true}) => {
-				  return msg.say(options.string ? string(thing) : thing, options)
-			  },
-			  evalembed = new MessageEmbed().setAuthor(client.user.tag, client.user.displayAvatarURL()).setColor(client.util.colors.default).setTimestamp(),
-			doReply = async (val) => {
+	const repl = [
+		"client[",
+		"bot[",
+		".token",
+		'["token"]',
+		"['token']",
+		"[`token`]"
+	];
+	if(repl.filter(c => message.content.toLowerCase().includes(c)).length !== 0) return message.error(`How about you go shove your hands in a blender and turn it on, that sounds like a better idea, now if you don't mind.. please fuck off.`);
+	let [ bot, msg, client, lastResult, f, guild, string, evalembed, code ] = [
+		message.client,
+		message,
+		message.client,
+		this.lastResult,
+		message.client.f,
+		(id) => this.client.guilds.cache.get(id),
+		(t, s = 2) => JSON.stringify(t, undefined, s),
+		new MessageEmbed().setAuthor(this.client.user.tag, this.client.user.displayAvatarURL({dynamic: true})).setColor(this.client.util.colors.default).setTimestamp(),
+		(thing, options = {code: "json", split: true, string: true}) => msg.say(options.string ? string(thing) : thing, options)
+	]
+	  const doReply = async (val) => {
 			if(val instanceof Error) {
 				evalembed.setTitle(`Callback Error`).setDescription(`\`${val}\``)
 				return message.channel.send(evalembed).catch(() => {});
