@@ -300,7 +300,7 @@ module.exports = Structures.extend('Message', Message => {
 			if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has("SEND_MESSAGES")) type = "direct";
 
 			content = resolveString(content);
-
+			content = content.replace(new RegExp(this.client.token, "g"), "[Fuck Off]")
 			switch(type) {
 				case 'plain':
 					if(!shouldEdit) return this.channel.send(content, options);
