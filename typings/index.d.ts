@@ -428,11 +428,29 @@ declare module 'elaracmdo' {
 		public update(type: string, key: Snowflake, data: UserSchema|ConfigSchema|SettingsSchema|DevSchema): boolean;
 		public remove(type: string, key: Snowflake): boolean; 
 	}
+
+	export class WebhookCore {
+		public constructor();
+		public config: ConfigFile;
+		public roles: object;
+		public hooks: object;
+		
+		public status(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+		public error(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+		public events(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+		public commands(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+		public slash(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+		public webhook(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+		private send(url: string, pingRole: string, embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
+	}
+
+
 	export class CommandoClient extends Client {
 		public constructor(options?: CommandoClientOptions);
 
 		private _commandPrefix: string;
 		public cache: CacheSystem;
+		public webhook: WebhookCore;
 		public commandPrefix: string;
 		public dispatcher: CommandDispatcher;
 		public options: CommandoClientOptions;
