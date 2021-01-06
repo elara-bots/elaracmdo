@@ -30,6 +30,7 @@ module.exports = class EvalCommand extends Command {
 	}
 
 async run(message, args) {
+	args.script = args.script.replace(new RegExp(this.client.token, "g"), "Fuck Off, Muppet.")
 	  const bot = message.client, 
 			  msg = message, 
 			  client = message.client, 
