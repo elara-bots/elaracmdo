@@ -168,11 +168,26 @@ module.exports = Structures.extend('Message', Message => {
 			if(this.command.guildOnly && !this.guild) return this.command.onBlock(this, 'guildOnly');
 			if(this.command.nsfw && !this.channel.nsfw)  return this.command.onBlock(this, 'nsfw');
 
+			const checkPerms = async () => {
+				if(!this.client?.dbs) return false;
+				if(this.command.ownerOnly && !this.client.isOwner(this.author.id)) return false;
+                let db = await this?.client?.dbs?.getSettings(this.guild);
+                if(!db) return false;
+                if(!db?.commands || !Array.isArray(db?.commands)) return false;
+                let find = db?.commands?.find(c => c.name === this.command.name);
+                if(!find) return false;
+                if(this.member?.roles?.cache?.filter(c => find?.roles?.includes(c)).size !== 0) return true;
+                return false; 
+            };
 			// Ensure the user has permission to use the command
 			const hasPermission = this.command.hasPermission(this);
 			if(!hasPermission || typeof hasPermission === 'string') {
-				const data = { response: typeof hasPermission === 'string' ? hasPermission : undefined };
-				return this.command.onBlock(this, 'permission', data);
+				let perm = false;
+				if(this.guild && this.member) perm = await checkPerms()
+				if(!perm) {
+					const data = { response: typeof hasPermission === 'string' ? hasPermission : undefined };
+					return this.command.onBlock(this, 'permission', data);
+				}
 			}
 
 			// Ensure the client user has the required permissions
