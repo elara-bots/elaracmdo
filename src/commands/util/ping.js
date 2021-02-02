@@ -37,7 +37,7 @@ module.exports = class PingCommand extends Command {
                 }
             }),
             robot = this.client.util.emojis.robot;
-        if(!this.client.isSupport(msg.author.id)) message.edit({embed: {
+        if(!this.client.isSupport(msg.author.id)) return message.edit({embed: {
             author, footer,
             title: `${robot} Status ${robot}`,
             color: this.client.getColor(message.guild),
