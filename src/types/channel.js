@@ -17,7 +17,7 @@ class ChannelArgumentType extends ArgumentType {
 			if(arg.oneOf && !arg.oneOf.includes(channels.first().id)) return false;
 			return true;
 		}
-		const exactChannels = channels.cache.filter(nameFilterExact(search));
+		const exactChannels = channels.filter(nameFilterExact(search));
 		if(exactChannels.size === 1) {
 			if(arg.oneOf && !arg.oneOf.includes(exactChannels.first().id)) return false;
 			return true;
@@ -35,7 +35,7 @@ class ChannelArgumentType extends ArgumentType {
 		const channels = msg.guild.channels.cache.filter(nameFilterInexact(search));
 		if(channels.size === 0) return null;
 		if(channels.size === 1) return channels.first();
-		const exactChannels = channels.cache.filter(nameFilterExact(search));
+		const exactChannels = channels.filter(nameFilterExact(search));
 		if(exactChannels.size === 1) return exactChannels.first();
 		return null;
 	}
