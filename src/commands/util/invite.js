@@ -32,23 +32,18 @@ module.exports = class NCommand extends Command {
             ]
       let fields = []
       if(this.client.user.equals(user)) fields.push({name: `Support`, value: `[Invite](${this.client.options.invite})`, inline: false});
-      return message.boop({
+      return message.channel.send({
           embed: {
               author: {
-                  name: `${user.tag}'s Invite`,
+                  name: `Invite for: @${user.tag}`,
                   icon_url: user.displayAvatarURL({dynamic: true}),
                   url: this.client.user.equals(user) ? this.client.options.invite : undefined
               },
               color: this.client.getColor(message.guild),
-              fields: [
-                  {
-                      name: `Permissions`,
-                      value: links.join("\n"),
-                      inline: true
-                  },
-                  ...fields
-              ],
-              footer: { text: `Permissions | /Slash Commands` }
+              title: "Permissions",
+              description: links.join("\n"),
+              fields,
+              footer: { text: `Permissions | Permissions + / Slash Commands` }
           }
       })
     }
