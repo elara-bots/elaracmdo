@@ -22,7 +22,7 @@ module.exports = class NCommand extends Command {
     }
     async run(message, { user}) {
         if(user.bot === false) return message.error(`That is a user account, not a bot..`);
-        let p = (name, num. slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${user.id}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""})`,
+        let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${user.id}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""})`,
             links = [
                 `${p("All", "2137517567")} | ${p("All + /", "2137517567")}`,
                 `${p("Administrator", "8")} | ${p("Administrator + /", "8")}`,
