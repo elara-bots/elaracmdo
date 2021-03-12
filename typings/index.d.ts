@@ -864,6 +864,8 @@ declare module 'elaracmdo' {
 			yellow: string;
 		};
 		public emojis: {
+			s: string;
+			ss: string;
 			sreact: string;
 			nreact: string;
 			rload: string;
