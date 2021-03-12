@@ -27,7 +27,8 @@ const perm = {
 	DEAFEN_MEMBERS: 'Deafen Members',
 	MOVE_MEMBERS: 'Move Members',
 	USE_VAD: 'Use Voice Activity',
-	STREAM: "Stream"
+	STREAM: "Stream",
+	SLASH_COMMANDS: "Slash Commands"
 }
 module.exports = {
 	escapeRegex: str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&'),
@@ -134,6 +135,8 @@ module.exports = {
 		"eplus": "<:plus:552471361960804362>",
 		"en": "<:Enabled:587440902025248796>",
 		"ed": "<:Disabled:587440969423781899>",
+		"s": "▫",
+		"ss": "◽",
 	
 		// Reactions
 		"rminus": "552471429199953921",
