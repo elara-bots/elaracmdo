@@ -833,6 +833,7 @@ declare module 'elaracmdo' {
 		private _commandPrefix: string;
 		private _commandsEnabled: object;
 		private _groupsEnabled: object;
+		public readonly client: CommandoClient;
 		
 		public invites: string[];
 		public commandPrefix: string;
