@@ -565,7 +565,7 @@ module.exports = Structures.extend('Message', Message => {
 		 * @return {string[]} The array of arguments
 		 */
 		static parseArgs(argString, argCount, allowSingleQuote = true) {
-			const re = allowSingleQuote ? /\s*(?:("|')([^]*?)\1|(\S+))\s*/g : /\s*(?:(")([^]*?)"|(\S+))\s*/g;
+			const re = allowSingleQuote ? /\s*(?:("|'|”)([^]*?)\1|(\S+))\s*/g : /\s*(?:("|”)([^]*?)"|(\S+))\s*/g;
 			const result = [];
 			let match = [];
 			// Large enough to get all items
@@ -574,7 +574,7 @@ module.exports = Structures.extend('Message', Message => {
 			while(--argCount && (match = re.exec(argString))) result.push(match[2] || match[3]);
 			// If text remains, push it to the array as-is (except for wrapping quotes, which are removed)
 			if(match && re.lastIndex < argString.length) {
-				const re2 = allowSingleQuote ? /^("|')([^]*)\1$/g : /^(")([^]*)"$/g;
+				const re2 = allowSingleQuote ? /^("|'|”)([^]*)\1$/g : /^("|”)([^]*)("|”)$/g;
 				result.push(argString.substr(re.lastIndex).replace(re2, '$2'));
 			}
 			return result;
