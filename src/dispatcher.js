@@ -225,11 +225,12 @@ class CommandDispatcher {
 	 * @private
 	 */
 	parseMessage(message) {
+		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
 		// Find the command to run by patterns
 		for(const command of this.registry.commands.values()) {
 			if(!command.patterns) continue;
 			for(const pattern of command.patterns) {
-				const matches = pattern.exec(message.content);
+				const matches = pattern.exec(content);
 				if(matches) return message.initCommand(command, null, matches);
 			}
 		}
@@ -251,13 +252,14 @@ class CommandDispatcher {
 	 * @private
 	 */
 	matchDefault(message, pattern, commandNameIndex = 1, prefixless = false) {
-		const matches = pattern.exec(message.content);
+		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
+		const matches = pattern.exec(content);
 		if(!matches) return null;
 		const commands = this.registry.findCommands(matches[commandNameIndex], true);
 		if(commands.length !== 1 || !commands[0].defaultHandling) {
-			return message.initCommand(this.registry.unknownCommand, prefixless ? message.content : matches[1]);
+			return message.initCommand(this.registry.unknownCommand, prefixless ? content : matches[1]);
 		}
-		const argString = message.content.substring(matches[1].length + (matches[2] ? matches[2].length : 0));
+		const argString = content.substring(matches[1].length + (matches[2] ? matches[2].length : 0));
 		return message.initCommand(commands[0], argString);
 	}
 
