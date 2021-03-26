@@ -27,7 +27,7 @@ module.exports = Structures.extend('Guild', Guild => {
 			 * @name CommandoGuild#currency
 			 * @type {string}
 			 */
-			this.currency = "Coins";
+			this.currency = "$";
 
 			/**
 			 * Array for the guild invites.
@@ -48,7 +48,7 @@ module.exports = Structures.extend('Guild', Guild => {
 		 * @returns {string}
 		 */
 		getColor(){
-			return this.color ? this.color : this.client.util.colors.default;
+			return this.color ?? this.client.util.colors.default;
 		};
 		/**
 		 * @param {string} [color]
@@ -110,9 +110,7 @@ module.exports = Structures.extend('Guild', Guild => {
 		isCommandEnabled(command) {
 			command = this.client.registry.resolveCommand(command);
 			if(command.guarded) return true;
-			if(!this._commandsEnabled || typeof this._commandsEnabled[command.name] === 'undefined') {
-				return command._globalEnabled;
-			}
+			if(!this._commandsEnabled || typeof this._commandsEnabled[command.name] === 'undefined') return command._globalEnabled;
 			return this._commandsEnabled[command.name];
 		}
 
