@@ -169,15 +169,15 @@ class CommandoClient extends Client {
 	 */
 	isOwner(user) {
 		try{
-		if(!this.options.owner) return false;
-		user = this.users.resolve(user);
-		if(!user) throw new RangeError('Unable to resolve user.');
-		if(typeof this.options.owner === 'string') return user.id === this.options.owner;
-		if(this.options.owner instanceof Array) return this.options.owner.includes(user.id);
-		if(this.options.owner instanceof Set) return this.options.owner.has(user.id);
-		throw new RangeError('The client\'s "owner" option is an unknown value.');
+			if(!this.options.owner) return false;
+			user = this.users.resolve(user);
+			if(!user) throw new RangeError('Unable to resolve user.');
+			if(typeof this.options.owner === 'string') return user.id === this.options.owner;
+			if(this.options.owner instanceof Array) return this.options.owner.includes(user.id);
+			if(this.options.owner instanceof Set) return this.options.owner.has(user.id);
+			throw new RangeError('The client\'s "owner" option is an unknown value.');
 		}catch(err){
-	 	   return false;
+	 	   	return false;
 		}
 	}
 	/**
@@ -188,16 +188,15 @@ class CommandoClient extends Client {
 
 	isSupport(user){
 		try{
-		if(!this.options.support) return false;
-		user = this.users.resolve(user);
-		if(!user) throw new RangeError(`[isSupport] - Unable to resolve user.`);
-		if(this.options.support instanceof Array) return this.options.support.includes(user.id);
-		if(this.options.support instanceof Set) return this.options.support.has(user.id);
-		if(typeof this.options.support === "string") return user.id === this.options.support;
-		if(this.options.support instanceof Array) return this.options.support.includes(user.id);
-		return false;	
+			if(!this.options.support) return false;
+			user = this.users.resolve(user);
+			if(!user) throw new RangeError(`[isSupport] - Unable to resolve user.`);
+			if(this.options.support instanceof Array) return this.options.support.includes(user.id);
+			if(this.options.support instanceof Set) return this.options.support.has(user.id);
+			if(typeof this.options.support === "string") return user.id === this.options.support;
+			return false;	
 		}catch(err){
-		return false;
+			return false;
 		}
 	};
 	getPrefix(guild){
