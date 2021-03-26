@@ -4,16 +4,13 @@ const Command = require('../commands/base');
 const FriendlyError = require('../errors/friendly');
 const CommandFormatError = require('../errors/command-format');
 const functions = {
-	blacklist: (client, message) => {
-		try{
-			if((message.client.GlobalUsers || []).includes(message.author.id)) return true;
-			if(!message.guild) return false;
-			if((client.config.ignore.guilds || []).includes(message.guild.id)) return true;
-			return false;
-		}catch{
-			return false;
-		}
-    	}
+	blacklist: (message) => {
+		if(message.client.isOwner(message.author.id)) return false;
+		if(message?.client?.GlobalUsers?.includes(message.author.id)) return true;
+		if(!message.guild) return false;
+		if(message.client?.config?.ignore?.guilds?.includes(message.guild?.id)) return true;
+		return false;
+	}
 }
 
 module.exports = Structures.extend('Message', Message => {
@@ -76,16 +73,13 @@ module.exports = Structures.extend('Message', Message => {
 			this.argString = argString;
 			this.patternMatches = patternMatches;
 			return this;
-    }
-    /**
-     * @typedef {Object} DelOptions
-     * @property {?number} [timeout=0] - Time to wait for it to delete.
-     * @property {?string} [reason=""] - The reason for deleting the message.
-     */
-    /**
-     * @param {?DelOptions} options 
-     */
-	 del(options = {timeout: 0, reason: ""}){
+    	}
+    	/**
+     	* @param {Object} [options]
+		* @param {number} [options.timeout=0] - The time to wait before deleting the message.
+		* @param {string} [options.reason=""] - The reason for deleting the message. 
+     	*/
+	 	del(options = {timeout: 0, reason: ""}){
         	if(this.deleted) return Promise.resolve(`The message was deleted.`);
 		if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
     		const { timeout = 0, reason } = options;
@@ -99,7 +93,7 @@ module.exports = Structures.extend('Message', Message => {
                 	}, timeout);	
             	   });	
        		}
-	}
+		}
 		/**
 		 * Creates a usage string for the message's command
 		 * @param {string} [argString] - A string of arguments for the command
@@ -139,14 +133,9 @@ module.exports = Structures.extend('Message', Message => {
 		 */
 		parseArgs() {
 			switch(this.command.argsType) {
-				case 'single':
-					return this.argString.trim().replace(
-						this.command.argsSingleQuotes ? /^("|')([^]*)\1$/g : /^(")([^]*)"$/g, '$2'
-					);
-				case 'multiple':
-					return this.constructor.parseArgs(this.argString, this.command.argsCount, this.command.argsSingleQuotes);
-				default:
-					throw new RangeError(`Unknown argsType "${this.argsType}".`);
+				case 'single': return this.argString.trim().replace(this.command.argsSingleQuotes ? /^("|')([^]*)\1$/g : /^(")([^]*)"$/g, '$2');
+				case 'multiple': return this.constructor.parseArgs(this.argString, this.command.argsCount, this.command.argsSingleQuotes);
+				default: throw new RangeError(`Unknown argsType "${this.argsType}".`);
 			}
 		}
 
@@ -155,35 +144,49 @@ module.exports = Structures.extend('Message', Message => {
 		 * @return {Promise<?Message|?Array<Message>>}
 		 */
 		async run() { // eslint-disable-line complexity
-			if(this.author.bot) return null;
-			if(this.webhookID) return null; // This should never run if it's a webhook.
-			if(this.guild && (this.client.config?.ignore?.guilds || []).includes(this.guild.id)) return null; 
-			if(this.client.main && !this.client.isSupport(this.author)) return this.command.onBlock(this, "maintenance");
-			if(functions.blacklist(this.client, this) === true) return this.command.onBlock(this, "blacklist");
-			if((this.client.GlobalCmds || []).includes(this.command.name) && !this.client.isOwner(this.author.id)) return this.command.onBlock(this, "GlobalDisable");
-			if(this.channel.type === "text" && !this.guild.members.cache.get(this.author.id)) return null;
-			if(this.guild && this.guild.commands && this.guild.commands !== this.channel.id && !this.member.permissions.has("MANAGE_MESSAGES") && !this.client.isOwner(this.author)) return this.command.onBlock(this, "channel");
-			// Only Checks.
-			if(this.command.dmOnly && this.guild) return this.command.onBlock(this, "dmOnly");
-			if(this.command.guildOnly && !this.guild) return this.command.onBlock(this, 'guildOnly');
-			if(this.command.nsfw && !this.channel.nsfw)  return this.command.onBlock(this, 'nsfw');
-
-			const checkPerms = async () => {
-				if(!this.client?.dbs) return false;
-				if(this.command.ownerOnly && !this.client.isOwner(this.author.id)) return false;
-                let db = await this?.client?.dbs?.getSettings(this.guild);
-                if(!db) return false;
-                if(!db?.commands || !Array.isArray(db?.commands)) return false;
-                let find = db?.commands?.find(c => c.name === this.command.name);
-                if(!find) return false;
-                if(this.member?.roles?.cache?.filter(c => find?.roles?.includes(c)).size !== 0) return true;
-                return false; 
+			if(!this.author) return null;
+			if(this.author.bot || this.webhookID) return null;
+			let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
+			
+			if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
+			if(functions.blacklist(this) && !support) return this.command.onBlock(this, "blacklist");
+			if(this.client.GlobalCmds?.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
+			
+			if(this.guild) {
+				if(!this.member) return null;
+				if(this.client.config?.ignore?.guilds?.includes(this.guild.id) && !support) return null;
+				if(!this.guild.members.cache.has(this.author.id)) return null;
+				if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
+				if(this.guild.commands && (this.guild.commands !== this.channel.id) && !this.member.permissions.has("MANAGE_MESSAGES") && !owner) return this.command.onBlock(this, "channel");
+			}else {
+				if(this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
+				if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
+			}
+			/**
+			 * @returns {Promise<boolean>}
+			 */
+			const checkPerms = () => {
+				return new Promise(async (_, rej) => {
+					if(!this.member) return _(false);
+					if(this.member.roles.cache.filter(c => c.id !== this.guild.id).size === 0) return _(false);
+					if(!this.client || !this.client.user) return _(false);
+					if(!this.client.dbs || !this.client.dbs.getSettings) return _(false);
+					if(this.command.ownerOnly && !this.client.isOwner(this.author.id)) return _(false);
+					if(this.client.isOwner(this.author.id)) return _(false);
+                	let db = await this.client.dbs.getSettings(this.guild);
+                	if(!db) return _(false);
+                	if(!db.commands || !Array.isArray(db.commands)) return _(false);
+                	let find = db.commands.find(c => c.name === this.command.name);
+                	if(!find) return _(false);
+                	if(this.member.roles.cache.filter(c => find.roles?.includes(c)).size !== 0) return _(true);
+                	return _(false); 
+				})
             };
 			// Ensure the user has permission to use the command
 			const hasPermission = this.command.hasPermission(this);
 			if(!hasPermission || typeof hasPermission === 'string') {
 				let perm = false;
-				if(this.guild && this.member) perm = await checkPerms()
+				if(this.guild && this.member) perm = await checkPerms();
 				if(!perm) {
 					const data = { response: typeof hasPermission === 'string' ? hasPermission : undefined };
 					return this.command.onBlock(this, 'permission', data);
@@ -202,7 +205,7 @@ module.exports = Structures.extend('Message', Message => {
 
 			// Throttle the command
 			const throttle = this.command.throttle(this.author.id);
-			if(throttle && throttle.usages + 1 > this.command.throttling.usages) {
+			if(throttle && ((throttle.usages + 1) > this.command.throttling.usages)) {
 				const remaining = (throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000;
 				const data = { throttle, remaining };
 				return this.command.onBlock(this, 'throttling', data);
@@ -236,7 +239,7 @@ module.exports = Structures.extend('Message', Message => {
 					let candelete = this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES") || false;
 					let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
 					if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
-					this.channel.bulkDelete(IDS, true).catch(() => {});
+						this.channel.bulkDelete(IDS, true).catch(() => {});
 					}
 				}
 				args = collResult.values;
@@ -264,11 +267,10 @@ module.exports = Structures.extend('Message', Message => {
 				this.client.emit('commandRun', this.command, promise, this, args, fromPattern, collResult);
 				const retVal = await promise;
 				if(!(retVal instanceof Message || retVal instanceof Array || retVal === null || retVal === undefined)) {
-					throw new TypeError(oneLine`
+					throw new TypeError( oneLine`
 						Command ${this.command.name}'s run() resolved with an unknown type
-						(${retVal !== null ? retVal && retVal.constructor ? retVal.constructor.name : typeof retVal : null}).
-						Command run methods must return a Promise that resolve with a Message, Array of Messages, or null/undefined.
-					`);
+						(${retVal !== null ? retVal && retVal.constructor ? retVal.constructor.name : (typeof retVal) : null}).
+						Command run methods must return a Promise that resolve with a Message, Array of Messages, or null/undefined.`);
 				}
 				return retVal;
 			} catch(err) {
@@ -285,19 +287,17 @@ module.exports = Structures.extend('Message', Message => {
 				 */
 				this.client.emit('commandError', this.command, err, this, args, fromPattern, collResult);
 				if(this.channel.typingCount > typingCount) this.channel.stopTyping();
-				if(err instanceof FriendlyError) {
-					return this.reply(err.message);
-				} else {
-					return this.command.onError(err, this, args, fromPattern, collResult);
-				}
+				if(err instanceof FriendlyError) return this.reply(err.message);
+				return this.command.onError(err, this, args, fromPattern, collResult);
 			}
 		}
 		/**
-		@returns {Promise<Message>}
+			@returns {Promise<Message>}
 		*/
 		publish(){
-		 if(this.channel.type !== "news") throw new Error(`You can only crosspost messages in a news channel!`)
-		  return this.crosspost();
+		 	console.log(`[${require("../../package.json").name}, v${require("../../package.json").version}]: DEPRECATION WARNING: (message.publish) is deprecated and will be removed in a later version, switch to (message.crosspost)`)
+			if(this.channel.type !== "news") throw new Error(`You can only crosspost messages in a news channel!`)
+		  	return this.crosspost();
 		}
 		/**
 		 * Responds to the command message
