@@ -547,7 +547,7 @@ declare module 'elaracmdo' {
 		on(event: 'warn', listener: (info: string) => void): this;
 		on(event: 'webhookUpdate', listener: (channel: TextChannel) => void): this;
 	}
-	type MessageDB = {
+	export type MessageDB = {
 		id: string;
 		type: string;
 		guildID: string;
@@ -555,6 +555,8 @@ declare module 'elaracmdo' {
 		author: string;
 		content: string;
 		attachments: string[];
+		stickers: string[],
+		activites: string[],
 		createdAt: Date;
 		expire: Date;
 	}
@@ -578,10 +580,10 @@ declare module 'elaracmdo' {
 		public delete(messageID: string): Promise<string|null>;
 		public get(messageID: string): Promise<MessageDB>;
 		public getBulk(messageIDs: string[], shouldDelete: boolean): Promise<MessageDB[]>;
-		public count(): Promise<number>;
+		public count(guildID?: string): Promise<number>;
 		public removeGuildMessages(guildID: string): Promise<MessageDB[]>;
-		public removeAllMessages(dryRun: boolean): Promise<MessageDB[]>;
-		public findAndRemoveExpired(dryRun: boolean): Promise<number>;
+		public removeAllMessages(dryRun?: boolean): Promise<MessageDB[]>;
+		public findAndRemoveExpired(dryRun?: boolean): Promise<number>;
 		public formatMessage(data: MessageDBData): Promise<MessageDB>;
 	}
 	type WeatherOptions = {
@@ -594,106 +596,73 @@ declare module 'elaracmdo' {
 		public find(options: WeatherOptions, callback: Function): void;
 	}
 	export class ConfigFile{
-		public getWebhooks: string[];
-		public getAPI: string[];
+		public clientOptions: CommandoClientOptions;
+		public look: string;
+		private token: string;
+		public webhooks: object;
+		public botConnected: boolean;
+		public user: { name: string, icon: string };
 		public ignore: {
-			guilds: string[];
-			users: string[];
-			dms: string[];
+			guilds: string[],
+			users: string[],
+			allowed: string[],
+			voting: string[],
+			cooldown: string[]
 		};
-		public apis: {
-			paladins: {
-				devID: string;
-				key: string;
-			},
-			IMDB: string;
-			hastebin: string;
-			api: string;
-			fortnite: string;
-			giphy: string;
-			twitch: string;
-			youtube: string;
-			lists: {
-				dbl: string;
-				dboats: string;
-				dbots: string;
-				del: string;
-				bfd: string;
-				dblist: string;
-			}
-		}
 		public presence: {
 			random: {
-				enabled: boolean;
-				list: string[];
+				enabled: boolean,
+				list: string[]
 			},
 			default: {
-				enabled: boolean;
-				def(client: CommandoClient): Promise<void>;
+				enabled: boolean,
+				def(client: CommandoClient, id: number): void;
 			}
 		};
-		public user: {
-			name: string;
-			icon: string;
-		}
-		public webhooks: {
-			audit: string;
-			mentions: string;
-			log: string;
-			error: string;
-			servers: string; 
-			action: string; 
-			feedback: string;
-			database: string;
-		};
-		public misc: {
-			owners: string[];
-			prefix: string;
-			logs: boolean;
-			disable: boolean;
-			dms: boolean;
-			VIP: string[];
-			website: {
-				url: string;
-				cdn: string;
-				services: string;
-				admin: string;
-				normal: string;
-				api: string;
-				votePass: string;
-			};
-			commandfolders: string[];
-			commandGroups: string[]; 
-		};
-		public links: {
-			dblpro: string;
-			github: string;
-			invite: string;
-			web: {
-				feedback: string;
-			}
+		public apis: {
+			paladins: { devID: string, key: string },
+			IMDB: string,
+			fortnite: string,
+			giphy: string,
+			twitch: string,
+			youtube: string,
+			lists: object
 		};
 		public roles: {
-			unhandled: {
-				rejection: string;
-				exeption: string;
-			},
+			unhandled: { rejection: string, exeption: string },
 			errors: {
-				commands: string;
-				logger: string;
-				events: string;
+				commands: string, logger: string,
+				events: string, webhook: string,
+				slash: string
 			}
 		};
+		public misc: {
+			prefix: string,
+			owners: string[],
+			support: string[],
+			invite: string,
+			logs: boolean,
+			disable: boolean,
+			caching: boolean,
+			locked: boolean,
+			webhooks: boolean,
+			messages: boolean,
+			debug: boolean,
+			express: boolean,
+			commandfolders: string[],
+			commandGroups: string[],
+			website: {
+				url: string,
+				cdn: string,
+				services: string,
+				api: string,
+				stats: string,
+				admin: string
+			}
+		}
 		public getPrefix(ID: string): string;
 		public api(num: number): string;
-		public webhook(num: number): string;
-		public group(id: string, name: string, guarded: boolean): string[];
-		public lists(num: number): string;
-		public clientOptions: ClientOptions;
-		public token: string;
-		public mongo: string;
-		public botConnected: boolean; 
-		public rexexp(str: string): string;
+		public group(id: string, name: string, guarded?: boolean): string[];
 	}
 	export class FunctionsList{
 		public perms(c: Channel, m: GuildMember, p: PermissionResolvable[]): boolean;
