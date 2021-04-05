@@ -152,7 +152,7 @@ async run(message, args) {
 		}
 	}
 	filterArgs(args){
-		return args.replace(new RegExp(this.client.config.token, "g"), "").replace(this.client.config.mongo, "")
+		return args.replace(new RegExp(this.client.config.token, "g"), "");
 	}
 	get sensitivePattern() {
 		if(!this._sensitivePattern) {
