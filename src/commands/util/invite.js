@@ -24,11 +24,11 @@ module.exports = class NCommand extends Command {
         if(user.bot === false) return message.error(`That is a user account, not a bot..`);
         let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${user.id}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""})`,
             links = [
-                `${p("All", "2137517567")} | ${p("All + /", "2137517567")}`,
-                `${p("Administrator", "8")} | ${p("Administrator + /", "8")}`,
-                `${p("Moderator", "1543892167")} | ${p("Moderator + /", "1543892167")}`,
-                `${p("Normal", "67488833")} | ${p("Normal + /", "67488833")}`,
-                `${p("None", "0")} | ${p("None + /", "0")}`,
+                `${p("All", "2137517567", false)} | ${p("All + /", "2137517567")}`,
+                `${p("Administrator", "8", false)} | ${p("Administrator + /", "8")}`,
+                `${p("Moderator", "1543892167", false)} | ${p("Moderator + /", "1543892167")}`,
+                `${p("Normal", "67488833", false)} | ${p("Normal + /", "67488833")}`,
+                `${p("None", "0", false)} | ${p("None + /", "0")}`,
             ]
       let fields = []
       if(this.client.user.equals(user)) fields.push({name: `Support`, value: `[Invite](${this.client.options.invite})`, inline: false});
