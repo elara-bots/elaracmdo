@@ -663,8 +663,26 @@ declare module 'elaracmdo' {
 		public getPrefix(ID: string): string;
 		public api(num: number): string;
 		public group(id: string, name: string, guarded?: boolean): string[];
+	}	
+	export class Purger {
+		public constructor(channel: TextChannel, amount?: number, cmd?: boolean);
+		public readonly channel: TextChannel;
+		public readonly amount: number;
+		public readonly cmd: boolean;
+		public links(amount?: number): Promise<number>;
+		public bots(amount?: number): Promise<number>;
+		public images(amount?: number): Promise<number>;
+		public text(amount?: number): Promise<number>;
+		public embeds(amount?: number): Promise<number>;
+		public client(amount?: number): Promise<number>;
+		public invites(amount?: number): Promise<number>;
+		public user(user: User, amount?: number): Promise<number>;
+		public normal(amount?: number): Promise<number>;
+		public init(filter?: string, user?: User|null): Promise<number>;
+		public purge(filter: Function, amount: number): Promise<number|null>;
+		public fetch(): Promise<CommandoMessage[]>;
 	}
-	export class FunctionsList{
+	export class FunctionsList {
 		public perms(c: Channel, m: GuildMember, p: PermissionResolvable[]): boolean;
 		
 		public create(type: string, args: CommandoGuild|User|CommandoClient|string, user: User|CommandoClient|string): Promise<void>;
