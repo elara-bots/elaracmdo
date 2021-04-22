@@ -161,6 +161,7 @@ module.exports = {
 		"yellow": 0xFAFF00,
 		"orange": 0xFF8300,
 		"cyan": 0x00ffe9,
+		"purple": 0xb28dff,
 		"default": 0x36393E
 	},
 	throws: [
