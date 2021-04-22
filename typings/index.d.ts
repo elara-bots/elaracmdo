@@ -193,7 +193,7 @@ declare module 'elaracmdo' {
 		public delete(timeout?: number): Promise<CommandoMessage>;
 		public del(options?: {timeout?: number, reason?: string}): Promise<CommandoMessage>;
 		public direct(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public edit(content: StringResolvable): Promise<CommandoMessage>
+		public edit(content: StringResolvable): Promise<CommandoMessage>;
 		public embed(embed: MessageEmbed | {}, content?: StringResolvable, options?: MessageOptions): Promise<Message | CommandoMessage[]>;
 		public success(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public error(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
@@ -202,7 +202,7 @@ declare module 'elaracmdo' {
 		public fetchWebhook(): Promise<Webhook>;
 		public parseArgs(): string | string[];
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
-		public pin(): Promise<CommandoMessage>
+		public pin(): Promise<CommandoMessage>;
 		public react(emoji: string | Emoji | ReactionEmoji): Promise<MessageReaction>;
 		public reply(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
@@ -847,6 +847,7 @@ declare module 'elaracmdo' {
 			green: string;
 			cyan: string;
 			default: string;
+			purple: string;
 			orange: string;
 			yellow: string;
 		};
