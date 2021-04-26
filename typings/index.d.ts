@@ -464,6 +464,7 @@ declare module 'elaracmdo' {
 		public messages: MessageService;
 		public stats: StatsTypes;
 		public main: boolean;
+		public chunks()
 		public registry: CommandoRegistry;
 		public util: ElaraUtil;
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
@@ -474,6 +475,7 @@ declare module 'elaracmdo' {
 		public isOwner(user: UserResolvable): boolean;
 		public isSupport(user: UserResolvable): boolean;
 		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
+		public deleteMessages(channel: TextChannel, messageIDs: string[]): Promise<string[]>;
 
 		on(event: string, listener: Function): this;
 		on(event: "database", listener: (client: CommandoClient, name: string, data: string[], color: string, create: boolean) => void): this;
