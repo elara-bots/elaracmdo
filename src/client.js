@@ -1,7 +1,8 @@
 const { Client, Channel, User, Message, Collection, SnowflakeUtil } = require('discord.js'),
 	   util = require("./util"),
 	   CommandoRegistry = require('./registry'),
-	   CommandDispatcher = require('./dispatcher');
+	   CommandDispatcher = require('./dispatcher'),
+	   sleep = (ms) => new Promise((res) => setTimeout(res, ms))
 /**
  * Discord.js Client with a command framework
  * @extends {Client}
@@ -40,7 +41,7 @@ class CommandoClient extends Client {
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
 		this.util = util
-        	this.GlobalCmds = []; 
+        this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => guild ? guild.color ? guild.color : this.util.colors.default : this.util.colors.default
@@ -252,6 +253,55 @@ class CommandoClient extends Client {
 		};
 		return messageIDs;
 	};
+	async purgeChannel(channelID, limit, filter, before, after) {
+		let channel = this.channels.resolve(channelID)
+		if(!channel) return 0;
+        if(typeof filter === "string") filter = (msg) => msg.content.includes(filter);
+        if(limit !== -1 && limit <= 0) return 0;
+	this.emit("special:debug", `[CLIENT:purgeChannel]: Running the purge in ${channel.name} (${channel.id})`);
+        let [ toDelete, deleted, done ] = [ [], 0, false ];
+        const checkToDelete = async () => {
+            const messageIDs = (done && toDelete) || (toDelete.length >= 100 && toDelete.splice(0, 100));
+            if(messageIDs) {
+                deleted += messageIDs.length;
+                await this.deleteMessages(channel, messageIDs);
+                if(done) return deleted;
+                await sleep(1000);
+                return checkToDelete();
+            }else 
+			if(done) {
+                return deleted;
+            }else {
+                await sleep(250);
+                return checkToDelete();
+            }
+        };
+        const del = async (_before, _after) => {
+            const messages = await this.fetchMessages(channel, 100, _before, _after);
+            if(limit !== -1 && limit <= 0) {
+                done = true;
+                return;
+            }
+            for(const message of messages) {
+                if(limit !== -1 && limit <= 0) {
+                    break;
+                }
+                if(message.timestamp < Date.now() - 1209600000) { // 14d * 24h * 60m * 60s * 1000ms
+                    done = true;
+                    return;
+                }
+                if(!filter || filter(message)) toDelete.push(message.id);
+                if(limit !== -1) limit--;
+            }
+            if((limit !== -1 && limit <= 0) || messages.length < 100) {
+                done = true;
+                return;
+            }
+            await del((_before || !_after) && messages[messages.length - 1].id, _after && messages[0].id);
+        };
+        await del(before, after);
+        return checkToDelete();
+    }
 }
 
 module.exports = CommandoClient;
