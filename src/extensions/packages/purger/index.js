@@ -58,11 +58,11 @@ module.exports = class Purger {
 
     async init(filter, user = null) {
         let amount = this.amount;
-        if(amount > 100) amount = 100;
+        if(amount > 500) amount = 500;
         const f = (reg, name) => {
             if(filter.match(new RegExp(reg, "i"))) filter = name;
         }
-        if(this.channel.client.user.equals(user) && ["user", "users", "member", "members"].includes(filter)) filter = "none";
+        if(this.cmd && this.channel.client.user.equals(user) && ["user", "users", "member", "members"].includes(filter)) filter = "none";
 
         if(!filter.match(/text|(link|url)(s)?|embed(s)?|(ro)?bot(s)?|image(s)?|photo(s)?|attachment(s)?|you|invite(s)?|user(s)?|member(s)?/i)){
             user = await this.channel.client.users.fetch(filter.replace(/<@(!)?|>/gi, ""), true).catch(() => null);
@@ -100,13 +100,20 @@ module.exports = class Purger {
         let messages = await this.fetch();
         if(!messages) return Promise.resolve(this.cmd ? null : 0);
         if(!amount || amount <= 0) amount = this.amount; 
-        return this.channel.bulkDelete(messages.filter(filter).array().slice(0, amount), true).then((m) => this.cmd ? null : m.size).catch(() => this.cmd ? null : 0);
+        return await this.channel.client.deleteMessages(this.channel, messages.filter(filter).map(c => c.id).slice(0, amount))
+        .then((m) => this.cmd ? null : m.length)
+        .catch(() => this.cmd ? null : 0)
     };
 
     async fetch() {
         if(!this.channel.permissionsFor(this.channel.client.user.id).has(this.permissions)) return Promise.resolve(null);
-        let messages = await this.channel.messages.fetch({ limit: 100 }).catch(() => new Collection());
-        if(messages.size === 0) return Promise.resolve(null);
+        let amount = 0;
+        if(this.amount <= 500 && this.amount >= 100) amount = 500;
+        else
+        if(this.amount <= 100 && this.amount >= 50) amount = 200;
+        else amount = 100;
+        let messages = await this.channel.client.fetchMessages(this.channel, amount).catch(() => []);
+        if(messages.length === 0) return Promise.resolve(null);
         return Promise.resolve(messages)
     };
 };
