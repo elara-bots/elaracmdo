@@ -464,7 +464,7 @@ declare module 'elaracmdo' {
 		public messages: MessageService;
 		public stats: StatsTypes;
 		public main: boolean;
-		public chunks()
+		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
 		public util: ElaraUtil;
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
