@@ -1,4 +1,4 @@
-const {Client, Channel, User, Message} = require('discord.js'),
+const { Client, Channel, User, Message, Collection } = require('discord.js'),
 	   util = require("./util"),
 	   CommandoRegistry = require('./registry'),
 	   CommandDispatcher = require('./dispatcher');
@@ -205,6 +205,32 @@ class CommandoClient extends Client {
 	async destroy() {
 		await super.destroy();
 	}
+	  /**
+    * Get previous messages in a channel
+	* @arg {import("discord.js").TextChannel} [channel]
+    * @arg {Number} [limit=50] The max number of messages to get
+    * @arg {String} [before] Get messages before this message ID
+    * @arg {String} [after] Get messages after this message ID
+    * @arg {String} [around] Get messages around this message ID (does not work with limit > 100)
+    * @returns {Promise<Array<import("elaracmdo").CommandoMessage>>}
+    */
+       async fetchMessages(channel, limit = 50, before, after, around) {
+        if(limit && limit > 100) {
+            let logs = [];
+            const get = async (_before, _after) => {
+                const messages = (await channel.messages.fetch({ limit: 100, before: _before || undefined, after: _after || undefined }).catch(() => new Collection())).array();
+                if(limit <= messages.length) {
+                    return (_after ? messages.slice(messages.length - limit, messages.length).map((message) => message).concat(logs) : logs.concat(messages.slice(0, limit).map((message) => message)));
+                }
+                limit -= messages.length;
+                logs = (_after ? messages.map((message) => message).concat(logs) : logs.concat(messages.map((message) => message)));
+                if(messages.length < 100)  return logs;
+                return get((_before || !_after) && messages[messages.length - 1].id, _after && messages[0].id);
+            };
+            return get(before, after);
+        }
+        return (await channel.messages.fetch({ limit, before, after, around }).catch(() => new Collection())).array();
+    }
 }
 
 module.exports = CommandoClient;
