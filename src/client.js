@@ -199,12 +199,14 @@ class CommandoClient extends Client {
 			return false;
 		}
 	};
-	getPrefix(guild){
-		return guild ? guild.commandPrefix : this.commandPrefix;
-	}
-	async destroy() {
-		await super.destroy();
-	}
+	chunk(s = [], c = 10) {
+		let R = [];
+		for (var i = 0; i < s.length; i += c) R.push(s.slice(i, i + c));
+		return R;
+	};
+	getPrefix(guild){ return guild?.commandPrefix ?? this.commandPrefix; };
+
+	async destroy() { await super.destroy(); };
 	  /**
     * Get previous messages in a channel
 	* @arg {import("discord.js").TextChannel} [channel]
@@ -214,7 +216,7 @@ class CommandoClient extends Client {
     * @arg {String} [around] Get messages around this message ID (does not work with limit > 100)
     * @returns {Promise<Array<import("elaracmdo").CommandoMessage>>}
     */
-       async fetchMessages(channel, limit = 50, before, after, around) {
+    async fetchMessages(channel, limit = 50, before, after, around) {
         if(limit && limit > 100) {
             let logs = [];
             const get = async (_before, _after) => {
@@ -230,7 +232,23 @@ class CommandoClient extends Client {
             return get(before, after);
         }
         return (await channel.messages.fetch({ limit, before, after, around }).catch(() => new Collection())).array();
-    }
+    };
+	async deleteMessages(channel, messageIDs) {
+		if(messageIDs.length <= 0) throw new Error(`[CLIENT:deleteMessages]: No messages provided!`);
+		if(messageIDs.length <= 100) {
+			await channel.bulkDelete(messageIDs, true).catch(() => new Collection());
+			return messageIDs;
+		};
+		let [ chunks, i ] = [
+			this.chunk(messageIDs, 100),
+			0
+		];
+		for (const chunk of chunks) {
+			i++;
+			setTimeout(() => channel.bulkDelete(chunk, true).catch(() => new Collection()), i * 2000);
+		};
+		return messageIDs;
+	};
 }
 
 module.exports = CommandoClient;
