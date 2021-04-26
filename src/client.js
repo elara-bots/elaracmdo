@@ -1,4 +1,4 @@
-const { Client, Channel, User, Message, Collection } = require('discord.js'),
+const { Client, Channel, User, Message, Collection, SnowflakeUtil } = require('discord.js'),
 	   util = require("./util"),
 	   CommandoRegistry = require('./registry'),
 	   CommandDispatcher = require('./dispatcher');
@@ -217,6 +217,7 @@ class CommandoClient extends Client {
     * @returns {Promise<Array<import("elaracmdo").CommandoMessage>>}
     */
     async fetchMessages(channel, limit = 50, before, after, around) {
+		this.emit("special:debug", `[CLIENT:fetchMessages]: Fetching ${limit} messages from ${channel.name} (${channel.id})`);
         if(limit && limit > 100) {
             let logs = [];
             const get = async (_before, _after) => {
@@ -235,6 +236,8 @@ class CommandoClient extends Client {
     };
 	async deleteMessages(channel, messageIDs) {
 		if(messageIDs.length <= 0) throw new Error(`[CLIENT:deleteMessages]: No messages provided!`);
+		messageIDs = messageIDs.filter(id => Date.now() - SnowflakeUtil.deconstruct(id).timestamp < 1209600000)
+		this.emit("special:debug", `[CLIENT:deleteMessages]: Deleting ${messageIDs.length} messages from ${channel.name} (${channel.id})`);
 		if(messageIDs.length <= 100) {
 			await channel.bulkDelete(messageIDs, true).catch(() => new Collection());
 			return messageIDs;
