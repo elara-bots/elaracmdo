@@ -473,6 +473,7 @@ declare module 'elaracmdo' {
 		public services: ServicesList;
 		public isOwner(user: UserResolvable): boolean;
 		public isSupport(user: UserResolvable): boolean;
+		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
 
 		on(event: string, listener: Function): this;
 		on(event: "database", listener: (client: CommandoClient, name: string, data: string[], color: string, create: boolean) => void): this;
