@@ -20,9 +20,9 @@ module.exports = class NCommand extends Command {
             ]
         })
     }
-    async run(message, { user}) {
-        if(user.bot === false) return message.error(`That is a user account, not a bot..`);
-        let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${user.id}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""})`,
+    async run(message, { user }) {
+        if(!user.bot) return message.error(`That is a user account, not a bot..`);
+        let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${user.id}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""}${this.isOfficialClient(user.id) ? `&response_type=code&redirect_uri=${this.client.options.invite}` : ""})`,
             links = [
                 `${p("All", "2137517567", false)} | ${p("All + /", "2137517567")}`,
                 `${p("Administrator", "8", false)} | ${p("Administrator + /", "8")}`,
@@ -30,9 +30,9 @@ module.exports = class NCommand extends Command {
                 `${p("Normal", "67488833", false)} | ${p("Normal + /", "67488833")}`,
                 `${p("None", "0", false)} | ${p("None + /", "0")}`,
             ]
-      let fields = []
-      if(this.client.user.equals(user)) fields.push({name: `Support`, value: `[Invite](${this.client.options.invite})`, inline: false});
-      return message.channel.send({
+        let fields = []
+        if(this.client.user.equals(user)) fields.push({name: `Support`, value: `[Invite](${this.client.options.invite})`, inline: false});
+        return message.channel.send({
           embed: {
               author: {
                   name: `Invite for: @${user.tag}`,
@@ -46,5 +46,14 @@ module.exports = class NCommand extends Command {
               footer: { text: `Permissions | Permissions + / Slash Commands` }
           }
       })
-    }
-}
+    };
+    isOfficialClient(id) {
+        return [
+            '480881356935790622', // @Kitten#1552
+            '535824054763126784', // @ModBot#9095
+            '455166272339181589', // @Elara#1162
+            '491635097599082497', // @Elara#2878
+            '607752722753519646', // @RoCord#8902
+          ].includes(id);
+    };
+};
