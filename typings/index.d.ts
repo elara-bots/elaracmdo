@@ -55,7 +55,15 @@ declare module 'elaracmdo' {
 	export class ArgumentUnionType extends ArgumentType {
 		public types: ArgumentType[];
 	}
-
+	export type StickerData = {
+	     	id: string;
+		pack_id: string;
+		name: string;
+		description: string;
+		tags?: string;
+		asset: string;
+		format_type: number;
+	}
 	export class Command {
 		public constructor(client: CommandoClient, info: CommandInfo);
 
@@ -67,6 +75,7 @@ declare module 'elaracmdo' {
 		private static validateInfo(client: CommandoClient, info: CommandInfo);
 		public readonly client: CommandoClient;
 		public name: string;
+		public stickers: StickerData[];
 		public memberName: string;
 		public aliases: string[];
 		public argsCount: number;
