@@ -1,6 +1,11 @@
 declare module 'elaracmdo' {
 	import { Channel, Client, ClientOptions, Collection, DMChannel, Emoji, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageAttachment, MessageEmbed, MessageMentions, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, ReactionEmoji, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Webhook, Invite, GuildAuditLogsEntry, EmbedField, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable } from 'discord.js';
 
+	
+	export class CommandoMember extends GuildMember {
+		public pending: boolean;
+	}
+	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
 
