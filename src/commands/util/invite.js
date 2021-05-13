@@ -32,7 +32,7 @@ module.exports = class NCommand extends Command {
             ]
         let fields = []
         if(this.client.user.equals(user)) fields.push({name: `Support`, value: `[Invite](${this.client.options.invite})`, inline: false});
-        return message.channel.send({
+        return message.boop({
           embed: {
               author: {
                   name: `Invite for: @${user.tag}`,
