@@ -41,7 +41,7 @@ class CommandoClient extends Client {
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
 		this.util = util
-        this.GlobalCmds = []; 
+        	this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => guild ? guild.color ? guild.color : this.util.colors.default : this.util.colors.default
@@ -74,7 +74,7 @@ class CommandoClient extends Client {
 			if(options.embed) sendObj.embed = {
 				title: options.embed.title || "",
 				description: options.embed.description || "",
-				color: options.embed.color || util.colors.default,
+				color: options.embed.color || util.colors.purple,
 				url: options.embed.url || "",
 				image: {url: options.embed.image},
 				thumbnail: {url: options.embed.thumbnail},
@@ -86,7 +86,10 @@ class CommandoClient extends Client {
 			if(!sendObj.content && !sendObj.embed) return null;
 			const permcheck = (c = null) => {
 				if(!c) return message.send(sendObj).catch(() => null)
-				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) return c.send(sendObj).catch(() => null);
+				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) {
+				    if(message instanceof Message) return c.boop(sendObj);
+				    return c.send(sendObj).catch(() => null);
+				}
 				return null;
 			}
 			if(message instanceof User) return permcheck();
