@@ -144,8 +144,8 @@ module.exports = Structures.extend('Message', Message => {
 		 * @return {Promise<?Message|?Array<Message>>}
 		 */
 		async run() { // eslint-disable-line complexity
-			if(!this.author) return null;
-			if(this.author.bot || this.webhookID) return null;
+			if(!this.author) return this.command.onBlock(this, `no_author`);
+			if(this.author.bot || this.webhookID) return this.command.onBlock(this, "bot_or_webhook");
 			let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
 			
 			if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
@@ -153,9 +153,9 @@ module.exports = Structures.extend('Message', Message => {
 			if(this.client.GlobalCmds?.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
 			
 			if(this.guild) {
-				if(!this.member) return null;
-				if(this.client.config?.ignore?.guilds?.includes(this.guild.id) && !support) return null;
-				if(!this.guild.members.cache.has(this.author.id)) return null;
+				if(!this.member) return this.command.onBlock(this, "no_member");
+				if(this.client.config?.ignore?.guilds?.includes(this.guild.id) && !support) return this.command.onBlock(this, "guild_ignored");
+				if(!this.guild.members.cache.has(this.author.id)) return this.command.onBlock(this, "member_not_cached");
 				if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
 				if(this.guild.commands && (this.guild.commands !== this.channel.id) && !this.member.permissions.has("MANAGE_MESSAGES") && !owner) return this.command.onBlock(this, "channel");
 			}else {
@@ -251,7 +251,6 @@ module.exports = Structures.extend('Message', Message => {
 			if(throttle) throttle.usages++;
 			const typingCount = this.channel.typingCount;
 			try {
-				this.client.emit('debug', `Running command ${this.command.groupID}:${this.command.memberName}.`);
 				const promise = this.command.run(this, args, fromPattern, collResult);
 				/**
 				 * Emitted when running a command
@@ -290,14 +289,6 @@ module.exports = Structures.extend('Message', Message => {
 				if(err instanceof FriendlyError) return this.reply(err.message);
 				return this.command.onError(err, this, args, fromPattern, collResult);
 			}
-		}
-		/**
-			@returns {Promise<Message>}
-		*/
-		publish(){
-		 	console.log(`[${require("../../package.json").name}, v${require("../../package.json").version}]: DEPRECATION WARNING: (message.publish) is deprecated and will be removed in a later version, switch to (message.crosspost)`)
-			if(this.channel.type !== "news") throw new Error(`You can only crosspost messages in a news channel!`)
-		  	return this.crosspost();
 		}
 		/**
 		 * Responds to the command message
@@ -443,12 +434,8 @@ module.exports = Structures.extend('Message', Message => {
 			}
 			return this.respond({ type: 'direct', content, options });
 		}
-		success(content, text, options){
-			return this.custom(`${this.client.util.emojis.semoji} ${content}`, text, options)
-		}
-		error(content, text, options){
-			return this.custom(`${this.client.util.emojis.nemoji} ${content}`, text, options)
-		}
+		success(content, text, options){ return this.custom(`${this.client.util.emojis.semoji} ${content}`, text, options); };
+		error(content, text, options){ return this.custom(`${this.client.util.emojis.nemoji} ${content}`, text, options); };
 		/**
 		 * Responds with an embed
 		 * @param {MessageEmbed|Object} [embed] - Embed to send
@@ -479,11 +466,7 @@ module.exports = Structures.extend('Message', Message => {
 					description: content, 
 					color: this.client.getColor(this.guild),
 					timestamp: new Date(),
-					author: {
-						name: this.author.tag,
-						icon_url: this.author.displayAvatarURL({dynamic: true}),
-						url: this.client.options.invite
-					}
+					author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
 				}
 			}, options);
 		};
