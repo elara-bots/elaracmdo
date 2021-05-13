@@ -304,9 +304,11 @@ class Command {
 	 */
 	onBlock(message, reason, data) {
 		if(CommandCooldown.has(message.author.id)) return null;
-		CommandCooldown.add(message.author.id)
-		setTimeout(() => CommandCooldown.delete(message.author.id), 5000)
-        const send = (content, data = []) => {
+		if(!CommandCooldown.has(message.author.id)) {
+			CommandCooldown.add(message.author.id)
+			setTimeout(() => CommandCooldown.delete(message.author.id), 5000);
+		}
+		const send = (content, data = []) => {
             if(!message.guild) return message.error(content);
             if(message.channel.permissionsFor(message.client.user).has("EMBED_LINKS")) return message.error(content);
             return message.channel.send(`I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${permissions[c]}\``).join("\n") : ["EMBED_LINKS"].map(c => `▫ \`${c}\``).join("\n")}`)
@@ -371,8 +373,8 @@ class Command {
 				color: message.client.util.colors.red,
 				timestamp: new Date(),
 				footer: {
-					text: message.client.isOwner(message.author) ? "" : `Note: This has been reported to the bot development team.`,
-					icon_url: message.client.isOwner(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`
+					text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`,
+					icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`
 				}
 			}
 		}).catch(() => {})
