@@ -18,6 +18,6 @@ module.exports = class SCommand extends Command {
             .setAuthor(`${this.client.user.username} Support`, this.client.user.displayAvatarURL())
             .setColor(message.guild ? message.guild.color : this.client.util.colors.default)
             .setDescription(this.client.options.invite)
-        message.say(embed)
+        return message.boop(embed);
     }
 }
