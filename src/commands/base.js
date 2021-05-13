@@ -327,7 +327,7 @@ class Command {
 					icon_url: message.client.user.displayAvatarURL({dynamic: true}),
 					url: message.client.options.invite
 				},
-				color: message.client.util.colors.red,
+				color: message.client.util.colors.purple,
 				timestamp: new Date(),
 				thumbnail: {url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
 				description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.\n\n**Join the [Support Server](${message.client.options.invite})**`,
@@ -367,10 +367,9 @@ class Command {
 					icon_url: message.client.user.displayAvatarURL({dynamic: true}),
 					url: message.client.options.invite
 				},
-				color: message.client.util.colors.red,
+				color: message.client.util.colors.purple,
 				title: `Command (\`${message.command.name}\`) Error`,
 				description: `\`\`\`js\n${err}\`\`\``,
-				color: message.client.util.colors.red,
 				timestamp: new Date(),
 				footer: {
 					text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`,
