@@ -48,7 +48,7 @@ module.exports = Structures.extend('Guild', Guild => {
 		 * @returns {string}
 		 */
 		getColor(){
-			return this.color ?? this.client.util.colors.default;
+			return this.color ?? this.client.util.colors.purple;
 		};
 		get settings() {
 			if(!this.client?.dbs) return null;
