@@ -16,7 +16,7 @@ module.exports = class SCommand extends Command {
     async run(message) {
         let embed = new Discord.MessageEmbed()
             .setAuthor(`${this.client.user.username} Support`, this.client.user.displayAvatarURL())
-            .setColor(message.guild ? message.guild.color : this.client.util.colors.default)
+            .setColor(this.client.getColor(message))
             .setDescription(this.client.options.invite)
         return message.boop(embed);
     }
