@@ -87,7 +87,7 @@ class CommandoClient extends Client {
 			const permcheck = (c = null) => {
 				if(!c) return message.send(sendObj).catch(() => null)
 				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) {
-				    if(message instanceof Message) return c.boop(sendObj);
+				    if(message instanceof Message) return message?.boop(sendObj) ?? c.send(sendObj).catch(() => null);
 				    return c.send(sendObj).catch(() => null);
 				}
 				return null;
