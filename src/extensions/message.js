@@ -419,7 +419,6 @@ module.exports = Structures.extend('Message', Message => {
 				content = '';
 			};
 			return this.inlineReply(content, options);
-			// return this.respond({ type: 'reply', content, options });
 		}
 
 		/**
@@ -471,16 +470,6 @@ module.exports = Structures.extend('Message', Message => {
 				...options,
 				reply: true
 			})
-			// return this.boop({
-			// 	content: text || undefined,
-			// 	embed: {
-			// 		title: `INFO`,
-			// 		description: content, 
-			// 		color: this.client.getColor(this.guild),
-			// 		timestamp: new Date(),
-			// 		author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
-			// 	}
-			// }, options);
 		};
 		/** 
 		 * @param {import("elaracmdo").SayOpt} options 
@@ -490,21 +479,20 @@ module.exports = Structures.extend('Message', Message => {
 			let sendObj = {...messageOptions}
 			if(options.content) sendObj.content = options.content;
 			if(options.embed) sendObj.embed = {
-				title: options.embed.title || "",
-				description: options.embed.description || "",
-				color: options.embed.color || this.client.getColor(this.guild),
-				url: options.embed.url || "",
-				image: {url: options.embed.image},
-				thumbnail: {url: options.embed.thumbnail},
-				fields: options.embed.fields,
-				author: options.embed.author,
-				footer: options.embed.footer,
-				timestamp: options.embed.timestamp
+				title: options?.embed?.title ?? undefined,
+				description: options?.embed?.description ?? undefined,
+				color: options?.embed?.color ?? this.client.getColor(this.guild),
+				url: options?.embed?.url ?? undefined,
+				image: { url: options?.embed?.image ?? undefined },
+				thumbnail: { url: options?.embed?.thumbnail ?? undefined },
+				fields: options?.embed?.fields ?? [],
+				author: options?.embed?.author ?? null,
+				footer: options?.embed?.footer ?? null,
+				timestamp: options?.embed?.timestamp ?? undefined
 			};
 			if(!sendObj.content && !sendObj.embed) return null;
 			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(["VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "USE_EXTERNAL_EMOJIS", "EMBED_LINKS"])) return null;
 			return this.inlineReply(sendObj.content ?? "", {...sendObj, reply: true});
-			// return this.channel.send(sendObj).catch(() => null);
 		}
 
 		/**
