@@ -28,7 +28,7 @@ module.exports = class PingCommand extends Command {
                 text: `Requested by: @${msg.author.tag}`,
                 icon_url: msg.author.displayAvatarURL({dynamic: true})
             },
-            message = await msg.channel.send({
+            message = await msg.boop({
                 embed: {
                     author, footer,
                     timestamp: new Date(), 
@@ -37,6 +37,7 @@ module.exports = class PingCommand extends Command {
                 }
             }),
             robot = this.client.util.emojis.robot;
+	if(!message) return null
         if(!this.client.isSupport(msg.author.id)) return message.edit({embed: {
             author, footer,
             title: `${robot} Status ${robot}`,
