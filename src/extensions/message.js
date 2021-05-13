@@ -417,8 +417,9 @@ module.exports = Structures.extend('Message', Message => {
 			if(!options && typeof content === 'object' && !(content instanceof Array)) {
 				options = content;
 				content = '';
-			}
-			return this.respond({ type: 'reply', content, options });
+			};
+			return this.inlineReply(content, options);
+			// return this.respond({ type: 'reply', content, options });
 		}
 
 		/**
@@ -459,16 +460,27 @@ module.exports = Structures.extend('Message', Message => {
 			if(text === null) text = undefined;
 			if(typeof text === "object") { options = text; text = undefined; };
 			if(typeof options === "string") { options = {}; text = options; }
-			return this.boop({
-				content: text || undefined,
+			return this.inlineReply(text || undefined, {
 				embed: {
 					title: `INFO`,
 					description: content, 
 					color: this.client.getColor(this.guild),
 					timestamp: new Date(),
 					author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
-				}
-			}, options);
+				},
+				...options,
+				reply: true
+			})
+			// return this.boop({
+			// 	content: text || undefined,
+			// 	embed: {
+			// 		title: `INFO`,
+			// 		description: content, 
+			// 		color: this.client.getColor(this.guild),
+			// 		timestamp: new Date(),
+			// 		author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
+			// 	}
+			// }, options);
 		};
 		/** 
 		 * @param {import("elaracmdo").SayOpt} options 
@@ -491,7 +503,8 @@ module.exports = Structures.extend('Message', Message => {
 			};
 			if(!sendObj.content && !sendObj.embed) return null;
 			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(["VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "USE_EXTERNAL_EMOJIS", "EMBED_LINKS"])) return null;
-			return this.channel.send(sendObj).catch(() => null);
+			return this.inlineReply(sendObj.content ?? "", {...sendObj, reply: true});
+			// return this.channel.send(sendObj).catch(() => null);
 		}
 
 		/**
@@ -561,7 +574,26 @@ module.exports = Structures.extend('Message', Message => {
 				result.push(argString.substr(re.lastIndex).replace(re2, '$2'));
 			}
 			return result;
-		}
+		};
+		/**
+		 * Responds with a reply message
+		 * @param {StringResolvable} content - Content for the message
+		 * @param {MessageOptions} [options] - Options for the message
+		 * @return {Promise<Message|Message[]>}
+		 */
+		inlineReply(content, options) {
+			if(!options && typeof content === 'object' && !(content instanceof Array)) {
+				options = content;
+				content = '';
+			};
+			if(typeof options !== "object") options = { };
+			let message_reference = { message_id: this.id, fail_if_not_exists: false };
+			if(options?.reply === true) options.allowedMentions = { ...options.allowedMentions, replied_user: false };
+			delete options["reply"];
+			let { data } = require("discord.js").APIMessage.create(this, content, options).resolveData();
+			if(typeof data.allowed_mentions === "undefined" && options.allowedMentions) data.allowed_mentions = options.allowedMentions;
+			return this.client.api.channels(this.channel.id).messages.post({ data: { ...data, message_reference } }).then(r => new (CommandoMessage)(this.client, r, this.channel)).catch(err => err);
+		};
 	}
 
 	return CommandoMessage;
