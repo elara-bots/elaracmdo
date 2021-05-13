@@ -41,7 +41,7 @@ class CommandoClient extends Client {
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
 		this.util = util
-        	this.GlobalCmds = []; 
+        this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => guild?.color ?? this.util.colors.purple
@@ -60,7 +60,7 @@ class CommandoClient extends Client {
 			title: "INFO",  
 			timestamp: "",  
 			description: "",  
-			color: util.colors.default,  
+			color: util.colors.purple,  
 			image: "",  
 			url: "",
 			thumbnail: "", 
@@ -72,16 +72,16 @@ class CommandoClient extends Client {
 			let sendObj = {...messageOptions}
 			if(options.content) sendObj.content = options.content;
 			if(options.embed) sendObj.embed = {
-				title: options.embed.title || "",
-				description: options.embed.description || "",
-				color: options.embed.color || util.colors.purple,
-				url: options.embed.url || "",
-				image: {url: options.embed.image},
-				thumbnail: {url: options.embed.thumbnail},
-				fields: options.embed.fields,
-				author: options.embed.author,
-				footer: options.embed.footer,
-				timestamp: options.embed.timestamp
+				title: options?.embed?.title ?? undefined,
+				description: options?.embed?.description ?? undefined,
+				color: options?.embed?.color ?? util.colors.purple,
+				url: options?.embed?.url ?? undefined,
+				image: {url: options?.embed?.image ?? undefined},
+				thumbnail: {url: options?.embed?.thumbnail ?? undefined},
+				fields: options?.embed?.fields ?? [],
+				author: options?.embed?.author ?? undefined,
+				footer: options?.embed?.footer ?? undefined,
+				timestamp: options?.embed?.timestamp ?? undefined
 			};
 			if(!sendObj.content && !sendObj.embed) return null;
 			const permcheck = (c = null) => {
