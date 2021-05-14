@@ -52,9 +52,9 @@ module.exports = class BotinfoCommand extends Command {
         .setColor(this.client.getColor(message.guild))
         .setThumbnail(user.displayAvatarURL({dynamic: true}))
         .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${new Date(user.createdAt).toLocaleString("en-US", {timeZone: "America/Los_Angeles"})} (PST)\n\n
-        ${this.s}Misc\n${this.ss}Status: ${this.client.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.get(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.get(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.map(c => c).length}\n\n${links.join(" | ")}`)
+        ${this.s}Misc\n${this.ss}Status: ${this.client.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
         .addField(`Policies`, `**[Privacy](https://my.elara.services/privacy)** | **[Terms Of Service](https://my.elara.services/terms)**`)
-        return message.boop(embed)
+        return message.boop({ embed });
     }
 }
