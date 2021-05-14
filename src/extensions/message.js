@@ -478,18 +478,12 @@ module.exports = Structures.extend('Message', Message => {
 		boop(options = {}, ...messageOptions){
 			let sendObj = {...messageOptions}
 			if(options.content) sendObj.content = options.content;
-			if(options.embed) sendObj.embed = {
-				title: options?.embed?.title ?? undefined,
-				description: options?.embed?.description ?? undefined,
-				color: options?.embed?.color ?? this.client.getColor(this.guild),
-				url: options?.embed?.url ?? undefined,
-				image: { url: options?.embed?.image ?? undefined },
-				thumbnail: { url: options?.embed?.thumbnail ?? undefined },
-				fields: options?.embed?.fields ?? [],
-				author: options?.embed?.author ?? null,
-				footer: options?.embed?.footer ?? null,
-				timestamp: options?.embed?.timestamp ?? undefined
-			};
+
+			if(options.embed) {
+				if(options.embed?.image && typeof options.embed?.image === "string") options.embed.image = { url: options.embed.image };
+				if(options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
+				sendObj.embed = new MessageEmbed(options.embed).toJSON();
+			}
 			if(!sendObj.content && !sendObj.embed) return null;
 			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(["VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "USE_EXTERNAL_EMOJIS", "EMBED_LINKS"])) return null;
 			return this.inlineReply(sendObj.content ?? "", {...sendObj, reply: true});
@@ -580,7 +574,9 @@ module.exports = Structures.extend('Message', Message => {
 			delete options["reply"];
 			let { data } = require("discord.js").APIMessage.create(this, content, options).resolveData();
 			if(typeof data.allowed_mentions === "undefined" && options.allowedMentions) data.allowed_mentions = options.allowedMentions;
-			return this.client.api.channels(this.channel.id).messages.post({ data: { ...data, message_reference } }).then(r => new (CommandoMessage)(this.client, r, this.channel)).catch(err => err);
+			return this.client.api.channels(this.channel.id).messages.post({ data: { ...data, message_reference } })
+			.then(r => new (CommandoMessage)(this.client, r, this.channel))
+			.catch(err => err);
 		};
 	}
 
