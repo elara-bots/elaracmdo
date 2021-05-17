@@ -48,6 +48,7 @@ class Command {
 	 * @property {RegExp[]} [patterns] - Patterns to use for triggering the command
 	 * @property {boolean} [guarded=false] - Whether the command should be protected from disabling
 	 * @property {boolean} [hidden=false] - Whether the command should be hidden from the help command
+	 * @property {?string[]} [flags=[]] - The special flags that should be included in the help command.
 	 * may only be one command registered with this property as `true`.
 	 */
 
@@ -183,6 +184,12 @@ class Command {
 		 * @type {?ThrottlingOptions}
 		 */
 		this.throttling = info.throttling || null;
+		
+		/**
+		* Help command options. 
+		* @type {string[]}
+		*/
+		this.flags = info.flags || [];
 
 		/**
 		 * The argument collector for the command
@@ -539,6 +546,7 @@ class Command {
 		if(typeof info.description !== 'string') throw new TypeError('Command description must be a string.');
 		if('format' in info && typeof info.format !== 'string') throw new TypeError('Command format must be a string.');
 		if('details' in info && typeof info.details !== 'string') throw new TypeError('Command details must be a string.');
+		if(info.flags && !Array.isArray(info.flags)) throw new TypeError("Command flags must be an array.");
 		if(info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) {
 			throw new TypeError('Command examples must be an Array of strings.');
 		}
