@@ -1,5 +1,4 @@
 const { ReactionCollector } = require('discord.js');
-const {CommandoMessage} = require('elaracmdo');
 /**
  * @extends ReactionCollector
  */
@@ -25,7 +24,7 @@ class ReactionHandler extends ReactionCollector {
 	/**
 	 * Constructs our ReactionHandler instance
 	 * @since 0.4.0
-	 * @param {CommandoMessage} message A message this ReactionHandler should handle reactions
+	 * @param {import("elaracmdo").CommandoMessage} message A message this ReactionHandler should handle reactions
 	 * @param {Function} filter A filter function to determine which emoji reactions should be handled
 	 * @param {ReactionHandlerOptions} options The options for this ReactionHandler
 	 * @param {(RichDisplay|RichMenu)} display The RichDisplay or RichMenu that this handler is for
