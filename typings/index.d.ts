@@ -64,6 +64,9 @@ declare module 'elaracmdo' {
 		asset: string;
 		format_type: number;
 	}
+	
+	export type CommandFlags = 'NEW'
+	
 	export class Command {
 		public constructor(client: CommandoClient, info: CommandInfo);
 
@@ -78,6 +81,7 @@ declare module 'elaracmdo' {
 		public stickers: StickerData[];
 		public memberName: string;
 		public aliases: string[];
+		public flags: CommandFlags[]|string[];
 		public argsCount: number;
 		public argsSingleQuotes: boolean;
 		public argsType: string;
