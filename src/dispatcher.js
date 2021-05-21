@@ -123,7 +123,7 @@ class CommandDispatcher {
 		// Run the command, or reply with an error
 		let responses;
 		if(cmdMsg) {
-			const inhibited = this.inhibit(cmdMsg);
+			const inhibited = await this.inhibit(cmdMsg);
 
 			if(!inhibited) {
 				if(cmdMsg.command) {
@@ -172,12 +172,12 @@ class CommandDispatcher {
 	/**
 	 * Inhibits a command message
 	 * @param {CommandoMessage} cmdMsg - Command message to inhibit
-	 * @return {?Inhibition}
+	 * @return {Promise<?Inhibition>}
 	 * @private
 	 */
-	inhibit(cmdMsg) {
-		for(const inhibitor of this.inhibitors) {
-			let inhibit = inhibitor(cmdMsg);
+	async inhibit(cmdMsg) {
+		for await (const inhibitor of this.inhibitors) {
+			let inhibit = await inhibitor(cmdMsg);
 			if(inhibit) {
 				if(typeof inhibit !== 'object') inhibit = { reason: inhibit, response: undefined };
 
