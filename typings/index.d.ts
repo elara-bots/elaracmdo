@@ -1,5 +1,5 @@
 declare module 'elaracmdo' {
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Emoji, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageAttachment, MessageEmbed, MessageMentions, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, ReactionEmoji, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Webhook, Invite, GuildAuditLogsEntry, EmbedField, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable } from 'discord.js';
+	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Invite, GuildAuditLogsEntry, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake } from 'discord.js';
 
 	
 	export class CommandoMember extends GuildMember {
@@ -78,7 +78,6 @@ declare module 'elaracmdo' {
 		private static validateInfo(client: CommandoClient, info: CommandInfo);
 		public readonly client: CommandoClient;
 		public name: string;
-		public stickers: StickerData[];
 		public memberName: string;
 		public aliases: string[];
 		public flags: CommandFlags[]|string[];
@@ -108,7 +107,7 @@ declare module 'elaracmdo' {
 
 		public hasPermission(message: CommandoMessage): boolean | string;
 		public isEnabledIn(guild: GuildResolvable, bypassGroup?: boolean): boolean;
-		public isUsable(message: Message): boolean;
+		public isUsable(message: CommandoMessage): boolean;
 		public onBlock(message: CommandoMessage, reason: string, data?: Object): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'guildOnly' | 'nsfw'): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'permission', data: { response?: string }): Promise<Message | Message[]>;
@@ -132,12 +131,12 @@ declare module 'elaracmdo' {
 		private _results: Map<string, CommandoMessage>;
 
 		private buildCommandPattern(prefix: string): RegExp;
-		private cacheCommandoMessage(message: Message, oldMessage: Message, cmdMsg: CommandoMessage, responses: Message | Message[]): void;
-		private handleMessage(messge: Message, oldMessage?: Message): Promise<void>;
+		private cacheCommandoMessage(message: CommandoMessage, oldMessage: CommandoMessage, cmdMsg: CommandoMessage, responses: CommandoMessage | CommandoMessage[]): void;
+		private handleMessage(messge: CommandoMessage, oldMessage?: CommandoMessage): Promise<void>;
 		private inhibit(cmdMsg: CommandoMessage): Inhibition;
-		private matchDefault(message: Message, pattern: RegExp, commandNameIndex: number): CommandoMessage;
-		private parseMessage(message: Message): CommandoMessage;
-		private shouldHandleMessage(message: Message, oldMessage?: Message): boolean;
+		private matchDefault(message: CommandoMessage, pattern: RegExp, commandNameIndex: number): CommandoMessage;
+		private parseMessage(message: CommandoMessage): CommandoMessage;
+		private shouldHandleMessage(message: CommandoMessage, oldMessage?: CommandoMessage): boolean;
 
 		public readonly client: CommandoClient;
 		public inhibitors: Set<Function>;
@@ -165,7 +164,7 @@ declare module 'elaracmdo' {
 		public setEnabledIn(guild: GuildResolvable, enabled: boolean): void;
 	}
 
-	export class CommandoMessage {
+	export class CommandoMessage extends Message {
 		public constructor(message: Message, command?: Command, argString?: string, patternMatches?: string[]);
 
 		private deleteRemainingResponses(): void;
@@ -176,178 +175,79 @@ declare module 'elaracmdo' {
 		public typing(): boolean;
 
 		public argString: string;
-		public readonly attachments: Collection<string, MessageAttachment>;
-		public readonly author: User;
-		public readonly channel: TextChannel | DMChannel;
-		public readonly cleanContent: string;
 		public readonly client: CommandoClient;
+		public stickers: StickerData[];
 		public command: Command|null;
-		public readonly content: string;
-		public readonly createdAt: Date;
-		public readonly createdTimestamp: number;
-		public readonly deletable: boolean;
-		public readonly editable: boolean;
-		public readonly editedAt: Date;
-		public readonly editedTimestamp: number;
-		public readonly edits: CommandoMessage[];
-		public readonly embeds: MessageEmbed[];
 		public readonly guild: CommandoGuild;
-		public readonly id: string;
-		public readonly member: GuildMember;
-		public readonly mentions: MessageMentions;
 		public message: CommandoMessage;
-		public readonly nonce: string;
 		public patternMatches: string[];
-		public readonly pinnable: boolean;
-		public readonly pinned: boolean;
-		public readonly reactions: Collection<string, MessageReaction>;
 		public responsePositions: {};
 		public responses: {};
-		public readonly system: boolean;
-		public readonly tts: boolean;
-		public readonly webhookID: string;
-
+		
 		public anyUsage(command?: string, prefix?: string, user?: User): string;
-		public delete(timeout?: number): Promise<CommandoMessage>;
 		public del(options?: {timeout?: number, reason?: string}): Promise<CommandoMessage>;
 		public direct(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public edit(content: StringResolvable): Promise<CommandoMessage>;
 		public embed(embed: MessageEmbed | {}, content?: StringResolvable, options?: MessageOptions): Promise<Message | CommandoMessage[]>;
 		public success(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public error(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public custom(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public boop(options: SayOpt, message_options: MessageOptions): Promise<CommandoMessage|CommandoMessage[]>;
-		public fetchWebhook(): Promise<Webhook>;
+		public boop(options: SayOptions, message_options: MessageOptions): Promise<CommandoMessage|CommandoMessage[]>;
 		public parseArgs(): string | string[];
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
-		public pin(): Promise<CommandoMessage>;
-		public react(emoji: string | Emoji | ReactionEmoji): Promise<MessageReaction>;
+		
+		// @ts-ignore
 		public reply(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
 		public say(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public unpin(): Promise<CommandoMessage>;
 		public usage(argString?: string, prefix?: string, user?: User): string;
 	}
-	export type SayOpt = {
-		content?: string;
-		embed?: {
-			author?: {
-				name?: string;
-				icon_url?: string;
-				url?: string;
-			};
-			title?: string;
-			description?: string;
-			url?: string;
-			color?: ColorResolvable;
-			timestamp?: Date|string;
-			image?: string;
-			thumbnail?: string;
-			fields?: EmbedField[];
-			footer?: {
-				text?: string;
-				icon_url?: string;
-			}
-		}
-	}
-	type UserSchema = {
+	export type UserSchema = {
 		userTag: string;
 		userID: string;
 		todos: string[];
 		reminders: string[];
 		time: string;
-		counts: {
-			boops: number;
-		};
-		tokens: {
-			amount: number;
-			boost: {
-				enabled: boolean;
-				date: string;
-			}
-		};
-		custom: {
-			image: string;
-			description: string;
-		};
-		afk: {
-			enabled: boolean;
-			time: string;
-			message: string;
-		};
-		links: {
-			instagram: string;
-			twitter: string;
-			github: string;
-			gitlab: string;
-			twitch: string;
-			youtube: string;
-			discord: string;
-			reddit: string;
-		}
+		counts: { boops: number; tokens: number; battles: { wins: number, loses: number }; };
+		custom: { image: string; description: string; };
+		afk: { enabled: boolean; time: string; message: string; };
+		optout: { boops: boolean };
+		links: { instagram: string; twitter: string; github: string; gitlab: string; twitch: string; youtube: string; discord: string; reddit: string; };
 	};
-	type ConfigSchema = {
+	export type ConfigSchema = {
 		guildName: string;
 		guildID: string;
-		warnings: {
-			case: number;
-			id: string;
-			user: string;
-			mid: string;
-			mod: string;
-			reason: string;
-			date: Date|string;
-			appealed: boolean;
-		}[],
+		warnings: { case: number; id: string; user: string; mid: string; mod: string; reason: string; date: Date|string; appealed: boolean; }[],
 		commands: string[];
-		mutes: string[];
-		assignroles: {
-			id: string;
-			requires: string;
-		}[];
-		codes: {
-			id: string;
-			max: number;
-			amount: number;
-			users: Snowflake[]
-		}[]
+		mutes: { guild: string, userID: string, time: string, ms: number, roles: string[], mutedrole: string, created: string, nodm: boolean }[];
+		tags: { id: string, content: string }[];
+		assignroles: { id: string; requires: string; }[];
+		codes: { id: string; max: number; amount: number; users: string[] }[];
+		starboard: { id: string, msg: string, channel: string }[];
 	};
-	type SettingsSchema = {
+	export type SettingsSchema = {
 		guildName: string;
 		guildID: string;
 		prefix: string;
 		misc: {
 			throws: string[];
 			jobs: string[];
-			crime: {
-				success: string[];
-				failed: string[];
-			};
+			crime: { success: string[]; failed: string[]; };
 			currency: string;
 			color: string;
 			commands: string[];
 			coins: boolean;
+			days: number
 		},
-		roles: {
-			muted: string;
-		},
+		roles: { muted: string; },
 		channels: {
-			log: {
-				all: string;
-				user: string;
-				server: string;
-				invites: string;
-				mod: string;
-				joins: string;
-				messages: string;
-				commands: string;
-			};
+			log: { all: string; user: string; server: string; invites: string; mod: string; joins: string; messages: string; commands: string; };
 			reports: string;
 			vclogs: string;
 			action: string;
 			appeals: string;
 			commands: string;
 			ignore: string[];
+			nickrequests: string;
 		};
 		toggles: {
 			user: boolean;
@@ -357,84 +257,34 @@ declare module 'elaracmdo' {
 			joins: boolean;
 			invites: boolean;
 			logbots: boolean;
+			prompts: boolean;
+			dmNicknames: boolean;
 		};
 		suggestions: {
-			channel: string;
-			ignore: {
-				command: string;
-				auto: string[];
-			};
-			reactions: {
-				one: string;
-				two: string;
-			}
+			channels: { channel: string, emojis: string[] }[];
+			anonymous: boolean;
+			ignore: { command: string; auto: string[]; };
 		};
-		welcome: {
-			channel: string;
-			role: string;
-			bots: string;
-			msg: string;
-		};
-		leaves: {
-			channel: string;
-			msg: string;
+		welcome: { channel: string; role: string[]; bots: string[]; msg: string; };
+		leaves: { channel: string; msg: string;
 		};
 		starboard: {
 			enabled: boolean;
 			channel: string;
 			count: number;
-			ignore: {
-				channels: string[];
-				users: string[];
-				roles: string[]
-			};
+			ignore: { channels: string[]; users: string[]; roles: string[]; };
 		};
-		ignore: {
-			commands: string[];
-			logs: {
-				all: string[];
-				messages: string[];
-				user: string[];
-			}
-		};
-		messages: {
-			mute: string;
-			unmute: string;
-			kick: string;
-			ban: string;
-			unban: string;
-			softban: string;
-		}
+		ignore: { commands: string[]; logs: { all: string[]; messages: string[]; user: string[]; }; };
+		messages: { mute: string; unmute: string; kick: string; ban: string; unban: string; softban: string; };
+		events: { name: string, id: string, color: number, disabled: boolean }[];
+		commands: { name: string, roles: string[] }[];
 	};
-	type DevSchema = {
+	export type DevSchema = {
 		clientID: string;
 		clientTag: string;
-		logging: {
-			status: string;
-			server: string;
-		};
-		misc: {
-			disabled: string[];
-			maintenance: boolean;
-			cooldown: string[];
-		};
-		dms: {
-			enabled: boolean;
-			hook: string;
-		};
-		cmdlog: {
-			enabled: boolean;
-			hook: string;
-		};
-		leaves: {
-			id: string;
-			name: string;
-			logs: {
-				date: string;
-				mod: string;
-				reason: string;
-			}[]
-		}[]
+		logging: { status: string; server: string; };
+		misc: { disabled: string[]; maintenance: boolean; cooldown: string[]; };
+		leaves: { id: string; name: string; logs: { date: string; mod: string; reason: string; }[] }[]
 	};
 	export class CacheSystem {
 		public users: Collection<Snowflake, UserSchema>;
@@ -449,9 +299,9 @@ declare module 'elaracmdo' {
 
 	export class WebhookCore {
 		public constructor();
-		public config: ConfigFile;
-		public roles: object;
-		public hooks: object;
+		private config: ConfigFile;
+		private roles: object;
+		private hooks: object;
 		
 		public status(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
 		public error(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
@@ -467,6 +317,12 @@ declare module 'elaracmdo' {
 		public constructor(options?: CommandoClientOptions);
 
 		private _commandPrefix: string;
+		private setup(): Promise<void>;
+		public queue: {
+		   	add(channelID: string, webhook: string, guild: CommandoGuild, opts: { content?: string|null, embeds?: MessageEmbed[], webhook: { name?: string|null, icon: string|null } }): Promise<void>;
+		   	run_queue(): Promise<void>;
+			send(id: string, token: string, options: { guild: CommandoGuild, embeds: MessageEmbed[], username: string, avatarURL: string, channel: string }): Promise<void>;
+		};
 		public cache: CacheSystem;
 		public webhook: WebhookCore;
 		public commandPrefix: string;
@@ -478,7 +334,6 @@ declare module 'elaracmdo' {
 		public GlobalCmds: string[];
 		public getColor(guild: CommandoGuild): string;
 		public getPrefix(guild: CommandoGuild): string;
-		public handleEvent: object;
 		public messages: MessageService;
 		public stats: StatsTypes;
 		public main: boolean;
@@ -495,7 +350,13 @@ declare module 'elaracmdo' {
 		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
 		public deleteMessages(channel: TextChannel, messageIDs: string[]): Promise<string[]>;
 		public purgeChannel(channelID: Snowflake, limit: number, filter?: Function|string, before?: Snowflake, after?: Snowflake): Promise<Number>;
-
+		public slash: {
+			client: CommandoClient,
+			commands: Collection<string, object>;
+			load(dirs: string[]): void;
+			run(data: object): Promise<void>;
+			console(title: string, args: any): void;
+		};
 
 		on(event: string, listener: Function): this;
 		on(event: "database", listener: (client: CommandoClient, name: string, data: string[], color: string, create: boolean) => void): this;
@@ -579,25 +440,20 @@ declare module 'elaracmdo' {
 		content: string;
 		attachments: string[];
 		stickers: string[],
-		activites: string[],
 		createdAt: Date;
 		expire: Date;
 	}
-	type MessageDBData = {
-		ids: {
-			message: string,
-			user: string,
-			guild: string,
-			channel: string
-		},
+	export type MessageDBData = {
+		ids: { message: string, user: string, guild: string, channel: string },
 		type: string,
 		content: string,
 		timestamp: Date,
-		attachments: string[]
+		attachments: string[],
+		stickers: string[];
 	}
 	export class MessageService {
 		public constructor(client: CommandoClient);
-		public getDB(): Promise<MessageDB[]>
+		public getDB(): Promise<MessageDB[]>;
 		public add(data: MessageDBData): Promise<string>;
 		public update(content: string, messageID: string, channelID: string): Promise<MessageDB>;
 		public delete(messageID: string): Promise<string|null>;
@@ -609,38 +465,19 @@ declare module 'elaracmdo' {
 		public findAndRemoveExpired(dryRun?: boolean): Promise<number>;
 		public formatMessage(data: MessageDBData): Promise<MessageDB>;
 	}
-	type WeatherOptions = {
-		timeout: number;
-		lang: string;
-		degreeType: string;
-		search: string;
-	}
 	export class Weather {
-		public find(options: WeatherOptions, callback: Function): void;
+		public find(options: { timeout: number; lang: string; degreeType: string; search: string; }, callback: Function): void;
 	}
 	export class ConfigFile{
 		public clientOptions: CommandoClientOptions;
 		public look: string;
 		private token: string;
-		public webhooks: object;
-		public botConnected: boolean;
+		private webhooks: object;
 		public user: { name: string, icon: string };
-		public ignore: {
-			guilds: string[],
-			users: string[],
-			allowed: string[],
-			voting: string[],
-			cooldown: string[]
-		};
+		public ignore: { guilds: string[], users: string[], allowed: string[], voting: string[], cooldown: string[]; };
 		public presence: {
-			random: {
-				enabled: boolean,
-				list: string[]
-			},
-			default: {
-				enabled: boolean,
-				def(client: CommandoClient, id: number): void;
-			}
+			random: { enabled: boolean, list: string[] },
+			default: { enabled: boolean, def(client: CommandoClient, id: number): void;};
 		};
 		public apis: {
 			paladins: { devID: string, key: string },
@@ -653,11 +490,7 @@ declare module 'elaracmdo' {
 		};
 		public roles: {
 			unhandled: { rejection: string, exeption: string },
-			errors: {
-				commands: string, logger: string,
-				events: string, webhook: string,
-				slash: string
-			}
+			errors: { commands: string, logger: string, events: string, webhook: string, slash: string }
 		};
 		public misc: {
 			prefix: string,
@@ -674,18 +507,11 @@ declare module 'elaracmdo' {
 			express: boolean,
 			commandfolders: string[],
 			commandGroups: string[],
-			website: {
-				url: string,
-				cdn: string,
-				services: string,
-				api: string,
-				stats: string,
-				admin: string
-			}
+			website: { url: string, cdn: string, services: string, api: string, stats: string, admin: string };
 		}
-		public getPrefix(ID: string): string;
-		public api(num: number): string;
-		public group(id: string, name: string, guarded?: boolean): string[];
+		private getPrefix(ID: string): string;
+		private api(num: number): string;
+		private g(id: string, name: string, guarded?: boolean): string[];
 	}	
 	export class Purger {
 		public constructor(channel: TextChannel, amount?: number, cmd?: boolean);
@@ -706,11 +532,10 @@ declare module 'elaracmdo' {
 		public fetch(): Promise<CommandoMessage[]>;
 	}
 	export class FunctionsList {
+		public maint(client: CommandoClient): boolean;
+		public console(...args: any): void;
+
 		public perms(c: Channel, m: GuildMember, p: PermissionResolvable[]): boolean;
-		
-		public create(type: string, args: CommandoGuild|User|CommandoClient|string, user: User|CommandoClient|string): Promise<void>;
-		
-		public delete(type: string, args: CommandoGuild|User|CommandoClient|string, user: User|CommandoClient|string): Promise<void>;
 		
 		public invite(client: CommandoClient, guild: CommandoGuild, cache: boolean): Promise<string>;
 		
@@ -720,34 +545,23 @@ declare module 'elaracmdo' {
 		
 		public ignore(client: CommandoClient, guild: CommandoGuild, channel: Channel): Promise<boolean>;
 		
-		public maint(client: CommandoClient): boolean;
-		public audit(guild: CommandoGuild, type: string, all: boolean): Promise<GuildAuditLogsEntry>;
+		public audit(guild: CommandoGuild, type: string, all: boolean): Promise<GuildAuditLogsEntry|GuildAuditLogsEntry[]>;
 	
-		public connect(url: string): Promise<void>;
-		public message: {
-			commands(client: CommandoClient, message: CommandoMessage): Promise<void>;
-			main(client: CommandoClient, message: CommandoMessage): Promise<void>;
-			pings(client: CommandoClient, message: CommandoMessage): Promise<void>;
-			back(client: CommandoClient, message: CommandoMessage): Promise<void>;
-			coins(client: CommandoClient, message: CommandoMessage): Promise<void>;
-			dms(client: CommandoClient, message: CommandoMessage): Promise<void>;
-		};
+		public snowflake(id: Snowflake): DeconstructedSnowflake;
+		
 		public misc: {
-			bin(title: string, args: string, ext: string, bin: string): Promise<void>;
-			mention(client: CommandoClient, args: string): Promise<User>;
+			bin(title: string, args: string, ext: string, bin: string): Promise<string|null>;
+			mention(client: CommandoClient, args: string): Promise<User|null>;
 			role(guild: CommandoGuild, id: string): Promise<Role|null>;
 			channel(client: CommandoClient, id: string): Promise<Channel|null>;
-			member(guild: CommandoGuild, args: string): Promise<GuildMember|null>;
-			coins(msg: Message): void;
+			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<CommandoMember|null>;
+			coins(msg: CommandoMessage): void;
 			coinsCheck(guild: CommandoGuild): Promise<boolean>;
 		};
 		public developer: {
-			stats(client: CommandoClient, type: string, options: {name: string, msg: string, args: string}): Promise<void>;
 			Format(amount: number): string;
 			Enabled(boolean: boolean): string;
-			shards(id: number, event: string, color: string, footer: string, error: string): Promise<void>;
-			userdb(client: CommandoClient, user: User): Promise<void>;
-			coinsEnabled(guild: CommandoGuild): Promise<void>; 
+			shards(id: number, event: string, color: string, footer: { text: string, icon_url: string }|string, error: string): Promise<void>;
 		};
 		public embed(message: CommandoMessage, options: {
 			title: string,
@@ -756,10 +570,11 @@ declare module 'elaracmdo' {
 			color: string,
 			image: string,
 			thumbnail: string,
-			fields: string[],
+			fields: { name: string, value: string, inline: boolean }[],
 			author: {
 				name: string,
-				icon_url: string
+				icon_url: string;
+				url: string;
 			},
 			footer: {
 				text: string,
@@ -767,22 +582,27 @@ declare module 'elaracmdo' {
 			}
 		}): Promise<void>;
 		public starting(client: CommandoClient): Promise<void>;
+		public extra(client: CommandoClient): Promise<void>;
 		public errors: {
 			commandError(client: CommandoClient, cmd: string, message: CommandoMessage, error: string, args: string): Promise<void>;
 			error(msg: CommandoMessage, error: string, valid: string[], del: boolean, options: {thumbnail: string, image: string}): Promise<void>;
 			logger(client: CommandoClient, message: CommandoMessage, error: string, shard: number): Promise<void>;
 			event(client: CommandoClient, event: string, error: string, guild: CommandoGuild): Promise<void>;
 			webhook(client: CommandoClient, reason: string, guild: CommandoGuild, payload: object): Promise<void>;
-
 		};
 		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string>;
 		public getTimeLeft(date: Date, type: string): boolean;
-		public getTimeRemaining(date: Date, type: string): number;
+		public getTimeRemaining(date: Date, type: string): string;
 		public configService(client: CommandoClient, sconfig: string[]): Promise<void>;
 		public userService(client: CommandoClient, susers: string[]): Promise<void>;
-		public time(date: Date): string;
+		public time(date?: Date): string;
 		public process(name: string, error: Error, ended: boolean): void|null;
-
+		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string|null>;
+		public ms(ms: number, long: boolean): string;
+		public isBooster(client: CommandoClient, userID: string): boolean;
+		public proper(name: string): string;
+		public convertMS(seconds: number): string;
+		public process(name: string, error: Error, ended: boolean): void;
 	}
 	export class ServicesList{
 		public support: string;
@@ -919,7 +739,7 @@ declare module 'elaracmdo' {
 		public types: Collection<string, ArgumentType>;
 		public unknownCommand?: Command;
 
-		public findCommands(searchString?: string, exact?: boolean, message?: Message | CommandoMessage): Command[];
+		public findCommands(searchString?: string, exact?: boolean, message?: CommandoMessage): Command[];
 		public findGroups(searchString?: string, exact?: boolean): CommandGroup[];
 		public registerCommand(command: Command | Function): CommandoRegistry;
 		public registerCommands(commands: Command[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
@@ -968,7 +788,7 @@ declare module 'elaracmdo' {
 		public useCustomFooters(): void;
 		public addPage(callback: (embed: MessageEmbed) => void): void;
 		public setInfoPage(callback: (embed: MessageEmbed) => void): void;
-		public run(message, options: {
+		public run(message: CommandoMessage, options: {
 			filter(reaction: MessageReaction, user: User): Function;
 			stop: string;
 			firstLast: string;
@@ -980,7 +800,7 @@ declare module 'elaracmdo' {
 		public paginated: boolean;
 		public options: string[];
 		public addOption(name: string, value: string, inline: boolean): void;
-		public run(message, options: object): Promise<void>;
+		public run(message: CommandoMessage, options: object): Promise<void>;
 	}
 	export class util {
 		public static disambiguation(items: any[], label: string, property?: string): string;
@@ -992,18 +812,14 @@ declare module 'elaracmdo' {
 		};
 		public static readonly permissions: { [K in PermissionString]: string };
 	}
-	type MorseResponse = {
-		name: string;
-		text: string;
-	}
-	export function Morse(string: string): MorseResponse;
+	export function Morse(string: string): { name: string; text: string; };
 	export const version: string;
 
 	type ArgumentCollectorResult<T = object> = {
 		values: T | null;
 		cancelled?: 'user' | 'time' | 'promptLimit';
-		prompts: Message[];
-		answers: Message[];
+		prompts: CommandoMessage[];
+		answers: CommandoMessage[];
 	};
 	type ArgumentInfo = {
 		key: string;
@@ -1025,8 +841,8 @@ declare module 'elaracmdo' {
 	type ArgumentResult = {
 		value: any | any[];
 		cancelled?: 'user' | 'time' | 'promptLimit';
-		prompts: Message[];
-		answers: Message[];
+		prompts: CommandoMessage[];
+		answers: CommandoMessage[];
 	};
 
 	type CommandGroupResolvable = CommandGroup | string;
@@ -1155,7 +971,7 @@ declare module 'elaracmdo' {
 		use: number;
 	}
 
-	type Inhibitor = (msg: CommandoMessage) => false | string | Inhibition;
+	type Inhibitor = (message: CommandoMessage) => false | string | Inhibition;
 	type Inhibition = {
 		reason: string;
 		response?: Promise<Message>;
@@ -1165,16 +981,16 @@ declare module 'elaracmdo' {
 		usages: number;
 		duration: number;
 	}
-	type SayOptions = {
+	export type SayOptions = {
 		content: string|null;
 		embed: {
 			title: string;
 			timestamp: Date|string;
 			description: string;
-			color: string;
+			color: ColorResolvable|string|number;
 			image: string;
 			thumbnail: string;
-			fields: EmbedField[];
+			fields: { name: string, value: string, inline: boolean }[];
 			author: {
 				name: string;
 				icon_url: string;
