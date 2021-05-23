@@ -194,13 +194,15 @@ module.exports = Structures.extend('Message', Message => {
 			}
 
 			// Ensure the client user has the required permissions
-			if(this.guild && this.command.clientPermissions) {
-				const missing = this.channel.permissionsFor(this.client.user).missing(this.command.clientPermissions);
-				if(missing.length > 0) return this.command.onBlock(this, 'clientPermissions', { missing });
-			}
-			if(this.guild && this.command.clientGuildPermissions){
-				const missing = this.guild.me.permissions.missing(this.command.clientGuildPermissions);
-				if(missing.length !== 0) return this.command.onBlock(this, "clientPermissions", {missing})
+			if(this.guild) {
+				if(this.command.clientPermissions) {
+					const missing = this.channel.permissionsFor(this.client.user).missing(this.command.clientPermissions);
+					if(missing.length > 0) return this.command.onBlock(this, 'clientPermissions', { missing });
+				};
+				if(this.command.clientGuildPermissions) {
+					const missing = this.guild.me.permissions.missing(this.command.clientGuildPermissions);
+					if(missing.length !== 0) return this.command.onBlock(this, 'clientPermissions', { missing });
+				};
 			};
 
 			// Throttle the command
@@ -472,7 +474,7 @@ module.exports = Structures.extend('Message', Message => {
 			})
 		};
 		/** 
-		 * @param {import("elaracmdo").SayOpt} options 
+		 * @param {import("elaracmdo").SayOptions} options 
 		 * @param  {import("discord.js").MessageOptions} messageOptions 
 		 */
 		boop(options = {}, ...messageOptions){
