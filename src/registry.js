@@ -148,12 +148,8 @@ class CommandoRegistry {
 	registerCommands(commands, ignoreInvalid = false) {
 		if(!Array.isArray(commands)) throw new TypeError('Commands must be an Array.');
 		for(const command of commands) {
-			const valid = typeof command === 'function' || typeof command.default === 'function' ||
-				command instanceof Command || command.default instanceof Command;
-			if(ignoreInvalid && !valid) {
-				this.client.emit('warn', `Attempting to register an invalid command object: ${command}; skipping.`);
-				continue;
-			}
+			const valid = typeof command === 'function' || typeof command.default === 'function' || command instanceof Command || command.default instanceof Command;
+			if(ignoreInvalid && !valid) continue;
 			this.registerCommand(command);
 		}
 		return this;
@@ -277,27 +273,13 @@ class CommandoRegistry {
 	 * @return {CommandoRegistry}
 	 */
 	registerDefaultCommands(commands = {}) {
-		commands = {
-			help: true, prefix: true, ping: true, eval: true, commandState: true, extra: true, ...commands
-		};
+		commands = { help: true, prefix: true, ping: true, eval: true, commandState: true, extra: true, ...commands };
 		if(commands.help) this.registerCommand(require('./commands/util/help'));
 		if(commands.prefix) this.registerCommand(require('./commands/util/prefix'));
 		if(commands.ping) this.registerCommand(require('./commands/util/ping'));
 		if(commands.eval) this.registerCommand(require('./commands/util/eval'));
-		if(commands.extra){
-		this.registerCommands([
-		require("./commands/util/support"),
-		require("./commands/util/invite"),
-		require("./commands/util/info")
-		])
-		}
-		if(commands.commandState) {
-			this.registerCommands([
-				require('./commands/commands/groups'),
-				require('./commands/commands/enable'),
-				require('./commands/commands/disable')
-			]);
-		}
+		if(commands.extra) this.registerCommands([ require("./commands/util/support"), require("./commands/util/invite"), require("./commands/util/info") ])
+		if(commands.commandState) this.registerCommands([ require('./commands/commands/groups'), require('./commands/commands/enable'), require('./commands/commands/disable') ]);
 		return this;
 	}
 
