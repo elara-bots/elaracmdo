@@ -532,14 +532,9 @@ declare module 'elaracmdo' {
 		public fetch(): Promise<CommandoMessage[]>;
 	}
 	export class FunctionsList {
-		public maint(client: CommandoClient): boolean;
-		public console(...args: any): void;
-
 		public perms(c: Channel, m: GuildMember, p: PermissionResolvable[]): boolean;
 		
 		public invite(client: CommandoClient, guild: CommandoGuild, cache: boolean): Promise<string>;
-		
-		public reason(client: CommandoClient, guild: CommandoGuild, setting: string, reason: string): Promise<void>;
 		
 		public logbots(client: CommandoClient, guild: CommandoGuild, user: User): Promise<boolean>;
 		
@@ -602,8 +597,14 @@ declare module 'elaracmdo' {
 		public isBooster(client: CommandoClient, userID: string): boolean;
 		public proper(name: string): string;
 		public convertMS(seconds: number): string;
-		public process(name: string, error: Error, ended: boolean): void;
 		public button(options: ButtonOptionsCustom): ButtonOptions;
+		public send(client: CommandoClient, id: string, options: FunctionSendOptions): Promise<CommandoMessage>;
+	}
+	export type FunctionSendOptions = {
+		content?: string;
+		embed?: MessageEmbed;
+		components?: ButtonOptions;
+		reply?: string;
 	}
 	export type ButtonOptions = {
 		custom_id: string;
