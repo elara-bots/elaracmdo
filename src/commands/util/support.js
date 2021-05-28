@@ -23,7 +23,14 @@ module.exports = class SCommand extends Command {
                 description: `Click on the button below!`,
                 timestamp: new Date()
             },
-            components: this.client.f?.button ? [ { type: 1, components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite }) ] } ] : []
+            components: this.client.f?.button ? [ 
+                { 
+                    type: 1, 
+                    components: [ 
+                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite }) 
+                    ] 
+                } 
+            ] : []
         });
     }
 }
