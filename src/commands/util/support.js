@@ -14,6 +14,16 @@ module.exports = class SCommand extends Command {
         })
     }
     async run(message) {
-        return message.custom(`${this.client.util.emojis.robot} Support: ${this.client.options.invite}`);
+        return this.client.send(this.client, message.channel.id, {
+            reply: message.id,
+            embed: { 
+                author: { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({ dynamic: true }), url: this.client.options.invite },
+                color: this.client.getColor(message.guild),
+                title: `Bot Support`,
+                description: `Click on the button below!`,
+                timestamp: new Date()
+            },
+            components: this.client.f?.button ? [ { type: 1, components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite }) ] } ] : []
+        });
     }
 }
