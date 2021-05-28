@@ -22,9 +22,8 @@ module.exports = class BotinfoCommand extends Command {
             "invisible": "Offline"
         },
             a = (name, link) => `**[${name}](${link})**`,
+            INVITE = `https://discord.com/oauth2/authorize?client_id=${this.client.user.id}&permissions=1543892167&scope=bot%20applications.commands`,
             links = [
-                a(`Invite`, `https://discord.com/oauth2/authorize?client_id=${this.client.user.id}&permissions=1543892167&scope=bot%20applications.commands`),
-                a(`Support`, this.client.options.invite),
                 a(`GitHub`, `https://github.com/elara-bots`),
                 a(`Feedback`, `https://my.elara.services/account/feedback`),
             ],
@@ -54,7 +53,21 @@ module.exports = class BotinfoCommand extends Command {
         .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${new Date(user.createdAt).toLocaleString("en-US", {timeZone: "America/Los_Angeles"})} (PST)\n\n
         ${this.s}Misc\n${this.ss}Status: ${this.client.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
-        .addField(`Policies`, `**[Privacy](https://my.elara.services/privacy)** | **[Terms Of Service](https://my.elara.services/terms)**`)
-        return message.boop({ embed });
+        return this.client.send(this.client, message.channel.id, {
+            reply: message.id,
+            embed,
+            components: this.client.f?.button ? [
+                {
+                    type: 1,
+                    components: [
+                        this.client.f.button({ title: `Invite`, style: 5, url: INVITE, emoji: { name: "Invite", id: "841655450512261140" } }),
+                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite }),
+                        this.client.f.button({ title: `Vote`, style: 5, url: `https://superchiefyt.xyz/vote`, emoji: { name: "Upvote", id: "784243907029762088" } }),
+                        this.client.f.button({ title: `Privacy`, style: 5, url: `https://my.elara.services/privacy`, emoji: { name: "🕵️" } }),
+                        this.client.f.button({ title: `TOS`, style: 5, url: `https://my.elara.services/terms`, emoji: { name: "Mod", id: "847719612846047263" } })
+                    ]
+                }
+            ] : null 
+        })
     }
 }
