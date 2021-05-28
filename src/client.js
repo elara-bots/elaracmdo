@@ -41,7 +41,7 @@ class CommandoClient extends Client {
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
 		this.util = util
-        this.GlobalCmds = []; 
+        	this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => guild?.color ?? this.util.colors.purple
@@ -301,7 +301,30 @@ class CommandoClient extends Client {
         };
         await del(before, after);
         return checkToDelete();
-    }
+    };
+    async send(client, id, options = {}) {
+        if(!client || !id || typeof options !== "object") return null;
+        let { content, embed, components, reply } = options;
+        if(!content && !embed) return null;
+        if(typeof reply !== "string") reply = "";
+        return client.api
+        .channels(id)
+        .messages
+        .post({
+            data: {
+                embed,
+                content,
+                components,
+                message_reference: reply ? { message_id: reply } : undefined,
+                allowed_mentions: { parse: [] }
+            }    
+        })
+        .then(m => new (require("elaracmdo")).CommandoMessage(client, m, client.channels.cache.get(m.channel_id)))
+        .catch(e => {
+            global.log(`[CLIENT:SEND:ERROR]: channel_id=${id}`, e);
+            return e;
+        });
+    };
 }
 
 module.exports = CommandoClient;
