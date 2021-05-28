@@ -584,7 +584,7 @@ declare module 'elaracmdo' {
 		public starting(client: CommandoClient): Promise<void>;
 		public extra(client: CommandoClient): Promise<void>;
 		public errors: {
-			commandError(client: CommandoClient, cmd: string, message: CommandoMessage, error: string, args: string): Promise<void>;
+			commandError(client: CommandoClient, cmd: Command, message: CommandoMessage, error: string, args: string): Promise<void>;
 			error(msg: CommandoMessage, error: string, valid: string[], del: boolean, options: {thumbnail: string, image: string}): Promise<void>;
 			logger(client: CommandoClient, message: CommandoMessage, error: string, shard: number): Promise<void>;
 			event(client: CommandoClient, event: string, error: string, guild: CommandoGuild): Promise<void>;
@@ -603,7 +603,28 @@ declare module 'elaracmdo' {
 		public proper(name: string): string;
 		public convertMS(seconds: number): string;
 		public process(name: string, error: Error, ended: boolean): void;
+		public button(options: ButtonOptionsCustom): ButtonOptions;
 	}
+	export type ButtonOptions = {
+		custom_id: string;
+		style: number;
+		type: number;
+		label: string;
+		emoji?: { name?: string, id?: string, animated?: boolean };
+		disabled?: boolean;
+		url?: string;
+	}
+	
+	export type ButtonOptionsCustom = {
+		id: string;
+		style: number;
+		type: number;
+		title: string;
+		disabled?: boolean;
+		url?: string;
+		emoji?: { name?: string, id?: string, animated?: boolean }
+	}
+	
 	export class ServicesList{
 		public support: string;
 		public docs: string;
@@ -634,7 +655,6 @@ declare module 'elaracmdo' {
 			time(place: string, all: boolean): Promise<object>;
 			docs(search: string, project: string, branch: string): Promise<object>;
 			platform: {
-				mixer(name: string): Promise<object>;
 				ytstats(token: string, IDOrName: string): Promise<object>;
 				twitch(token: string, name: string): Promise<object>;
 				roblox(id: string): Promise<object>;
@@ -706,6 +726,9 @@ declare module 'elaracmdo' {
 			nemoji: string;
 			eload: string;
 			robot: string;
+			staff: string;
+			dev: string;
+			owner: string;
 			eminus: string;
 			rminus: string;
 			eplus: string;
