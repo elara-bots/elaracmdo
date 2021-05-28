@@ -11,7 +11,7 @@ const perm = {
 	MANAGE_NICKNAMES: 'Manage Nicknames',
 	MANAGE_EMOJIS: 'Manage Emojis',
 	MANAGE_WEBHOOKS: 'Manage Webhooks',
-	VIEW_CHANNEL: 'View Text & Voice Channels',
+	VIEW_CHANNEL: 'View Channels',
 	SEND_MESSAGES: 'Send Messages',
 	SEND_TTS_MESSAGES: 'Send TTS Messages',
 	MANAGE_MESSAGES: 'Manage Messages',
