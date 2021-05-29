@@ -53,7 +53,7 @@ module.exports = class BotinfoCommand extends Command {
         .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${new Date(user.createdAt).toLocaleString("en-US", {timeZone: "America/Los_Angeles"})} (PST)\n\n
         ${this.s}Misc\n${this.ss}Status: ${this.client.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
-        return this.client.send(this.client, message.channel.id, {
+        return this.client.send(message.channel.id, {
             reply: message.id,
             embed,
             components: this.client.f?.button ? [
