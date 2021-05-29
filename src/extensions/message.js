@@ -21,7 +21,6 @@ module.exports = Structures.extend('Message', Message => {
 	class CommandoMessage extends Message {
 		constructor(client, data, channel) {
 			super(client, data, channel);
-			this.stickers = data.stickers ?? [];
 			/**
 			 * Whether the message contains a command (even an unknown one)
 			 * @type {boolean}
