@@ -302,12 +302,12 @@ class CommandoClient extends Client {
         await del(before, after);
         return checkToDelete();
     };
-    async send(client, id, options = {}) {
-        if(!client || !id || typeof options !== "object") return null;
+    async send(id, options = {}) {
+        if(!id || typeof options !== "object") return null;
         let { content, embed, components, reply } = options;
         if(!content && !embed) return null;
         if(typeof reply !== "string") reply = "";
-        return client.api
+        return this.api
         .channels(id)
         .messages
         .post({
@@ -319,7 +319,7 @@ class CommandoClient extends Client {
                 allowed_mentions: { parse: [] }
             }    
         })
-        .then(m => new (require("elaracmdo")).CommandoMessage(client, m, client.channels.cache.get(m.channel_id)))
+        .then(m => new (require("elaracmdo")).CommandoMessage(this, m, this.channels.cache.get(m.channel_id)))
         .catch(e => {
             global.log(`[CLIENT:SEND:ERROR]: channel_id=${id}`, e);
             return e;
