@@ -1,10 +1,5 @@
 declare module 'elaracmdo' {
 	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Invite, GuildAuditLogsEntry, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake } from 'discord.js';
-
-	
-	export class CommandoMember extends GuildMember {
-		public pending: boolean;
-	}
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -54,15 +49,6 @@ declare module 'elaracmdo' {
 
 	export class ArgumentUnionType extends ArgumentType {
 		public types: ArgumentType[];
-	}
-	export type StickerData = {
-	     	id: string;
-		pack_id: string;
-		name: string;
-		description: string;
-		tags?: string;
-		asset: string;
-		format_type: number;
 	}
 	
 	export type CommandFlags = 'NEW'
@@ -176,7 +162,6 @@ declare module 'elaracmdo' {
 
 		public argString: string;
 		public readonly client: CommandoClient;
-		public stickers: StickerData[];
 		public command: Command|null;
 		public readonly guild: CommandoGuild;
 		public message: CommandoMessage;
@@ -549,7 +534,7 @@ declare module 'elaracmdo' {
 			mention(client: CommandoClient, args: string): Promise<User|null>;
 			role(guild: CommandoGuild, id: string): Promise<Role|null>;
 			channel(client: CommandoClient, id: string): Promise<Channel|null>;
-			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<CommandoMember|null>;
+			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<GuildMember|null>;
 			coins(msg: CommandoMessage): void;
 			coinsCheck(guild: CommandoGuild): Promise<boolean>;
 		};
