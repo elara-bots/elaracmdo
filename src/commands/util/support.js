@@ -14,7 +14,7 @@ module.exports = class SCommand extends Command {
         })
     }
     async run(message) {
-        return this.client.send(this.client, message.channel.id, {
+        return this.client.send(message.channel.id, {
             reply: message.id,
             embed: { 
                 author: { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({ dynamic: true }), url: this.client.options.invite },
