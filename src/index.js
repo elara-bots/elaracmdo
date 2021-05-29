@@ -4,7 +4,6 @@ module.exports = {
 	CommandoRegistry: require('./registry'),
 	CommandoGuild: require('./extensions/guild'),
 	CommandoMessage: require('./extensions/message'),
-	CommandoMember: require("./extensions/member"),
 	Command: require('./commands/base'),
 	CommandGroup: require('./commands/group'),
 	ArgumentCollector: require('./commands/collector'),
