@@ -341,7 +341,7 @@ declare module 'elaracmdo' {
 		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
 		public deleteMessages(channel: TextChannel, messageIDs: string[]): Promise<string[]>;
 		public purgeChannel(channelID: Snowflake, limit: number, filter?: Function|string, before?: Snowflake, after?: Snowflake): Promise<Number>;
-		public send(client: CommandoClient, id: string, options: SendOptions): Promise<CommandoMessage|Error>;
+		public send(id: string, options: SendOptions): Promise<CommandoMessage|Error>;
 		public slash: {
 			client: CommandoClient,
 			commands: Collection<string, object>;
