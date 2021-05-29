@@ -297,6 +297,12 @@ declare module 'elaracmdo' {
 		private send(url: string, pingRole: string, embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
 	}
 
+	type SendOptions = {
+		embed?: MessageEmbed;
+		content?: string;
+		reply?: boolean;
+		components?: { type: number, components: ButtonOptions[] }[]
+	}
 
 	export class CommandoClient extends Client {
 		public constructor(options?: CommandoClientOptions);
@@ -335,6 +341,7 @@ declare module 'elaracmdo' {
 		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
 		public deleteMessages(channel: TextChannel, messageIDs: string[]): Promise<string[]>;
 		public purgeChannel(channelID: Snowflake, limit: number, filter?: Function|string, before?: Snowflake, after?: Snowflake): Promise<Number>;
+		public send(client: CommandoClient, id: string, options: SendOptions): Promise<CommandoMessage|Error>;
 		public slash: {
 			client: CommandoClient,
 			commands: Collection<string, object>;
