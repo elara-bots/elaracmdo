@@ -608,9 +608,11 @@ declare module 'elaracmdo' {
 		url?: string;
 	}
 	
+	type ButtonStyles = 'PRIMARY' | 'BLURPLE' | 'SECONDARY' | 'GREY' | 'SUCCESS' | 'GREEN' | 'DANGER' | 'RED' | 'LINK' | 'URL'
+
 	export type ButtonOptionsCustom = {
 		id: string;
-		style: number;
+		style: ButtonStyles|number;
 		type: number;
 		title: string;
 		disabled?: boolean;
