@@ -14,8 +14,9 @@ module.exports = class SCommand extends Command {
         })
     }
     async run(message) {
-        return this.client.send(message.channel.id, {
-            reply: message.id,
+        return message.channel.send(null, {
+            replyTo: { id: message.id },
+            allowedMentions: { parse: [] },
             embed: { 
                 author: { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({ dynamic: true }), url: this.client.options.invite },
                 color: this.client.getColor(message.guild),
