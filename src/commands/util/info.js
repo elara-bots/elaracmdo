@@ -40,12 +40,12 @@ module.exports = class BotinfoCommand extends Command {
                     message.guild.emojis.cache.get(id)
                 ];
                 if(message.guild.id === id) fields.push(`${this.s}Server: ${message.guild.name} (${message.guild.id})`);
-                if(role) fields.push(`${this.s}Role: ${role.toString()} (${role.id})`);
-                if(channel) fields.push(`${this.s}Channel: ${channel.toString()} (${channel.id})`);
-                if(emoji) fields.push(`${this.s}Emoji: ${emoji.toString()} (${emoji.id})`);
+                if(role) fields.push(`${this.s}Role: ${role.toString()} \`@${role.name}\` (${role.id})`);
+                if(channel) fields.push(`${this.s}Channel: ${channel.toString()} \`#${channel.name}\` (${channel.id})`);
+                if(emoji) fields.push(`${this.s}Emoji: ${emoji.toString()} \`${emoji.name}\` (${emoji.id})`);
                 if(!role || !channel || !emoji) {
                     let user = this.client.users.cache.get(id) ?? await this.client.users.fetch(id, true).catch(() => null);
-                    if(user) fields.push(`${this.s}User: ${user.toString()} (${user.id})`)
+                    if(user) fields.push(`${this.s}User: ${user.toString()} \`@${user.tag}\` (${user.id})`)
                 };
             };
             return message.boop({
