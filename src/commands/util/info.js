@@ -55,6 +55,7 @@ module.exports = class BotinfoCommand extends Command {
                     thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
                     description: `${this.s}Date: ${this.client.f.time(info.date)}\n${this.s}Timestamp: ${info.timestamp}\n${this.s}Increment: ${info.increment}\n${this.s}IDs:\n${this.ss}Process: ${info.processID}\n${this.ss}Worker: ${info.workerID}`,
                     fields: fields.length !== 0 ? [ { name: "Extra", value: fields.join("\n") } ] : undefined,
+                    color: this.client.util.colors.purple,
                     timestamp: new Date(),
                     footer: { text: `Requested by: @${message.author.tag}`, icon_url: message.author.displayAvatarURL({ dynamic: true }) }
                 }
