@@ -279,7 +279,7 @@ class CommandoRegistry {
 		if(commands.ping) this.registerCommand(require('./commands/util/ping'));
 		if(commands.eval) this.registerCommand(require('./commands/util/eval'));
 		if(commands.extra) this.registerCommands([ require("./commands/util/support"), require("./commands/util/invite"), require("./commands/util/info") ])
-		if(commands.commandState) this.registerCommands([ require('./commands/commands/groups'), require('./commands/commands/enable'), require('./commands/commands/disable') ]);
+		if(commands.commandState) this.registerCommands([  require('./commands/commands/enable'), require('./commands/commands/disable') ]);
 		return this;
 	}
 
