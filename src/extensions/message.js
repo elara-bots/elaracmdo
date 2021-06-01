@@ -479,7 +479,7 @@ module.exports = Structures.extend('Message', Message => {
 		boop(options = {}, ...messageOptions){
 			let sendObj = {...messageOptions}
 			if(options.content) sendObj.content = options.content;
-
+			if(options.components && Array.isArray(options.components)) sendObj.components = options.components;
 			if(options.embed) {
 				if(options.embed?.image && typeof options.embed?.image === "string") options.embed.image = { url: options.embed.image };
 				if(options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
@@ -575,6 +575,7 @@ module.exports = Structures.extend('Message', Message => {
 			delete options["reply"];
 			let { data } = require("discord.js").APIMessage.create(this, content, options).resolveData();
 			if(typeof data.allowed_mentions === "undefined" && options.allowedMentions) data.allowed_mentions = options.allowedMentions;
+			
 			return this.client.api.channels(this.channel.id).messages.post({ data: { ...data, message_reference } })
 			.then(r => new (CommandoMessage)(this.client, r, this.channel))
 			.catch(err => err);
