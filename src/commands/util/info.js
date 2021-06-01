@@ -6,15 +6,60 @@ module.exports = class BotinfoCommand extends Command {
             group: "bot",
             memberName: "botinfo",
             aliases: [`info`, `binfo`],
-            description: "Gives you the bots information",
-            examples: [`${client.commandPrefix}botinfo`],
+            description: "Gives you the bots info, or info on a snowflake you provide.",
+            examples: [`${client.commandPrefix}botinfo`, `${client.commandPrefix}botinfo (Snowflake/ID)`],
             clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-            throttling: Globalcooldown.default
+            throttling: Globalcooldown.default,
+            args: [
+                {
+                    key: "id",
+                    type: "string",
+                    prompt: "What's the snowflake?",
+                    default: ""
+                }
+            ]
         })
         this.ss = "◽";
         this.s = "▫";
     }
-    async run(message) {
+
+    /**
+     * @param {import("elaracmdo").CommandoMessage} message 
+     * @param {object} [args]
+     * @param {string} [args.id]
+     */
+    async run(message, { id }) {
+        if(id && !isNaN(id) && this.client.f?.snowflake && this.client.f?.time) {
+            let info = this.client.f.snowflake(id);
+            if(info.binary === "0000000000000000000000000000000000000000000000000000000000000000") return message.error(`That isn't a valid Discord snowflake.`);
+            let fields = [];
+            if(message.guild) {
+                let [ role, channel, emoji ] = [
+                    message.guild.roles.cache.get(id),
+                    message.guild.channels.cache.get(id),
+                    message.guild.emojis.cache.get(id)
+                ];
+                if(message.guild.id === id) fields.push(`${this.s}Server: ${message.guild.name} (${message.guild.id})`);
+                if(role) fields.push(`${this.s}Role: ${role.toString()} (${role.id})`);
+                if(channel) fields.push(`${this.s}Channel: ${channel.toString()} (${channel.id})`);
+                if(emoji) fields.push(`${this.s}Emoji: ${emoji.toString()} (${emoji.id})`);
+                if(!role || !channel || !emoji) {
+                    let user = this.client.users.cache.get(id) ?? await this.client.users.fetch(id, true).catch(() => null);
+                    if(user) fields.push(`${this.s}User: ${user.toString()} (${user.id})`)
+                };
+            };
+            return message.boop({
+                embed: {
+                    author: { name: "Discord Snowflake", icon_url: "https://cdn.discordapp.com/emojis/847624594717671476.png", url: this.client.options.invite },
+                    title: "Information",
+                    thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
+                    description: `${this.s}Date: ${this.client.f.time(info.date)}\n${this.s}Timestamp: ${info.timestamp}\n${this.s}Increment: ${info.increment}\n${this.s}IDs:\n${this.ss}Process: ${info.processID}\n${this.ss}Worker: ${info.workerID}`,
+                    fields: fields.length !== 0 ? [ { name: "Extra", value: fields.join("\n") } ] : undefined,
+                    timestamp: new Date(),
+                    footer: { text: `Requested by: @${message.author.tag}`, icon_url: message.author.displayAvatarURL({ dynamic: true }) }
+                }
+            })
+        };
         const statuses = {
             "online": "Online", 
             "idle": "Idle",
