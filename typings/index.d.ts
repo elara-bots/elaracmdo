@@ -735,6 +735,7 @@ declare module 'elaracmdo' {
 			rd: string;
 			ed: string;
 			rdiscord: string;
+			rinfo: string;
 		};
 		public jobs: string[];
 		public throws: string[];
