@@ -28,7 +28,11 @@ const perm = {
 	MOVE_MEMBERS: 'Move Members',
 	USE_VAD: 'Use Voice Activity',
 	STREAM: "Stream",
-	SLASH_COMMANDS: "Slash Commands"
+	USE_SLASH_COMMANDS: "Use Slash Commands",
+	REQUEST_TO_SPEAK: "Request To Speak",
+	MANAGE_THREADS: "Manage Threads",
+	USE_PUBLIC_THREADS: "Use Public Threads",
+	USE_PRIVATE_THREADS: "Use Private Threads"
 }
 module.exports = {
 	escapeRegex: str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&'),
@@ -80,7 +84,12 @@ module.exports = {
 		MANAGE_NICKNAMES: 134217728,
 		MANAGE_ROLES: 268435456,
 		MANAGE_WEBHOOKS: 536870912,
-		MANAGE_EMOJIS: 1073741824 
+		MANAGE_EMOJIS: 1073741824,
+		USE_SLASH_COMMANDS: 2147483648,
+		REQUEST_TO_SPEAK: 4294967296,
+		MANAGE_THREADS: 17179869184,
+		USE_PUBLIC_THREADS: 34359738368,
+		USE_PRIVATE_THREADS: 68719476736
 	},
 	SystemJoinMessages: [
 		"%user% just joined the server - glhf!",
