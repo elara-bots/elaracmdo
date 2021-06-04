@@ -724,6 +724,7 @@ declare module 'elaracmdo' {
 			staff: string;
 			dev: string;
 			owner: string;
+			info: string;
 			eminus: string;
 			rminus: string;
 			eplus: string;
