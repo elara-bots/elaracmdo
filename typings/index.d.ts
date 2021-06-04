@@ -725,6 +725,7 @@ declare module 'elaracmdo' {
 			dev: string;
 			owner: string;
 			info: string;
+			discord: string;
 			eminus: string;
 			rminus: string;
 			eplus: string;
@@ -733,6 +734,7 @@ declare module 'elaracmdo' {
 			en: string;
 			rd: string;
 			ed: string;
+			rdiscord: string;
 		};
 		public jobs: string[];
 		public throws: string[];
