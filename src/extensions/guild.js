@@ -50,23 +50,7 @@ module.exports = Structures.extend('Guild', Guild => {
 		getColor(){
 			return this.color ?? this.client.util.colors.purple;
 		};
-		get settings() {
-			if(!this.client?.dbs) return null;
-			if(typeof this.client.dbs.getSettings !== "function") return null;
-			return this.client.dbs.getSettings(this);
-		};
-		/**
-		 * @param {string} [color]
-		 * @returns {string}
-		 */
-		setColor(color){
-			this.color = color;
-			return color;
-		};
-		setCurrency(thing){
-			this.currency = thing;
-			return thing;
-		};
+		
 		setPrefix(thing){
 			this.commandPrefix = thing;
 			this._commandPrefix = thing;
