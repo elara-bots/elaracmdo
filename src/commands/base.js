@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js'),
 	  ArgumentCollector = require('./collector'),
-	  { permissions } = require('../util'),
+	  { permissions, permbits } = require('../util'),
 	  CommandCooldown = new Set()
 
 /** A command that can be run in a client */
@@ -555,7 +555,7 @@ class Command {
 				throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
 			}
 			for(const perm of info.clientPermissions) {
-				if(!permissions[perm]) throw new RangeError(`Invalid command clientPermission: ${perm}`);
+				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
 			}
 		}
 		if(info.clientGuildPermissions) {
@@ -563,7 +563,7 @@ class Command {
 				throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
 			}
 			for(const perm of info.clientGuildPermissions) {
-				if(!permissions[perm]) throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
+				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
 			}
 		}
 		if(info.userGuildPermissions) {
@@ -571,7 +571,7 @@ class Command {
 				throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
 			}
 			for(const perm of info.userGuildPermissions) {
-				if(!permissions[perm]) throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
+				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
 			}
 		}
 		if(info.userPermissions) {
@@ -579,7 +579,7 @@ class Command {
 				throw new TypeError('Command userPermissions must be an Array of permission key strings.');
 			}
 			for(const perm of info.userPermissions) {
-				if(!permissions[perm]) throw new RangeError(`Invalid command userPermission: ${perm}`);
+				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
 			}
 		}
 		if(info.throttling) {
