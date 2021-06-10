@@ -11,7 +11,7 @@ module.exports = class PingCommand extends Command {
             memberName: 'ping',
             description: 'Shows the ping for the bot',
             examples: ['ping'],
-	        clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+	    clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
             throttling: Globalcooldown.default,
         });
         this.field = (name, value, inline = false) => ({ name, value, inline });
@@ -25,7 +25,7 @@ module.exports = class PingCommand extends Command {
                     type: 1, 
                     components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite })  ] 
                 } 
-            ] : []
+            ] : [],
             message = await msg.boop({
                 embed: {
                     author, footer,
