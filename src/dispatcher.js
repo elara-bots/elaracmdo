@@ -128,10 +128,8 @@ class CommandDispatcher {
 			if(!inhibited) {
 				if(cmdMsg.command) {
 					if(!cmdMsg.command.isEnabledIn(message.guild)) {
-						if(!cmdMsg.command.unknown) {
-							let embed = {title: `Command (${cmdMsg.command.name}) is disabled!`, color: 0x36393E, author: {name: message.guild.name, icon_url: message.guild.iconURL()}}
-							responses = await cmdMsg.channel.send({embed: embed}).then(msg => {setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000)});
-						}
+						let embed = {title: `Command (${cmdMsg.command.name}) is disabled!`, color: 0x36393E, author: {name: message.guild.name, icon_url: message.guild.iconURL()}}
+						responses = await cmdMsg.channel.send({embed: embed}).then(msg => {setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000)});
 					} else if(!oldMessage || typeof oldCmdMsg !== 'undefined') {
 						responses = await cmdMsg.run();
 						if(typeof responses === 'undefined') responses = null;
@@ -256,9 +254,7 @@ class CommandDispatcher {
 		const matches = pattern.exec(content);
 		if(!matches) return null;
 		const commands = this.registry.findCommands(matches[commandNameIndex], true);
-		if(commands.length !== 1 || !commands[0].defaultHandling) {
-			return message.initCommand(this.registry.unknownCommand, prefixless ? content : matches[1]);
-		}
+		if(commands.length !== 1 || !commands[0].defaultHandling) return null;
 		const argString = content.substring(matches[1].length + (matches[2] ? matches[2].length : 0));
 		return message.initCommand(commands[0], argString);
 	}

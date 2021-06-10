@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js'),
 	  ArgumentCollector = require('./collector'),
-	  { permissions, permbits } = require('../util'),
+	  { permissions } = require('../util'),
 	  CommandCooldown = new Set()
 
 /** A command that can be run in a client */
@@ -311,10 +311,8 @@ class Command {
 	 */
 	onBlock(message, reason, data) {
 		if(CommandCooldown.has(message.author.id)) return null;
-		if(!CommandCooldown.has(message.author.id)) {
-			CommandCooldown.add(message.author.id)
-			setTimeout(() => CommandCooldown.delete(message.author.id), 5000);
-		}
+		CommandCooldown.add(message.author.id)
+		setTimeout(() => CommandCooldown.delete(message.author.id), 5000);
 		const send = (content, data = []) => {
             if(!message.guild) return message.error(content);
             if(message.channel.permissionsFor(message.client.user).has("EMBED_LINKS")) return message.error(content);
@@ -352,7 +350,7 @@ class Command {
 				timestamp: new Date()
 			})}).then(m => m.del({timeout: 10000}).catch(o => {}))
 			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
-			case "blacklist": default: return null;
+			default: return null;
 		}
 	}
 
@@ -360,28 +358,18 @@ class Command {
 	 * Called when the command produces an error while running
 	 * @param {Error} err - Error that was thrown
 	 * @param {import("elaracmdo").CommandoMessage} message - Command message that the command is running from (see {@link Command#run})
-	 * @param {Object|string|string[]} args - Arguments for the command (see {@link Command#run})
-	 * @param {boolean} fromPattern - Whether the args are pattern matches (see {@link Command#run})
-	 * @param {?ArgumentCollectorResult} result - Result from obtaining the arguments from the collector
 	 * (if applicable - see {@link Command#run})
 	 * @returns {Promise<?Message|?Array<Message>>}
 	 */
-	onError(err, message, a, p, res) { // eslint-disable-line no-unused-vars
+	onError(err, message) { // eslint-disable-line no-unused-vars
 		return message.boop({
 			embed: {
-				author: {
-					name: message.client.user.tag,
-					icon_url: message.client.user.displayAvatarURL({dynamic: true}),
-					url: message.client.options.invite
-				},
+				author: { name: message.client.user.tag, icon_url: message.client.user.displayAvatarURL({dynamic: true}), url: message.client.options.invite },
 				color: message.client.util.colors.purple,
 				title: `Command (\`${message.command.name}\`) Error`,
 				description: `\`\`\`js\n${err}\`\`\``,
 				timestamp: new Date(),
-				footer: {
-					text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`,
-					icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`
-				}
+				footer: { text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`, icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` }
 			}
 		}).catch(() => {})
 	}
@@ -393,16 +381,13 @@ class Command {
 	 * @private
 	 */
 	throttle(userID) {
-		if(!this.throttling || this.client.isOwner(userID)) return null;
-		if(this.client.config && this.client.config.ignore && this.client.config.ignore.cooldown && Array.isArray(this.client.config.ignore.cooldown) && this.client.config.ignore.cooldown.includes(userID)) return null;
+		if(!this.throttling || this.client.isOwner(userID) || this.client.config?.ignore?.cooldown?.includes(userID)) return null;
 		let throttle = this._throttles.get(userID);
 		if(!throttle) {
 			throttle = {
 				start: Date.now(),
 				usages: 0,
-				timeout: this.client.setTimeout(() => {
-					this._throttles.delete(userID);
-				}, this.throttling.duration * 1000)
+				timeout: this.client.setTimeout(() => this._throttles.delete(userID), this.throttling.duration * 1000)
 			};
 			this._throttles.set(userID, throttle);
 		}
@@ -461,42 +446,6 @@ class Command {
 	 */
 	usage(argString, prefix = this.client.commandPrefix, user = this.client.user) {
 		return this.constructor.usage(`${this.name}${argString ? ` ${argString}` : ''}`, prefix, user);
-	}
-
-	/**
-	 * Reloads the command
-	 */
-	reload() {
-		let cmdPath, cached, newCmd;
-		try {
-			cmdPath = this.client.registry.resolveCommandPath(this.groupID, this.memberName);
-			cached = require.cache[cmdPath];
-			delete require.cache[cmdPath];
-			newCmd = require(cmdPath);
-		} catch(err) {
-			if(cached) require.cache[cmdPath] = cached;
-			try {
-				cmdPath = require('path').join(__dirname, this.groupID, `${this.memberName}.js`);
-				cached = require.cache[cmdPath];
-				delete require.cache[cmdPath];
-				newCmd = require(cmdPath);
-			} catch(err2) {
-				if(cached) require.cache[cmdPath] = cached;
-				if(err2.message.includes('Cannot find module')) throw err; else throw err2;
-			}
-		}
-
-		this.client.registry.reregisterCommand(newCmd, this);
-	}
-
-	/**
-	 * Unloads the command
-	 */
-	unload() {
-		const cmdPath = this.client.registry.resolveCommandPath(this.groupID, this.memberName);
-		if(!require.cache[cmdPath]) throw new Error('Command cannot be unloaded.');
-		delete require.cache[cmdPath];
-		this.client.registry.unregisterCommand(this);
 	}
 
 	/**

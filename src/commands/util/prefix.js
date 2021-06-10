@@ -1,4 +1,5 @@
-const {Command} = require('elaracmdo'), {MessageEmbed} = require('discord.js');
+const { Command } = require('elaracmdo');
+
 module.exports = class NCommand extends Command {
          constructor(client) {
            super(client, {
@@ -24,7 +25,7 @@ module.exports = class NCommand extends Command {
                 max: 150
               }
             ]
-})
+  })
 }
     async run(message, {prefix}) {
           if(!message.guild) return message.custom(`My prefix is: \`${this.client.commandPrefix}\``)
@@ -34,18 +35,18 @@ module.exports = class NCommand extends Command {
           return this.prefix(message, db, prefix);
     }
     prefix(message, db, change){
-      if(!change) return message.custom(`My prefix is: \`${message.guild.commandPrefix}\` or \`@${message.client.user.tag}\``);
-      if(["reset", "clear", "default", db.prefix].includes(change.toLowerCase())){
-        db.prefix = "";
-        message.guild.commandPrefix = this.client.commandPrefix;
-        message.guild._commandPrefix = this.client.commandPrefix;
+        if(!change) return message.custom(`My prefix is: \`${message.guild.commandPrefix}\` or \`@${message.client.user.tag}\``);
+        if(["reset", "clear", "default", db.prefix].includes(change.toLowerCase())){
+          db.prefix = "";
+          message.guild.commandPrefix = this.client.commandPrefix;
+          message.guild._commandPrefix = this.client.commandPrefix;
+          db.save().catch(() => {});
+          return message.success(`The prefix is now: \`${message.client.commandPrefix}\` or \`@${message.client.user.tag}\``);
+        };
+        db.prefix = change.toLowerCase();
         db.save().catch(() => {});
-        return message.success(`The prefix is now: \`${message.client.commandPrefix}\` or \`@${message.client.user.tag}\``);
-      };
-      db.prefix = change.toLowerCase();
-      db.save().catch(() => {});
-      message.guild.commandPrefix = change.toLowerCase();
-      message.guild._commandPrefix = change.toLowerCase();
-      return message.success(`The prefix is now: \`${message.guild.commandPrefix}\` or \`@${message.client.user.tag}\``);
+        message.guild.commandPrefix = change.toLowerCase();
+        message.guild._commandPrefix = change.toLowerCase();
+        return message.success(`The prefix is now: \`${message.guild.commandPrefix}\` or \`@${message.client.user.tag}\``);
     }
 }

@@ -1,4 +1,4 @@
-const {Collection} = require('discord.js');
+const { Collection } = require('discord.js');
 
 /** A group for commands. Whodathunkit? */
 class CommandGroup {
@@ -75,13 +75,6 @@ class CommandGroup {
 		if(!guild) return this._globalEnabled;
 		guild = this.client.guilds.resolve(guild);
 		return guild.isGroupEnabled(this);
-	}
-
-	/**
-	 * Reloads all of the group's commands
-	 */
-	reload() {
-		for(const command of this.commands.values()) command.reload();
 	}
 }
 

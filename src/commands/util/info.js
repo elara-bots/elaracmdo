@@ -93,7 +93,7 @@ module.exports = class BotinfoCommand extends Command {
             ]
         let user = this.client.user;
         let embed = new Discord.MessageEmbed()
-        .setAuthor(`Information about myself`, user.displayAvatarURL({dynamic: true}))
+        .setAuthor(`Information about me`, user.displayAvatarURL({dynamic: true}))
         .setColor(this.client.getColor(message.guild))
         .setThumbnail(user.displayAvatarURL({dynamic: true}))
         .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${new Date(user.createdAt).toLocaleString("en-US", {timeZone: "America/Los_Angeles"})} (PST)\n\n

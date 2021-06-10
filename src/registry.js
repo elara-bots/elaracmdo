@@ -39,12 +39,6 @@ class CommandoRegistry {
 		 * @type {?string}
 		 */
 		this.commandsPath = null;
-
-		/**
-		 * Command to run when an unknown command is used
-		 * @type {?Command}
-		 */
-		this.unknownCommand = null;
 	}
 
 	/**
@@ -128,13 +122,11 @@ class CommandoRegistry {
 		if(group.commands.some(cmd => cmd.memberName === command.memberName)) {
 			throw new Error(`A command with the member name "${command.memberName}" is already registered in ${group.id}`);
 		}
-		if(command.unknown && this.unknownCommand) throw new Error('An unknown command is already registered.');
 
 		// Add the command
 		command.group = group;
 		group.commands.set(command.name, command);
 		this.commands.set(command.name, command);
-		if(command.unknown) this.unknownCommand = command;
 
 		return this;
 	}
@@ -233,22 +225,6 @@ class CommandoRegistry {
 	}
 
 	/**
-	 * Registers the default argument types, groups, and commands. This is equivalent to:
-	 * ```js
-	 * registry.registerDefaultTypes()
-	 * 	.registerDefaultGroups()
-	 * 	.registerDefaultCommands();
-	 * ```
-	 * @return {CommandoRegistry}
-	 */
-	registerDefaults() {
-		this.registerDefaultTypes();
-		this.registerDefaultGroups();
-		this.registerDefaultCommands();
-		return this;
-	}
-
-	/**
 	 * Registers the default groups ("util" and "commands")
 	 * @return {CommandoRegistry}
 	 */
@@ -266,10 +242,9 @@ class CommandoRegistry {
 	 * @param {boolean} [commands.eval=true] - Whether to register the built-in eval command
 	 * (requires "util" group and "string" type)
 	 * @param {boolean} [commands.ping=true] - Whether to register the built-in ping command (requires "util" group)
-	 * @param {boolean} [commands.unknownCommand=true] - Whether to register the built-in unknown command
 	 * (requires "util" group)
 	 * @param {boolean} [commands.commandState=true] - Whether to register the built-in command state commands
-	 * (enable, disable, load, unload, reload, list groups - requires "commands" group, "command" type, and "group" type)
+	 * (enable, disable, load, list groups - requires "commands" group, "command" type, and "group" type)
 	 * @return {CommandoRegistry}
 	 */
 	registerDefaultCommands(commands = {}) {
@@ -328,42 +303,6 @@ class CommandoRegistry {
 		if(types.duration) this.registerType(require('./types/duration'));
 		return this;
 	}
-
-	/**
-	 * Reregisters a command (does not support changing name, group, or memberName)
-	 * @param {Command|Function} command - New command
-	 * @param {Command} oldCommand - Old command
-	 */
-	reregisterCommand(command, oldCommand) {
-		/* eslint-disable new-cap */
-		if(typeof command === 'function') command = new command(this.client);
-		else if(typeof command.default === 'function') command = new command.default(this.client);
-		/* eslint-enable new-cap */
-
-		if(command.name !== oldCommand.name) throw new Error('Command name cannot change.');
-		if(command.groupID !== oldCommand.groupID) throw new Error('Command group cannot change.');
-		if(command.memberName !== oldCommand.memberName) throw new Error('Command memberName cannot change.');
-		if(command.unknown && this.unknownCommand !== oldCommand) {
-			throw new Error('An unknown command is already registered.');
-		}
-
-		command.group = this.resolveGroup(command.groupID);
-		command.group.commands.set(command.name, command);
-		this.commands.set(command.name, command);
-		if(this.unknownCommand === oldCommand) this.unknownCommand = null;
-		if(command.unknown) this.unknownCommand = command;
-	}
-
-	/**
-	 * Unregisters a command
-	 * @param {Command} command - Command to unregister
-	 */
-	unregisterCommand(command) {
-		this.commands.delete(command.name);
-		command.group.commands.delete(command.name);
-		if(this.unknownCommand === command) this.unknownCommand = null;
-	}
-
 	/**
 	 * Finds all groups that match the search string
 	 * @param {string} [searchString] - The string to search for
@@ -375,9 +314,7 @@ class CommandoRegistry {
 
 		// Find all matches
 		const lcSearch = searchString.toLowerCase();
-		const matchedGroups = Array.from(this.groups.filter(
-			exact ? groupFilterExact(lcSearch) : groupFilterInexact(lcSearch)
-		).values());
+		const matchedGroups = Array.from(this.groups.filter(exact ? groupFilterExact(lcSearch) : groupFilterInexact(lcSearch)).values());
 		if(exact) return matchedGroups;
 
 		// See if there's an exact match

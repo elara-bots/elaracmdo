@@ -1,10 +1,4 @@
-const [
-    { Collection },
-    { DISCORD_INVITE, LINK }
-] = [
-    require("discord.js"),
-    { DISCORD_INVITE: /(discord\.(gg|io|me|li|com)\/.+|discordapp\.com\/invite\/.+|discord\.com\/invite\/.+)/gi, LINK: /http(s)?:\/\//gi  }
-]
+const { DISCORD_INVITE, LINK } = { DISCORD_INVITE: /(discord\.(gg|io|me|li|com)\/.+|discordapp\.com\/invite\/.+|discord\.com\/invite\/.+)/gi, LINK: /http(s)?:\/\//gi  };
 
 module.exports = class Purger {
     /**

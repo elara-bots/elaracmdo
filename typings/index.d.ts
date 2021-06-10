@@ -1,5 +1,7 @@
 declare module 'elaracmdo' {
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Invite, GuildAuditLogsEntry, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake } from 'discord.js';
+
+	// @ts-ignore
+	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake } from 'discord.js';
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -88,7 +90,6 @@ declare module 'elaracmdo' {
 		public nsfw: boolean;
 		public patterns: RegExp[];
 		public throttling: ThrottlingOptions;
-		public unknown: boolean;
 		public userPermissions: PermissionResolvable[];
 
 		public hasPermission(message: CommandoMessage): boolean | string;
@@ -101,10 +102,8 @@ declare module 'elaracmdo' {
 		public onBlock(message: CommandoMessage, reason: 'throttling', data: { throttle: Object, remaining: number }): Promise<Message | Message[]>;
 		public onError(err: Error, message: CommandoMessage, args: object | string | string[], fromPattern: false): Promise<Message | Message[]>;
 		public onError(err: Error, message: CommandoMessage, args: string[], fromPattern: true): Promise<Message | Message[]>;
-		public reload(): void;
 		public run(message: CommandoMessage, args: object | string | string[], fromPattern: boolean): Promise<Message | Message[] | null> | null;
 		public setEnabledIn(guild: GuildResolvable, enabled: boolean): void;
-		public unload(): void;
 		public usage(argString?: string, prefix?: string, user?: User): string;
 
 		public static usage(command: string, prefix?: string, user?: User): string;
@@ -132,10 +131,6 @@ declare module 'elaracmdo' {
 		public removeInhibitor(inhibitor: Inhibitor): boolean;
 	}
 
-	export class CommandFormatError extends FriendlyError {
-		public constructor(msg: CommandoMessage);
-	}
-
 	export class CommandGroup {
 		public constructor(client: CommandoClient, id: string, name?: string, guarded?: boolean, commands?: Command[]);
 
@@ -146,7 +141,6 @@ declare module 'elaracmdo' {
 		public name: string;
 
 		public isEnabledIn(guild: GuildResolvable): boolean;
-		public reload(): void;
 		public setEnabledIn(guild: GuildResolvable, enabled: boolean): void;
 	}
 
@@ -323,7 +317,6 @@ declare module 'elaracmdo' {
 		public registry: CommandoRegistry;
 		public util: ElaraUtil;
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
-		public logger(client: CommandoClient, message: CommandoMessage, error: string, shard: number): Promise<void>;
 		public config: ConfigFile;
 		public f: FunctionsList;
 		public services: ServicesList;
@@ -546,7 +539,6 @@ declare module 'elaracmdo' {
 		}): Promise<void>;
 
 		public errors: {
-			logger(client: CommandoClient, message: CommandoMessage, error: string, shard: number): Promise<void>;
 			event(client: CommandoClient, event: string, error: string, guild: CommandoGuild): Promise<void>;
 		};
 		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string>;
@@ -650,13 +642,9 @@ declare module 'elaracmdo' {
 		public currency: string;
 		
 		public getColor(): string;
-		public setColor(Color: string): string;
 		public getPrefix(): string;
-		public setCurrency(thing: string): string;
 		public setPrefix(prefix: string): void;
 
-
-		public commandUsage(command?: string, user?: User): string;
 		public isCommandEndabled(command: CommandResolvable): boolean;
 		public isGroupEnabled(group: CommandGroupResolvable): boolean;
 		public setCommandEnabled(command: CommandResolvable, enabled: boolean): void;
@@ -722,16 +710,14 @@ declare module 'elaracmdo' {
 		public evalObjects: object;
 		public groups: Collection<string, CommandGroup>;
 		public types: Collection<string, ArgumentType>;
-		public unknownCommand?: Command;
 
 		public findCommands(searchString?: string, exact?: boolean, message?: CommandoMessage): Command[];
 		public findGroups(searchString?: string, exact?: boolean): CommandGroup[];
 		public registerCommand(command: Command | Function): CommandoRegistry;
 		public registerCommands(commands: Command[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
 		public registerCommandsIn(options: string | {}): CommandoRegistry;
-		public registerDefaultCommands(commands?: { help?: boolean, prefix?: boolean, eval?: boolean, ping?: boolean, commandState?: boolean, unknownCommand?: boolean }): CommandoRegistry;
+		public registerDefaultCommands(commands?: { help?: boolean, prefix?: boolean, eval?: boolean, ping?: boolean, commandState?: boolean }): CommandoRegistry;
 		public registerDefaultGroups(): CommandoRegistry;
-		public registerDefaults(): CommandoRegistry;
 		public registerDefaultTypes(types?: { string?: boolean, integer?: boolean, float?: boolean, boolean?: boolean, user?: boolean, member?: boolean, role?: boolean, channel?: boolean, message?: boolean, command?: boolean, group?: boolean, duration?: boolean }): CommandoRegistry;
 		public registerEvalObject(key: string, obj: {}): CommandoRegistry;
 		public registerEvalObjects(obj: {}): CommandoRegistry;
@@ -740,16 +726,11 @@ declare module 'elaracmdo' {
 		public registerType(type: ArgumentType | Function): CommandoRegistry;
 		public registerTypes(type: ArgumentType[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
 		public registerTypesIn(options: string | {}): CommandoRegistry;
-		public reregisterCommand(command: Command | Function, oldCommand: Command): void;
 		public resolveCommand(command: CommandResolvable): Command;
 		public resolveCommandPath(groups: string, memberName: string): string;
 		public resolveGroup(group: CommandGroupResolvable): CommandGroup;
-		public unregisterCommand(command: Command): void;
 	}
 
-	export class FriendlyError extends Error {
-		public constructor(message: string);
-	}
 
 	export class RichDisplay {
 		public embedTemplate: object;
@@ -798,7 +779,6 @@ declare module 'elaracmdo' {
 		public static readonly permissions: { [K in PermissionString]: string };
 	}
 	export function Morse(string: string): { name: string; text: string; };
-	export const version: string;
 
 	type ArgumentCollectorResult<T = object> = {
 		values: T | null;
@@ -860,7 +840,6 @@ declare module 'elaracmdo' {
 		patterns?: RegExp[];
 		guarded?: boolean;
 		hidden?: boolean;
-		unknown?: boolean;
 	};
 	type CommandoClientOptions = ClientOptions & {
 		commandPrefix?: string;

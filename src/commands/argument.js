@@ -217,11 +217,10 @@ class Argument {
 	 * @private
 	 */
 	async obtainInfinite(msg, vals, promptLimit = Infinity) { // eslint-disable-line complexity
-		const wait = this.wait > 0 && this.wait !== Infinity ? this.wait * 1000 : undefined,
-			  results = [],
-			  prompts = [],
-			  answers = [];
-		let currentVal = 0;
+		let [ wait, results, prompts, answers, currentVal ] = [
+			this.wait > 0 && this.wait !== Infinity ? this.wait * 1000 : undefined,
+			[], [], [], 0
+		];
 
 		while(true) { // eslint-disable-line no-constant-condition
 			/* eslint-disable no-await-in-loop */

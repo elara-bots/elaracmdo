@@ -1,7 +1,4 @@
-const { Structures } = require('discord.js');
-const Command = require('../commands/base')
-
-module.exports = Structures.extend('Guild', Guild => {
+module.exports = require('discord.js').Structures.extend('Guild', Guild => {
 	/**
 	 * A fancier Guild for fancier people.
 	 * @extends Guild
@@ -47,9 +44,7 @@ module.exports = Structures.extend('Guild', Guild => {
 		/**
 		 * @returns {string}
 		 */
-		getColor(){
-			return this.color ?? this.client.util.colors.purple;
-		};
+		getColor(){ return this.color ?? this.client.util.colors.purple; };
 		
 		setPrefix(thing){
 			this.commandPrefix = thing;
@@ -134,16 +129,6 @@ module.exports = Structures.extend('Guild', Guild => {
 			if(group.guarded) return true;
 			if(!this._groupsEnabled || typeof this._groupsEnabled[group.id] === 'undefined') return group._globalEnabled;
 			return this._groupsEnabled[group.id];
-		}
-
-		/**
-		 * Creates a command usage string using the guild's prefix
-		 * @param {string} [command] - A command + arg string
-		 * @param {User} [user=this.client.user] - User to use for the mention command format
-		 * @return {string}
-		 */
-		commandUsage(command, user = this.client.user) {
-			return Command.usage(command, this.commandPrefix, user);
 		}
 	}
 	return CommandoGuild;

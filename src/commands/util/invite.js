@@ -22,7 +22,7 @@ module.exports = class NCommand extends Command {
     }
     async run(message, { user }) {
         if(!user.bot) return message.error(`That is a user account, not a bot..`);
-        let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${user.id}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""}${this.isOfficialClient(user.id) ? `&response_type=code&redirect_uri=${this.client.options.invite}` : ""})`,
+        let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${this.convertID(user.id)}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""}${this.isOfficialClient(user.id) ? `&response_type=code&redirect_uri=${this.client.options.invite}` : ""})`,
             links = [
                 `${p("All", "2137517567", false)} | ${p("All + /", "2137517567")}`,
                 `${p("Administrator", "8", false)} | ${p("Administrator + /", "8")}`,
@@ -55,5 +55,20 @@ module.exports = class NCommand extends Command {
             '491635097599082497', // @Elara#2878
             '607752722753519646', // @RoCord#8902
           ].includes(id);
+    };
+    convertID(id) {
+        switch(id) {
+            // Dyno
+            case "155149108183695360": return "161660517914509312";
+            // MEE6
+            case "159985870458322944": return "159985415099514880";
+            // R. Danny
+            case "80528701850124288": return "169293305274826754";
+            // Octave
+            case "201503408652419073": return "201492375653056512";
+            // Tatsumaki/Tatsu
+            case "172002275412279296": return "172002255350792192";
+            default: return id;
+        };
     };
 };

@@ -88,12 +88,11 @@ module.exports = class HelpCommand extends Command {
             display.setFooterPrefix('Here are all of the commands you can use. Page: ')
             display.run(await message.channel.send(`Loading...`));
         }else{
-         return this.client.error(message, `${this.client.util.emojis.semoji} View the commands list here: ${this.client.config.misc.website.url}/commands\nUse: \`${this.client.commandPrefix}help\` in a server channel to view all of the commands.`)
+         return message.success(`View the commands list here: ${this.client.config.misc.website.url}/commands\nUse: \`${this.client.commandPrefix}help\` in a server channel to view all of the commands.`)
         }
     }
       }catch(e){
-	    this.client.error(message, e);
-	    this.client.logger(message, e.stack)
+	    message.error(e.message);
       }
     }
     permFormat(perms, def){

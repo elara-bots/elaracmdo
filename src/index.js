@@ -1,5 +1,4 @@
 module.exports = {
-	Client: require('./client'),
 	CommandoClient: require('./client'),
 	CommandoRegistry: require('./registry'),
 	CommandoGuild: require('./extensions/guild'),
@@ -9,8 +8,6 @@ module.exports = {
 	ArgumentCollector: require('./commands/collector'),
 	Argument: require('./commands/argument'),
 	ArgumentType: require('./types/base'),
-	FriendlyError: require('./errors/friendly'),
-	CommandFormatError: require('./errors/command-format'),
 	RichDisplay: require('./commands/React/RichDisplay'),
 	RichMenu: require('./commands/React/RichMenu'),
 	ReactionHandler: require('./commands/React/ReactionHandler'),
@@ -19,22 +16,11 @@ module.exports = {
 	Convert: require("./extensions/packages/ordinal/index"),
 	Purger: require("./extensions/packages/purger/index"),
 	Morse: require("./extensions/packages/morse/index"),
-	util: require('./util'),
-	eutil: require("./util"),
-	version: require('../package').version,
-	SettingProvider: require('./providers/base'),
+	util: require('./util')
 };
 
 /**
  * @external MessageEmbed
- * @see {@link https://discord.js.org/#/docs/main/master/class/MessageEmbed}
- */
-/**
- * @external RichEmbed
- * @see {@link https://discord.js.org/#/docs/main/master/class/MessageEmbed}
- */
-/**
- * @external Embed
  * @see {@link https://discord.js.org/#/docs/main/master/class/MessageEmbed}
  */
 /**
@@ -124,10 +110,6 @@ module.exports = {
 /**
  * @external Webhook
  * @see {@link https://discord.js.org/#/docs/main/master/class/Webhook}
- */
-/**
- * @external MessageEmbed
- * @see {@link https://discord.js.org/#/docs/main/master/class/MessageEmbed}
  */
 /**
  * @external ShardingManager

@@ -1,8 +1,6 @@
 const { Structures, escapeMarkdown, splitMessage, resolveString, MessageEmbed } = require('discord.js');
 const { oneLine } = require('common-tags');
 const Command = require('../commands/base');
-const FriendlyError = require('../errors/friendly');
-const CommandFormatError = require('../errors/command-format');
 const functions = {
 	blacklist: (message) => {
 		if(message.client.isOwner(message.author.id)) return false;
@@ -64,7 +62,6 @@ module.exports = Structures.extend('Message', Message => {
 	 	 * @param {string} [argString] - Argument string for the command
 	 	 * @param {?Array<string>} [patternMatches] - Command pattern matches (if from a pattern trigger)
 		 * @return {Message} This message
-		 * @private
 		 */
 		initCommand(command, argString, patternMatches) {
 			this.isCommand = true;
@@ -80,18 +77,15 @@ module.exports = Structures.extend('Message', Message => {
      	*/
 	 	del(options = {timeout: 0, reason: ""}){
         	if(this.deleted) return Promise.resolve(`The message was deleted.`);
-		if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
+			if (typeof options !== 'object') options = {timeout: 0, reason: ""};	    
     		const { timeout = 0, reason } = options;
-        	if (timeout <= 0) {	
-                   return this.channel.messages.delete(this.id, reason).then(() => this);	
-        	} else {	
-            	   return new Promise(resolve => {	
-                	this.client.setTimeout(() => {	
-                  		if(this.deleted) return resolve(`The message was already deleted.`); 
-                  		resolve(this.del({ reason }));	
-                	}, timeout);	
-            	   });	
-       		}
+        	if (timeout <= 0) return this.channel.messages.delete(this.id, reason).then(() => this);	
+            return new Promise(resolve => {	
+                this.client.setTimeout(() => {	
+                  	if(this.deleted) return resolve(`The message was already deleted.`); 
+                  	resolve(this.del({ reason }));	
+                }, timeout);	
+            });
 		}
 		/**
 		 * Creates a usage string for the message's command
@@ -103,8 +97,7 @@ module.exports = Structures.extend('Message', Message => {
 		 */
 		usage(argString, prefix, user = this.client.user) {
 			if(typeof prefix === 'undefined') {
-				if(this.guild) prefix = this.guild.commandPrefix;
-				else prefix = this.client.commandPrefix;
+				if(this.guild) prefix = this.guild.commandPrefix; else prefix = this.client.commandPrefix;
 			}
 			return this.command.usage(argString, prefix, user);
 		}
@@ -119,8 +112,7 @@ module.exports = Structures.extend('Message', Message => {
 		 */
 		anyUsage(command, prefix, user = this.client.user) {
 			if(typeof prefix === 'undefined') {
-				if(this.guild) prefix = this.guild.commandPrefix;
-				else prefix = this.client.commandPrefix;
+				if(this.guild) prefix = this.guild.commandPrefix; else prefix = this.client.commandPrefix;
 			}
 			return Command.usage(command, prefix, user);
 		}
@@ -222,7 +214,7 @@ module.exports = Structures.extend('Message', Message => {
 
 				collResult = await this.command.argsCollector.obtain(this, provided);
 				if(collResult.cancelled) {
-					if(collResult.prompts.length === 0) return this.reply(new CommandFormatError(this).message);
+					if(collResult.prompts.length === 0) return this.reply(`Invalid command usage. The \`${this.command.name}\` command's accepted format is: ${this.usage(this.command.format, this.guild ? undefined : null, this.guild ? undefined : null)}. Use ${this.anyUsage(`help ${this.command.name}`, this.guild ? undefined : null, this.guild ? undefined : null)} for more information.`);
 					if(this.guild && this.client.dbs && this.client.dbs.getSettings){
 						let db = await this.client.dbs.getSettings(this.guild);
 						if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
@@ -287,7 +279,7 @@ module.exports = Structures.extend('Message', Message => {
 				 */
 				this.client.emit('commandError', this.command, err, this, args, fromPattern, collResult);
 				if(this.channel.typingCount > typingCount) this.channel.stopTyping();
-				if(err instanceof FriendlyError) return this.reply(err.message);
+				if(err instanceof Error) return this.reply(err.message);
 				return this.command.onError(err, this, args, fromPattern, collResult);
 			}
 		}
@@ -310,17 +302,17 @@ module.exports = Structures.extend('Message', Message => {
 			content = content.replace(new RegExp(this.client.token, "g"), "[Fuck Off]")
 			switch(type) {
 				case 'plain':
-					if(!shouldEdit) return this.channel.send(content, options);
+					if(!shouldEdit) return this.channel.send(content, options).catch(() => null);
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'reply':
-					if(!shouldEdit) return super.reply(content, options);
+					if(!shouldEdit) return super.reply(content, options).catch(() => null);
 					if(options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'direct':
-					if(!shouldEdit) return this.author.send(content, options);
+					if(!shouldEdit) return this.author.send(content, options).catch(() => null);
 					return this.editCurrentResponse('dm', { type, content, options });
 				case 'code':
-					if(!shouldEdit) return this.channel.send(content, options);
+					if(!shouldEdit) return this.channel.send(content, options).catch(() => null);
 					if(options && options.split) {
 						if(!options.split.prepend) options.split.prepend = `\`\`\`${lang || ''}\n`;
 						if(!options.split.append) options.split.append = '\n```';
@@ -362,10 +354,10 @@ module.exports = Structures.extend('Message', Message => {
 				return Promise.all(promises);
 			} else {
 				if(response instanceof Array) { // eslint-disable-line no-lonely-if
-					for(let i = response.length - 1; i > 0; i--) response[i].del();
-					return response[0].edit(`${prepend}${content}`, options);
+					for(let i = response.length - 1; i > 0; i--) response[i].del().catch(() => null);
+					return response[0].edit(`${prepend}${content}`, options).catch(() => null);
 				} else {
-					return response.edit(`${prepend}${content}`, options);
+					return response.edit(`${prepend}${content}`, options).catch(() => null);
 				}
 			}
 		}
@@ -480,6 +472,7 @@ module.exports = Structures.extend('Message', Message => {
 			let sendObj = {...messageOptions}
 			if(options.content) sendObj.content = options.content;
 			if(options.components && Array.isArray(options.components)) sendObj.components = options.components;
+			if(options.embeds && Array.isArray(options.embeds)) sendObj.embeds = options.embeds;
 			if(options.embed) {
 				if(options.embed?.image && typeof options.embed?.image === "string") options.embed.image = { url: options.embed.image };
 				if(options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
@@ -576,7 +569,10 @@ module.exports = Structures.extend('Message', Message => {
 			let { data } = require("discord.js").APIMessage.create(this, content, options).resolveData();
 			if(typeof data.allowed_mentions === "undefined" && options.allowedMentions) data.allowed_mentions = options.allowedMentions;
 			
-			return this.client.api.channels(this.channel.id).messages.post({ data: { ...data, message_reference } })
+			return this.client.api
+			.channels(this.channel.id)
+			.messages
+			.post({ data: { ...data, message_reference } })
 			.then(r => new (CommandoMessage)(this.client, r, this.channel))
 			.catch(err => err);
 		};
