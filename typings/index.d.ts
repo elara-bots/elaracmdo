@@ -296,15 +296,6 @@ declare module 'elaracmdo' {
 		public webhook(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
 		private send(url: string, pingRole: string, embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
 	}
-
-	type SendOptions = {
-		embed?: MessageEmbed;
-		embeds?: MessageEmbed[];
-		content?: string;
-		reply?: boolean;
-		components?: { type: number, components: ButtonOptions[] }[]
-	}
-
 	export class CommandoClient extends Client {
 		public constructor(options?: CommandoClientOptions);
 
@@ -341,7 +332,6 @@ declare module 'elaracmdo' {
 		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
 		public deleteMessages(channel: TextChannel, messageIDs: string[]): Promise<string[]>;
 		public purgeChannel(channelID: Snowflake, limit: number, filter?: Function|string, before?: Snowflake, after?: Snowflake): Promise<Number>;
-		public send(id: string, options: SendOptions): Promise<CommandoMessage|Error>;
 		public slash: {
 			client: CommandoClient,
 			commands: Collection<string, object>;
@@ -976,8 +966,9 @@ declare module 'elaracmdo' {
 		duration: number;
 	}
 	export type SayOptions = {
-		content: string|null;
-		embed: {
+		content?: string|null;
+		embeds?: MessageEmbed[];
+		embed?: {
 			title: string;
 			timestamp: Date|string;
 			description: string;
