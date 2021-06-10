@@ -299,6 +299,7 @@ declare module 'elaracmdo' {
 
 	type SendOptions = {
 		embed?: MessageEmbed;
+		embeds?: MessageEmbed[];
 		content?: string;
 		reply?: boolean;
 		components?: { type: number, components: ButtonOptions[] }[]
@@ -315,7 +316,6 @@ declare module 'elaracmdo' {
 			send(id: string, token: string, options: { guild: CommandoGuild, embeds: MessageEmbed[], username: string, avatarURL: string, channel: string }): Promise<void>;
 		};
 		public cache: CacheSystem;
-		public webhook: WebhookCore;
 		public commandPrefix: string;
 		public dispatcher: CommandDispatcher;
 		public options: CommandoClientOptions;
@@ -467,10 +467,6 @@ declare module 'elaracmdo' {
 		private webhooks: object;
 		public user: { name: string, icon: string };
 		public ignore: { guilds: string[], users: string[], allowed: string[], voting: string[], cooldown: string[]; };
-		public presence: {
-			random: { enabled: boolean, list: string[] },
-			default: { enabled: boolean, def(client: CommandoClient, id: number): void;};
-		};
 		public apis: {
 			paladins: { devID: string, key: string },
 			IMDB: string,
@@ -501,7 +497,6 @@ declare module 'elaracmdo' {
 			commandGroups: string[],
 			website: { url: string, cdn: string, services: string, api: string, stats: string, admin: string };
 		}
-		private getPrefix(ID: string): string;
 		private api(num: number): string;
 		private g(id: string, name: string, guarded?: boolean): string[];
 	}	
@@ -524,32 +519,23 @@ declare module 'elaracmdo' {
 		public fetch(): Promise<CommandoMessage[]>;
 	}
 	export class FunctionsList {
-		public perms(c: Channel, m: GuildMember, p: PermissionResolvable[]): boolean;
-		
-		public invite(client: CommandoClient, guild: CommandoGuild, cache: boolean): Promise<string>;
-		
-		public logbots(client: CommandoClient, guild: CommandoGuild, user: User): Promise<boolean>;
-		
-		public ignore(client: CommandoClient, guild: CommandoGuild, channel: Channel): Promise<boolean>;
-		
-		public audit(guild: CommandoGuild, type: string, all: boolean): Promise<GuildAuditLogsEntry|GuildAuditLogsEntry[]>;
-	
 		public snowflake(id: Snowflake): DeconstructedSnowflake;
 		
 		public misc: {
-			bin(title: string, args: string, ext: string, bin: string): Promise<string|null>;
+			bin(title: string, args: string, ext: string, bin: 'mine' | 'mine-f' | 'haste' | 'pizza' | string): Promise<string|null>;
 			mention(client: CommandoClient, args: string): Promise<User|null>;
 			role(guild: CommandoGuild, id: string): Promise<Role|null>;
 			channel(client: CommandoClient, id: string): Promise<Channel|null>;
 			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<GuildMember|null>;
-			coins(msg: CommandoMessage): void;
 			coinsCheck(guild: CommandoGuild): Promise<boolean>;
 		};
+		
 		public developer: {
 			Format(amount: number): string;
 			Enabled(boolean: boolean): string;
 			shards(id: number, event: string, color: string, footer: { text: string, icon_url: string }|string, error: string): Promise<void>;
 		};
+		
 		public embed(message: CommandoMessage, options: {
 			title: string,
 			timestamp: string,
@@ -568,36 +554,23 @@ declare module 'elaracmdo' {
 				icon_url: string
 			}
 		}): Promise<void>;
-		public starting(client: CommandoClient): Promise<void>;
-		public extra(client: CommandoClient): Promise<void>;
+
 		public errors: {
-			commandError(client: CommandoClient, cmd: Command, message: CommandoMessage, error: string, args: string): Promise<void>;
-			error(msg: CommandoMessage, error: string, valid: string[], del: boolean, options: {thumbnail: string, image: string}): Promise<void>;
 			logger(client: CommandoClient, message: CommandoMessage, error: string, shard: number): Promise<void>;
 			event(client: CommandoClient, event: string, error: string, guild: CommandoGuild): Promise<void>;
-			webhook(client: CommandoClient, reason: string, guild: CommandoGuild, payload: object): Promise<void>;
 		};
 		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string>;
 		public getTimeLeft(date: Date, type: string): boolean;
 		public getTimeRemaining(date: Date, type: string): string;
-		public configService(client: CommandoClient, sconfig: string[]): Promise<void>;
-		public userService(client: CommandoClient, susers: string[]): Promise<void>;
 		public time(date?: Date): string;
-		public process(name: string, error: Error, ended: boolean): void|null;
 		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string|null>;
 		public ms(ms: number, long: boolean): string;
 		public isBooster(client: CommandoClient, userID: string): boolean;
 		public proper(name: string): string;
 		public convertMS(seconds: number): string;
 		public button(options: ButtonOptionsCustom): ButtonOptions;
-		public send(client: CommandoClient, id: string, options: FunctionSendOptions): Promise<CommandoMessage>;
 	}
-	export type FunctionSendOptions = {
-		content?: string;
-		embed?: MessageEmbed;
-		components?: ButtonOptions;
-		reply?: string;
-	}
+
 	export type ButtonOptions = {
 		custom_id: string;
 		style: number;
@@ -904,9 +877,8 @@ declare module 'elaracmdo' {
 		commandEditableDuration?: number;
 		nonCommandEditable?: boolean;
 		owner?: string | string[] | Set<string>;
-		support: string | string[] | Set<string>; 
+		support?: string | string[] | Set<string>; 
 		invite?: string;
-		
 	};
 
 	type CommandResolvable = Command | string;
@@ -928,17 +900,17 @@ declare module 'elaracmdo' {
 		messages(): number | string;
 		guilds(joins: boolean): number | string;
 		
-		client(type: string): number | string;
-		guild(options: StatsGuildOptions): number | string;
+		client(type: string): Promise<number | string>;
+		guild(options: StatsGuildOptions): Promise<number | string>;
 		
-		getClient(id: string): object;
-		getClients(): ClientResponse[];
+		getClient(id: string): Promise<object>;
+		getClients(): Promise<ClientResponse[]>;
 
-		getGuild(guildID: string, clientID: string): object;
-		getGuilds(id: string): GuildResponse[];
+		getGuild(guildID: string, clientID: string): Promise<object>;
+		getGuilds(id: string): Promise<GuildResponse[]>;
 		
-		post(url): number | string;
-		get(url): object;
+		post(url): Promise<number | string>;
+		get(url): Promise<object>;
 	}
 
 	type ClientResponse = {
