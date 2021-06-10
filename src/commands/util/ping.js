@@ -11,7 +11,7 @@ module.exports = class PingCommand extends Command {
             memberName: 'ping',
             description: 'Shows the ping for the bot',
             examples: ['ping'],
-	    clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+	        clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
             throttling: Globalcooldown.default,
         });
         this.field = (name, value, inline = false) => ({ name, value, inline });
