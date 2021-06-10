@@ -1,4 +1,4 @@
-const { Client, Channel, User, Message, Collection, SnowflakeUtil } = require('discord.js'),
+const { Client, Channel, User, Message, Collection, SnowflakeUtil, GuildMember } = require('discord.js'),
 	   util = require("./util"),
 	   CommandoRegistry = require('./registry'),
 	   CommandDispatcher = require('./dispatcher'),
@@ -41,7 +41,7 @@ class CommandoClient extends Client {
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
 		this.util = util
-        	this.GlobalCmds = []; 
+        this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => guild?.color ?? this.util.colors.purple
@@ -54,30 +54,20 @@ class CommandoClient extends Client {
 		 */
 		this._commandPrefix = null;
 
-		this.say = (message, options = {
-			content: null,
-			embed: {
-			title: "INFO",  
-			timestamp: "",  
-			description: "",  
-			color: util.colors.purple,  
-			image: "",  
-			url: "",
-			thumbnail: "", 
-			fields: [],  
-			author: { name: "", icon_url: "", url: ""},  
-			footer: { text: "", icon_url: ""}
-		}
-		}, ...messageOptions) => {
-			let sendObj = {...messageOptions}
+		this.say = (message, options = { content: null, embeds: [], embed: {} }, ...messageOptions) => {
+			let sendObj = {
+				...messageOptions
+			};
+
+			if(options.embeds && Array.isArray(options.embeds)) sendObj.embeds = options.embeds;
 			if(options.content) sendObj.content = options.content;
 			if(options.embed) sendObj.embed = {
-				title: options?.embed?.title ?? undefined,
+				title: options?.embed?.title ?? "INFO",
 				description: options?.embed?.description ?? undefined,
 				color: options?.embed?.color ?? util.colors.purple,
 				url: options?.embed?.url ?? undefined,
-				image: {url: options?.embed?.image ?? undefined},
-				thumbnail: {url: options?.embed?.thumbnail ?? undefined},
+				image: { url: options?.embed?.image ?? undefined },
+				thumbnail: { url: options?.embed?.thumbnail ?? undefined },
 				fields: options?.embed?.fields ?? [],
 				author: options?.embed?.author ?? undefined,
 				footer: options?.embed?.footer ?? undefined,
@@ -89,7 +79,7 @@ class CommandoClient extends Client {
 				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) return c.send(sendObj).catch(() => null);
 				return null;
 			}
-			if(message instanceof User) return permcheck();
+			if(message instanceof User || message instanceof GuildMember) return permcheck();
 			if(message instanceof Message) return permcheck(message.channel);
 			if(message instanceof Channel) return permcheck(message);
 			return null;
@@ -98,25 +88,28 @@ class CommandoClient extends Client {
 		const msgErr = (err) => this.emit('error', err);
 		this.on('message', message => this.dispatcher.handleMessage(message).catch(msgErr));
 		this.on('messageUpdate', (oldMessage, newMessage) => this.dispatcher.handleMessage(newMessage, oldMessage).catch(msgErr));
-		if(options.owner && options.support){
+		if(options.owner || options.support){
 			this.once("ready", () => {
-				let fetch = (type) => {
-					if(options[type] instanceof Array || options[type] instanceof Set){
-						for (const id of options[type]){
-							this.users.fetch(id).catch((err) => {
-								this.emit("warn", `Unable to fetch ${type}: ${id}`);
+				let fetch = (types) => {
+					for (const type of types) {
+						if(options[type] instanceof Array || options[type] instanceof Set){
+							for (const id of options[type]){
+								this.users.fetch(id)
+								.catch((err) => {
+									this.emit("warn", `Unable to fetch ${type}: ${id}`);
+									this.emit("error", err);
+								})
+							}
+						}else{
+							this.users.fetch(options[type])
+							.catch((err) => {
+								this.emit("warn", `Unable to fetch ${type}: ${owner}`);
 								this.emit("error", err);
 							})
 						}
-					}else{
-						this.users.fetch(options[type]).catch((err) => {
-							this.emit("warn", `Unable to fetch ${type}: ${owner}`);
-							this.emit("error", err);
-						})
-					}
+					};
 				};
-				fetch("owner");
-				fetch("support");
+				fetch([ "owner", "support" ]);
 			})
 		}
 	}
@@ -258,7 +251,7 @@ class CommandoClient extends Client {
 		if(!channel) return 0;
         if(typeof filter === "string") filter = (msg) => msg.content.includes(filter);
         if(limit !== -1 && limit <= 0) return 0;
-	this.emit("special:debug", `[CLIENT:purgeChannel]: Running the purge in ${channel.name} (${channel.id})`);
+		this.emit("special:debug", `[CLIENT:purgeChannel]: Running the purge in ${channel.name} (${channel.id})`);
         let [ toDelete, deleted, done ] = [ [], 0, false ];
         const checkToDelete = async () => {
             const messageIDs = (done && toDelete) || (toDelete.length >= 100 && toDelete.splice(0, 100));
@@ -301,29 +294,6 @@ class CommandoClient extends Client {
         };
         await del(before, after);
         return checkToDelete();
-    };
-    async send(id, options = {}) {
-        if(!id || typeof options !== "object") return null;
-        let { content, embed, components, reply } = options;
-        if(!content && !embed) return null;
-        if(typeof reply !== "string") reply = "";
-        return this.api
-        .channels(id)
-        .messages
-        .post({
-            data: {
-                embed,
-                content,
-                components,
-                message_reference: reply ? { message_id: reply } : undefined,
-                allowed_mentions: { parse: [] }
-            }    
-        })
-        .then(m => new (require("elaracmdo")).CommandoMessage(this, m, this.channels.cache.get(m.channel_id)))
-        .catch(e => {
-            global.log(`[CLIENT:SEND:ERROR]: channel_id=${id}`, e);
-            return e;
-        });
     };
 }
 
