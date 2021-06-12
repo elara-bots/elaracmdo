@@ -233,7 +233,10 @@ class CommandDispatcher {
 			}
 		}
 		// Find the command to run with default command handling
-		const prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix;
+		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix;
+		for (const pre of [ `hey ${this.client.user.username}`, `hey ${this.client.user.username},`, `${this.client.user.username},` ]) {
+			if(content?.toLowerCase()?.startsWith(pre.toLowerCase())) prefix = pre.toLowerCase();
+		};
 		if(!this._commandPatterns[prefix]) this.buildCommandPattern(prefix);
 		let cmdMsg = this.matchDefault(message, this._commandPatterns[prefix], 2);
 		if(!cmdMsg && !message.guild) cmdMsg = this.matchDefault(message, /^([^\s]+)/i, 1, true);
