@@ -30,8 +30,12 @@ module.exports = class NCommand extends Command {
                 `${p("Normal", "67488833", false)} | ${p("Normal + /", "67488833")}`,
                 `${p("None", "0", false)} | ${p("None + /", "0")}`,
             ]
-        let fields = []
-        if(this.client.user.equals(user)) fields.push({name: `Support`, value: `[Invite](${this.client.options.invite})`, inline: false});
+        let components = this.client.f?.button ? [ 
+            { 
+                type: 1, 
+                components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite })  ] 
+            } 
+        ] : [];
         return message.boop({
           embed: {
               author: {
@@ -42,9 +46,9 @@ module.exports = class NCommand extends Command {
               color: this.client.getColor(message.guild),
               title: "Permissions",
               description: links.join("\n"),
-              fields,
               footer: { text: `Permissions | Permissions + / Slash Commands` }
-          }
+          },
+          components: this.isOfficialClient(user.id) ? components : undefined
       })
     };
     isOfficialClient(id) {
