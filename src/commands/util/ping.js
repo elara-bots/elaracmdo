@@ -60,7 +60,6 @@ module.exports = class PingCommand extends Command {
             return `${((0<days)?(days+"d, "):"")}${hours}h, ${minutes}m, ${seconds}s`;
         }
         return message.edit({
-            components,
             embed: {
                 author,
                 title: `${this.client.util.emojis.robot} Status ${this.client.util.emojis.robot}`,
