@@ -11,7 +11,7 @@ module.exports = class PingCommand extends Command {
             memberName: 'ping',
             description: 'Shows the ping for the bot',
             examples: ['ping'],
-	        clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+	    clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
             throttling: Globalcooldown.default,
         });
         this.field = (name, value, inline = false) => ({ name, value, inline });
@@ -33,7 +33,7 @@ module.exports = class PingCommand extends Command {
                     color: this.client.getColor(msg.guild), 
                     description: `${this.client.util.emojis.eload} One moment.`
                 },
-                components
+                components: this.inServer(message.author.id) ? undefined : components
             }),
             robot = this.client.util.emojis.robot;
 	    if(!message) return null
