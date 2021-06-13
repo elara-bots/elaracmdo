@@ -301,17 +301,17 @@ module.exports = Structures.extend('Message', Message => {
 			content = content.replace(new RegExp(this.client.token, "g"), "[Fuck Off]")
 			switch(type) {
 				case 'plain':
-					if(!shouldEdit) return this.channel.send(content, options).catch(() => null);
+					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(() => null);
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'reply':
-					if(!shouldEdit) return super.reply(content, options).catch(() => null);
+					if(!shouldEdit) return super.reply({ content, ...options }).catch(() => null);
 					if(options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'direct':
-					if(!shouldEdit) return this.author.send(content, options).catch(() => null);
+					if(!shouldEdit) return this.author.send({ content, ...options }).catch(() => null);
 					return this.editCurrentResponse('dm', { type, content, options });
 				case 'code':
-					if(!shouldEdit) return this.channel.send(content, options).catch(() => null);
+					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(() => null);
 					if(options && options.split) {
 						if(!options.split.prepend) options.split.prepend = `\`\`\`${lang || ''}\n`;
 						if(!options.split.append) options.split.append = '\n```';
