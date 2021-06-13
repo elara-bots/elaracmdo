@@ -33,7 +33,7 @@ module.exports = class PingCommand extends Command {
                     color: this.client.getColor(msg.guild), 
                     description: `${this.client.util.emojis.eload} One moment.`
                 },
-                components: this.inServer(message.author.id) ? undefined : components
+                components: this.inServer(msg.author.id) ? undefined : components
             }),
             robot = this.client.util.emojis.robot;
 	    if(!message) return null
@@ -43,12 +43,12 @@ module.exports = class PingCommand extends Command {
                 title: `${robot} Status ${robot}`,
                 color: this.client.getColor(message.guild),
                 fields: [
-                    this.field(`Message Latency`, `${message.createdTimestamp - msg.createdTimestamp}ms`),
-                    this.field(`API Latency`, `${Math.round(this.client.ws.ping)}ms`),
-                    this.field(`Uptime`, `${getFormat(this.client.uptime, false)}`)
+                    this.field(`Message Latency`, `${message.createdTimestamp - msg.createdTimestamp}ms`, true),
+                    this.field(`API Latency`, `${Math.round(this.client.ws.ping)}ms`, true),
+                    this.field(`Uptime`, `${getFormat(this.client.uptime, false)}`, true)
                 ]
             },
-            components: this.inServer(message.author.id) ? undefined : components
+            components: this.inServer(msg.author.id) ? undefined : components
         });
         function secondsToHms(seconds){ // day, h, m and s
             var days     = Math.floor(seconds / (24*60*60));
