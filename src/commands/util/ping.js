@@ -36,7 +36,7 @@ module.exports = class PingCommand extends Command {
                 components
             }),
             robot = this.client.util.emojis.robot;
-	if(!message) return null
+	    if(!message) return null
         if(!this.client.isSupport(msg.author.id)) return message.edit({
             embed: {
                 author, footer,
@@ -48,7 +48,7 @@ module.exports = class PingCommand extends Command {
                     this.field(`Uptime`, `${getFormat(this.client.uptime, false)}`)
                 ]
             },
-            components
+            components: this.inServer(message.author.id) ? undefined : components
         });
         function secondsToHms(seconds){ // day, h, m and s
             var days     = Math.floor(seconds / (24*60*60));
@@ -72,5 +72,10 @@ module.exports = class PingCommand extends Command {
                 ]
             }
         });
+    };
+    inServer(id){
+        let guild = this.client.guilds.cache.get("499409162661396481");
+        if(!guild || !guild.available || !guild.members.cache.get(id)) return false;
+        return true;
     };
 };
