@@ -279,8 +279,7 @@ module.exports = Structures.extend('Message', Message => {
 				 */
 				this.client.emit('commandError', this.command, err, this, args, fromPattern, collResult);
 				if(this.channel.typingCount > typingCount) this.channel.stopTyping();
-				if(err instanceof Error) return this.reply(err.message);
-				return this.command.onError(err, this, args, fromPattern, collResult);
+				return this.command.onError(err?.message ?? err, this, args, fromPattern, collResult);
 			}
 		}
 		/**
