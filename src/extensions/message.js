@@ -363,11 +363,12 @@ module.exports = Structures.extend('Message', Message => {
 
 		/**
 		 * @description Makes the bot start typing in the channel that the command is used in.
+		 * @param {number} [timeout=5000]
 		 * @returns {boolean}
 		 */
-		typing(){
+		typing(timeout = 5000){
 			this.channel.startTyping(true);
-			setTimeout(() => this.channel.stopTyping(true), 5000);
+			setTimeout(() => this.channel.stopTyping(true), timeout);
 			return true;
 		}
 
