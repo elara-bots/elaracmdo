@@ -152,7 +152,7 @@ declare module 'elaracmdo' {
 		private editResponse(response: CommandoMessage | CommandoMessage[], options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
 		private finalize(responses: CommandoMessage | CommandoMessage[]): void;
 		private respond(options?: {}): CommandoMessage | CommandoMessage[];
-		public typing(): boolean;
+		public typing(timeout?: number): boolean;
 
 		public argString: string;
 		public readonly client: CommandoClient;
