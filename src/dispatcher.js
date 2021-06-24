@@ -233,8 +233,15 @@ class CommandDispatcher {
 			}
 		}
 		// Find the command to run with default command handling
-		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix;
-		for (const pre of [ `hey ${this.client.user.username}`, `hey ${this.client.user.username},`, `${this.client.user.username},` ]) {
+		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix,
+			extra = this.client.user.id !== "455166272339181589" && this.client.user.username.toLowerCase() === "elara" ? " 2" : ""
+
+		if(!message.guild?.members?.cache?.has?.("455166272339181589")) extra = ""
+		for (const pre of [
+			`hey ${this.client.user.username}${extra}`,
+			`hey ${this.client.user.username}${extra},`,
+			`${this.client.user.username}${extra},` 
+		]) {
 			if(content?.toLowerCase()?.startsWith(pre.toLowerCase())) prefix = pre.toLowerCase();
 		};
 		if(!this._commandPatterns[prefix]) this.buildCommandPattern(prefix);
