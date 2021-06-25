@@ -1,4 +1,4 @@
-const { Client, Channel, User, Message, Collection, SnowflakeUtil, GuildMember } = require('discord.js'),
+const { Client, User, Message, Collection, SnowflakeUtil, GuildMember, Channel } = require('discord.js'),
 	   util = require("./util"),
 	   CommandoRegistry = require('./registry'),
 	   CommandDispatcher = require('./dispatcher'),
@@ -61,22 +61,24 @@ class CommandoClient extends Client {
 
 			if(options.embeds && Array.isArray(options.embeds)) sendObj.embeds = options.embeds;
 			if(options.content) sendObj.content = options.content;
-			if(options.embed) sendObj.embed = {
-				title: options?.embed?.title ?? "INFO",
-				description: options?.embed?.description ?? undefined,
-				color: options?.embed?.color ?? util.colors.purple,
-				url: options?.embed?.url ?? undefined,
-				image: { url: options?.embed?.image ?? undefined },
-				thumbnail: { url: options?.embed?.thumbnail ?? undefined },
-				fields: options?.embed?.fields ?? [],
-				author: options?.embed?.author ?? undefined,
-				footer: options?.embed?.footer ?? undefined,
-				timestamp: options?.embed?.timestamp ?? undefined
-			};
-			if(!sendObj.content && !sendObj.embed) return null;
+			if(options.embed) sendObj.embeds = [
+				{
+					title: options?.embed?.title ?? "INFO",
+					description: options?.embed?.description ?? undefined,
+					color: options?.embed?.color ?? util.colors.purple,
+					url: options?.embed?.url ?? undefined,
+					image: { url: options?.embed?.image ?? undefined },
+					thumbnail: { url: options?.embed?.thumbnail ?? undefined },
+					fields: options?.embed?.fields ?? [],
+					author: options?.embed?.author ?? undefined,
+					footer: options?.embed?.footer ?? undefined,
+					timestamp: options?.embed?.timestamp ?? undefined
+				}
+			];
+			if(!sendObj.content && !sendObj.embeds?.length) return null;
 			const permcheck = (c = null) => {
-				if(!c) return message.send(sendObj).catch(() => null)
-				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) return c.send(sendObj).catch(() => null);
+				if(!c) return message.send(sendObj).catch(e => e)
+				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) return c.send(sendObj).catch(e => e);
 				return null;
 			}
 			if(message instanceof User || message instanceof GuildMember) return permcheck();
