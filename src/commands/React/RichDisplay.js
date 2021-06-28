@@ -186,16 +186,20 @@ class RichDisplay {
 			!('stop' in options) || ('stop' in options && options.stop),
 			!('firstLast' in options) || ('firstLast' in options && options.firstLast),
 		);
-		const waitmsg = message.editable ? await message.edit("", {embed: {
-			author: {
-				name: message.client.user.tag,
-				icon_url: message.client.user.displayAvatarURL({dynamic: true}),
-				url: message.client.options.invite
-			},
-			title: `INFO`,
-			description: `One moment please, loading the menu.`,
-			color: message.client.getColor(message.guild)
-		}}).catch(() => null) : await message.boop({embed: {
+		const waitmsg = message.editable ? await message.edit({
+			embeds: [
+				{
+					author: {
+						name: message.client.user.tag,
+						icon_url: message.client.user.displayAvatarURL({dynamic: true}),
+						url: message.client.options.invite
+					},
+					title: `INFO`,
+					description: `One moment please, loading the menu.`,
+					color: message.client.getColor(message.guild)
+				}
+			]
+		}).catch(() => null) : await message.boop({embed: {
 			author: {
 				name: message.client.user.tag,
 				icon_url: message.client.user.displayAvatarURL({dynamic: true}),
@@ -206,11 +210,11 @@ class RichDisplay {
 			color: message.client.getColor(message.guild)
 		}});
 		if(!waitmsg) return message.error(`I was unable to post or edit the loading menu message.`);
-		for await (const emoji of emojis){
-			if(!waitmsg.deleted) waitmsg.react(emoji).catch(() => {});
+		for await (const emoji of emojis) {
+			if(!waitmsg.deleted) await waitmsg.react(emoji).catch(() => {});
 		}
 		setTimeout(async () => {
-			const msg = waitmsg.editable ? await waitmsg.edit('', { embed: this.pages[options.startPage || 0] }) : await message.channel.send(this.pages[options.startPage || 0]);
+			const msg = waitmsg.editable ? await waitmsg.edit({ embeds: [ this.pages[options.startPage || 0] ] }) : await message.channel.send({ embeds: [ this.pages[options.startPage || 0] ] }).catch(() => null);
 			return new ReactionHandler(
 				msg,
 				(r, u) => emojis.includes(r.emoji.name) && !u.bot && options.filter(r, u),

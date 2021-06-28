@@ -11,7 +11,7 @@ class UserArgumentType extends ArgumentType {
 		const matches = val.match(/^(?:<@!?)?([0-9]+)>?$/);
 		if(matches) {
 			try {
-				const user = await msg.client.users.fetch(matches[1]);
+				const user = await msg.client.users.fetch(matches[1]).catch(() => null);
 				if(!user) return false;
 				if(arg.oneOf && !arg.oneOf.includes(user.id)) return false;
 				return true;

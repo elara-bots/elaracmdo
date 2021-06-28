@@ -60,17 +60,19 @@ module.exports = class PingCommand extends Command {
             return `${((0<days)?(days+"d, "):"")}${hours}h, ${minutes}m, ${seconds}s`;
         }
         return message.edit({
-            embed: {
-                author,
-                title: `${this.client.util.emojis.robot} Status ${this.client.util.emojis.robot}`,
-                color: this.client.getColor(message.guild),
-                timestamp: new Date(),
-                fields: [
-                    this.field(`💾 Memory`, `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`, true),
-                    this.field(`🏓 Latency`, `▫Message: **\`\`${message.createdTimestamp - msg.createdTimestamp}ms\`\`**\n▫API: **\`\`${this.client.ws.ping}ms\`\`**`, true),
-                    this.field(`📡 Uptime`, `▫Host: ${secondsToHms(require("os").uptime())}\n▫Process: ${getFormat(this.client.uptime, false)}`, true)
-                ]
-            }
+            embeds: [
+                {
+                    author,
+                    title: `${this.client.util.emojis.robot} Status ${this.client.util.emojis.robot}`,
+                    color: this.client.getColor(message.guild),
+                    timestamp: new Date(),
+                    fields: [
+                        this.field(`💾 Memory`, `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`, true),
+                        this.field(`🏓 Latency`, `▫Message: **\`\`${message.createdTimestamp - msg.createdTimestamp}ms\`\`**\n▫API: **\`\`${this.client.ws.ping}ms\`\`**`, true),
+                        this.field(`📡 Uptime`, `▫Host: ${secondsToHms(require("os").uptime())}\n▫Process: ${getFormat(this.client.uptime, false)}`, true)
+                    ]
+                }
+            ]
         });
     };
     inServer(id){

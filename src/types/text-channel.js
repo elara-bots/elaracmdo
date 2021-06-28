@@ -11,7 +11,7 @@ class TextChannelArgumentType extends ArgumentType {
 		const matches = val.match(/^(?:<#)?([0-9]+)>?$/);
 		if(matches) {
 			try {
-				const channel = msg.client.channels.resolve(matches[1]);
+				const channel = msg.guild.channels.resolve(matches[1]);
 				if(!channel || channel.type !== 'text') return false;
 				if(arg.oneOf && !arg.oneOf.includes(channel.id)) return false;
 				return true;
@@ -42,7 +42,7 @@ class TextChannelArgumentType extends ArgumentType {
 
 	parse(val, msg) {
 		const matches = val.match(/^(?:<#)?([0-9]+)>?$/);
-		if(matches) return msg.client.channels.resolve(matches[1]) || null;
+		if(matches) return msg.guild.channels.resolve(matches[1]) || null;
 		if(!msg.guild) return null;
 		const search = val.toLowerCase();
 		const channels = msg.guild.channels.cache.filter(channelFilterInexact(search));

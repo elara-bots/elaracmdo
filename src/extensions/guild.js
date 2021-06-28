@@ -28,10 +28,10 @@ module.exports = require('discord.js').Structures.extend('Guild', Guild => {
 
 			/**
 			 * Array for the guild invites.
-			 * @name CommandoGuild#invites
+			 * @name CommandoGuild#Invites
 			 * @type {string[]}
 			 */
-			this.invites = [];
+			this.Invites = [];
 
 			/**
 			 * The commands channel.. 

@@ -14,16 +14,18 @@ module.exports = class SCommand extends Command {
         })
     }
     async run(message) {
-        return message.channel.send(null, {
-            replyTo: { id: message.id },
+        return message.channel.send({
+            reply: { messageReference: message, failIfNotExists: false },
             allowedMentions: { parse: [] },
-            embed: { 
-                author: { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({ dynamic: true }), url: this.client.options.invite },
-                color: this.client.getColor(message.guild),
-                title: `Bot Support`,
-                description: `Click on the button below!`,
-                timestamp: new Date()
-            },
+            embeds: [
+                { 
+                    author: { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({ dynamic: true }), url: this.client.options.invite },
+                    color: this.client.getColor(message.guild),
+                    title: `Bot Support`,
+                    description: `Click on the button below!`,
+                    timestamp: new Date()
+                }
+            ],
             components: this.client.f?.button ? [ 
                 { 
                     type: 1, 

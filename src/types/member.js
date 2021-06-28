@@ -11,7 +11,7 @@ class MemberArgumentType extends ArgumentType {
 		const matches = val.match(/^(?:<@!?)?([0-9]+)>?$/);
 		if(matches) {
 			try {
-				const member = await msg.guild.members.fetch(await msg.client.users.fetch(matches[1]));
+				const member = await msg.guild.members.fetch({ user: matches[1], cache: true }).catch(() => null);
 				if(!member) return false;
 				if(arg.oneOf && !arg.oneOf.includes(member.id)) return false;
 				return true;

@@ -1,4 +1,4 @@
-const { Structures, escapeMarkdown, splitMessage, resolveString, MessageEmbed } = require('discord.js');
+const { Structures, escapeMarkdown, splitMessage, Util: { verifyString: resolveString }, MessageEmbed } = require('discord.js');
 const { oneLine } = require('common-tags');
 const Command = require('../commands/base');
 const functions = {
@@ -157,11 +157,11 @@ module.exports = Structures.extend('Message', Message => {
 			 * @returns {Promise<boolean>}
 			 */
 			const checkPerms = () => {
-				return new Promise(async (_, rej) => {
+				return new Promise(async (_) => {
 					if(!this.member) return _(false);
 					if(this.member.roles.cache.filter(c => c.id !== this.guild.id).size === 0) return _(false);
 					if(!this.client || !this.client.user) return _(false);
-					if(!this.client.dbs || !this.client.dbs.getSettings) return _(false);
+					if(!this.client.dbs?.getSettings) return _(false);
 					if(this.command.ownerOnly && !this.client.isOwner(this.author.id)) return _(false);
 					if(this.client.isOwner(this.author.id)) return _(false);
                 	let db = await this.client.dbs.getSettings(this.guild);
@@ -478,7 +478,6 @@ module.exports = Structures.extend('Message', Message => {
 				if(options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
 				sendObj.embed = new MessageEmbed(options.embed).toJSON();
 			}
-			if(!sendObj.content && !sendObj.embed) return null;
 			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(["VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "USE_EXTERNAL_EMOJIS", "EMBED_LINKS"])) return null;
 			return this.inlineReply(sendObj.content ?? "", {...sendObj, reply: true});
 		}
@@ -566,9 +565,13 @@ module.exports = Structures.extend('Message', Message => {
 			let message_reference = { message_id: this.id, fail_if_not_exists: false };
 			if(options?.reply === true) options.allowedMentions = { ...options.allowedMentions, replied_user: false };
 			delete options["reply"];
-			let { data } = require("discord.js").APIMessage.create(this, content, options).resolveData();
-			if(typeof data.allowed_mentions === "undefined" && options.allowedMentions) data.allowed_mentions = options.allowedMentions;
-			
+			return this.channel.send({
+				...data,
+				reply: { messageReference: this, failIfNotExists: false }
+			})
+			.catch(() => null);
+
+
 			return this.client.api
 			.channels(this.channel.id)
 			.messages

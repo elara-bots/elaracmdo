@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const { escapeMarkdown } = require('discord.js');
 const ArgumentUnionType = require('../types/union');
 
@@ -143,16 +144,14 @@ class Argument {
 
 	/**
 	 * Prompts the user and obtains the value for the argument
-	 * @param {CommandoMessage} msg - Message that triggered the command
+	 * @param {import("../extensions/message").CommandoMessage} msg - Message that triggered the command
 	 * @param {string} [val] - Pre-provided value for the argument
 	 * @param {number} [promptLimit=Infinity] - Maximum number of times to prompt for the argument
 	 * @returns {Promise<ArgumentResult>}
 	 */
 	async obtain(msg, val, promptLimit = Infinity) {
 		let empty = this.isEmpty(val, msg);
-		if(empty && this.default !== null) {
-		return {value: typeof this.default === 'function' ? await this.default(msg, this) : this.default, cancelled: null, prompts: [], answers: []};
-		}
+		if(empty && this.default !== null) return { value: typeof this.default === 'function' ? await this.default(msg, this) : this.default, cancelled: null, prompts: [], answers: [] };
 		if(this.infinite) return this.obtainInfinite(msg, val, promptLimit);
 
 		const wait = this.wait > 0 && this.wait !== Infinity ? this.wait * 1000 : undefined;
@@ -164,19 +163,18 @@ class Argument {
 			/* eslint-disable no-await-in-loop */
 			if(prompts.length >= promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
 
-	
 			prompts.push(await msg.embed({
 				author: {
 					name: msg.client.user.tag,
-					icon_url: msg.client.user.displayAvatarURL({dynamic: true}),
+					icon_url: msg.client.user.displayAvatarURL({ dynamic: true }),
 					url: msg.client.options.invite
 				},
 				title: `INFO`,
 				color: msg.client.getColor(msg.guild),
 				description: `${empty ? this.prompt : valid ? valid : `You provided an invalid ${this.label}. Please try again.`}`,
 				footer: {
-					text: wait ? `This will be automatically be cancelled in ${this.wait} seconds` : "",
-					icon_url: wait ? `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` : ""
+					text: wait ? `This will be automatically be cancelled in ${this.wait} seconds` : '',
+					icon_url: wait ? `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` : ''
 				},
 				fields: [
 					{
@@ -234,12 +232,12 @@ class Argument {
 
 				// Prompt the user for a new value
 				const embed = {
-					author: {name: msg.client.user.tag, icon_url: msg.client.user.displayAvatarURL({dynamic: true}), url: msg.client.options.invite},
-					title: "INFO",
+					author: { name: msg.client.user.tag, icon_url: msg.client.user.displayAvatarURL({ dynamic: true }), url: msg.client.options.invite },
+					title: 'INFO',
 					color: msg.client.getColor(msg.guild),
 					footer: {
-						text: wait ? `This will be automatically be cancelled in ${this.wait} seconds` : "",
-						icon_url: wait ? `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` : ""
+						text: wait ? `This will be automatically be cancelled in ${this.wait} seconds` : '',
+						icon_url: wait ? `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` : ''
 					},
 					fields: [
 						{
@@ -247,7 +245,7 @@ class Argument {
 							value: `Respond with **\`cancel\`** to cancel the command, or **\`finish\`** to finish entry up to this point.\n*Don't include the prefix and command name*`
 						}
 					]
-				}
+				};
 				if(val) {
 					const escaped = escapeMarkdown(val).replace(/@/g, '@\u200b');
 					embed.description = `	${valid ? valid : `You provided an invalid ${this.label}, "${escaped.length < 1850 ? escaped : '[too long to show]'}".\nPlease try again.`}`;
@@ -278,7 +276,7 @@ class Argument {
 
 			if(vals) {
 				currentVal++;
-				if(currentVal === vals.length) return { value: results, cancelled: null, prompts, answers};
+				if(currentVal === vals.length) return { value: results, cancelled: null, prompts, answers };
 			}
 			/* eslint-enable no-await-in-loop */
 		}

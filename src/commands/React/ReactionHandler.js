@@ -113,35 +113,34 @@ class ReactionHandler extends ReactionCollector {
 		// else return this.stop();
 
 		this.on('collect', (reaction, user) => {
-			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has("MANAGE_MESSAGES") && !this.message.deleted){
-			reaction.users.cache.filter(m => m.id !== this.client.user.id).forEach(m => {
-				reaction.users.remove(m.id).catch(() => {});
-			})
-			}
+			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has("MANAGE_MESSAGES") && !this.message.deleted) reaction.users.remove(user.id).catch(() => null);
 			this[this.methodMap.get(reaction.emoji.name)](user);
 		});
 		setTimeout(() => {this.emit("end")}, this.time || 120000)
 		this.on('end', () => {
-			if (this.reactionsDone && !this.message.deleted && this.message.guild) this.message.reactions.removeAll();
+			if (this.reactionsDone && !this.message.deleted && this.message.guild) this.message.reactions.removeAll().catch(() => null);
 				setTimeout(async () => {
 					
 			if(!this.message.deleted) this.message.edit({
-					embed: {
-						author: {
-							name: message.guild ? message.guild.name : message.author.tag,
-							icon_url: message.guild ? message.guild.iconURL({dynamic: true}) : this.message.author.displayAvatarURL({dynamic: true}),
-							url: `https://superchiefyt.xyz/support`
-						},
-						title: `Menu Closed`,
-						color: 0xFF0000,
-						timestamp: new Date(),
-						footer: {
-							text: `This message will be deleted in 20s`,
-							icon_url: `${this.client.options.http.cdn}/emojis/${this.client.util.emojis.rload}.gif`
+					embeds: [
+						{
+							author: {
+								name: message.guild ? message.guild.name : message.author.tag,
+								icon_url: message.guild ? message.guild.iconURL({dynamic: true}) : this.message.author.displayAvatarURL({dynamic: true}),
+								url: `https://superchiefyt.xyz/support`
+							},
+							title: `Menu Closed`,
+							color: 0xFF0000,
+							timestamp: new Date(),
+							footer: {
+								text: `This message will be deleted in 20s`,
+								icon_url: `${this.client.options.http.cdn}/emojis/${this.client.util.emojis.rload}.gif`
+							}
 						}
-					}
-				}).then(async () => {
-				if(!this.message.deleted) this.message.del({ timeout: 20000, reason: "Auto" });
+					]
+				})
+				.then(() => {
+					if(!this.message.deleted) this.message.del({ timeout: 20000, reason: "Auto" });
 				})
 			}, 5000)
 			})
@@ -195,7 +194,7 @@ class ReactionHandler extends ReactionCollector {
 	 * @returns {void}
 	 */
 	info() {
-		this.message.edit(this.display.infoPage);
+		this.message.edit({ embeds: [ this.display.infoPage ] });
 	}
 
 	/**
@@ -324,7 +323,7 @@ class ReactionHandler extends ReactionCollector {
 	 * @returns {void}
 	 */
 	update() {
-		if(!this.message.deleted) this.message.edit('', { embed: this.display.pages[this.currentPage] });
+		if(!this.message.deleted) this.message.edit({ embeds: [ this.display.pages[this.currentPage] ] });
 	}
 
 	/**
@@ -336,9 +335,11 @@ class ReactionHandler extends ReactionCollector {
 	 */
 	async _queueEmojiReactions(emojis) {
 		if (this.message.deleted) return this.stop();
-		if (this.ended) return this.message.reactions.clear();
-		for (const e of emojis){
-			if(!this.message.deleted) this.message.react(e).catch(() => null);
+		if (this.ended) return this.message.reactions.removeAll().catch(() => null);
+		for (const e of emojis) {
+			if(!this.message.deleted) {
+				this.message.react(e).catch(() => null);
+			}
 		}
 		this.reactionsDone = true;
 		return null;

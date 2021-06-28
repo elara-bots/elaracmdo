@@ -1,8 +1,9 @@
-const {Collection} = require("discord.js"),
-	  Command = require('./commands/base'),
-	  CommandGroup = require('./commands/group'),
-	  CommandoMessage = require('./extensions/message'),
-	  ArgumentType = require('./types/base');
+/* eslint-disable max-len */
+const { Collection } = require("discord.js"),
+	  	Command = require('./commands/base'),
+	  	CommandGroup = require('./commands/group'),
+	  	CommandoMessage = require('./extensions/message'),
+	  	ArgumentType = require('./types/base');
 
 /** Handles registration and searching of commands and groups */
 class CommandoRegistry {

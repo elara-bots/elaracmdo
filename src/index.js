@@ -12,10 +12,10 @@ module.exports = {
 	RichMenu: require('./commands/React/RichMenu'),
 	ReactionHandler: require('./commands/React/ReactionHandler'),
 	Weather: require('./extensions/packages/weather-js/index'),
-	CPU: require("./extensions/packages/cpu-stats/index"),
-	Convert: require("./extensions/packages/ordinal/index"),
-	Purger: require("./extensions/packages/purger/index"),
-	Morse: require("./extensions/packages/morse/index"),
+	CPU: require('./extensions/packages/cpu-stats/index'),
+	Convert: require('./extensions/packages/ordinal/index'),
+	Purger: require('./extensions/packages/purger/index'),
+	Morse: require('./extensions/packages/morse/index'),
 	util: require('./util')
 };
 
