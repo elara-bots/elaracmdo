@@ -35,10 +35,10 @@ module.exports = require('discord.js').Structures.extend('Guild', Guild => {
 
 			/**
 			 * The commands channel.. 
-			 * @name CommandoGuild#commands
+			 * @name CommandoGuild#Commands
 			 * @type {string}
 			 */
-			this.commands = "";
+			this.Commands = "";
 		}
 
 		/**
