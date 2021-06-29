@@ -214,8 +214,8 @@ module.exports = Structures.extend('Message', Message => {
 
 				collResult = await this.command.argsCollector.obtain(this, provided);
 				if(collResult.cancelled) {
-					if(collResult.prompts.length === 0) return this.reply(`Invalid command usage. The \`${this.command.name}\` command's accepted format is: ${this.usage(this.command.format, this.guild ? undefined : null, this.guild ? undefined : null)}. Use ${this.anyUsage(`help ${this.command.name}`, this.guild ? undefined : null, this.guild ? undefined : null)} for more information.`);
-					if(this.guild && this.client.dbs && this.client.dbs.getSettings){
+					if(collResult.prompts.length === 0) return this.error(`Invalid command usage. The \`${this.command.name}\` command's accepted format is: ${this.usage(this.command.format, this.guild ? undefined : null, this.guild ? undefined : null)}. Use ${this.anyUsage(`help ${this.command.name}`, this.guild ? undefined : null, this.guild ? undefined : null)} for more information.`);
+					if(this.guild && this.client.dbs?.getSettings){
 						let db = await this.client.dbs.getSettings(this.guild);
 						if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
 							let candelete = this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES") || false;
@@ -226,7 +226,7 @@ module.exports = Structures.extend('Message', Message => {
 					}
 					return this.error(`Command Cancelled`);
 				}
-				if(this.guild && this.client.dbs && this.client.dbs.getSettings){
+				if(this.guild && this.client.dbs?.getSettings){
 				let db = await this.client.dbs.getSettings(this.guild);
 				if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
 					let candelete = this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES") || false;
@@ -298,20 +298,20 @@ module.exports = Structures.extend('Message', Message => {
 			if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has("SEND_MESSAGES")) type = "direct";
 
 			content = resolveString(content);
-			content = content.replace(new RegExp(this.client.token, "g"), "[Fuck Off]")
+			content = content.replace(new RegExp(this.client.token, "g"), "[N/A]")
 			switch(type) {
 				case 'plain':
-					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(() => null);
+					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'reply':
-					if(!shouldEdit) return super.reply({ content, ...options }).catch(() => null);
+					if(!shouldEdit) return super.reply({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
 					if(options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'direct':
-					if(!shouldEdit) return this.author.send({ content, ...options }).catch(() => null);
+					if(!shouldEdit) return this.author.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
 					return this.editCurrentResponse('dm', { type, content, options });
 				case 'code':
-					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(() => null);
+					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
 					if(options && options.split) {
 						if(!options.split.prepend) options.split.prepend = `\`\`\`${lang || ''}\n`;
 						if(!options.split.append) options.split.append = '\n```';
@@ -341,22 +341,22 @@ module.exports = Structures.extend('Message', Message => {
 				const promises = [];
 				if(response instanceof Array) {
 					for(let i = 0; i < content.length; i++) {
-						if(response.length > i) promises.push(response[i].edit(`${prepend}${content[i]}`, options));
-						else promises.push(response[0].channel.send(`${prepend}${content[i]}`));
+						if(response.length > i) promises.push(response[i].edit({ content: `${prepend}${content[i]}`, ...options }).catch(e => global.log(`[MESSAGE:EDIT:ERROR]: ${__filename}`, e)));
+						else promises.push(response[0].channel.send({ content: `${prepend}${content[i]}` }).catch(e => global.log(`[MESSAGE:SEND:ERROR]: ${__filename}`, e)));
 					}
 				} else {
-					promises.push(response.edit(`${prepend}${content[0]}`, options));
+					promises.push(response.edit({ content: `${prepend}${content[0]}`, ...options }).catch(e => global.log(`[MESSAGE:EDIT:ERROR]: ${__filename}`, e)));
 					for(let i = 1; i < content.length; i++) {
-						promises.push(response.channel.send(`${prepend}${content[i]}`));
+						promises.push(response.channel.send({ content: `${prepend}${content[i]}` }).catch(e => global.log(`[MESSAGE:SEND:ERROR]: ${__filename}`, e)));
 					}
 				}
 				return Promise.all(promises);
 			} else {
 				if(response instanceof Array) { // eslint-disable-line no-lonely-if
 					for(let i = response.length - 1; i > 0; i--) response[i].del().catch(() => null);
-					return response[0].edit(`${prepend}${content}`, options).catch(() => null);
+					return response[0].edit({ content: `${prepend}${content}`, ...options }).catch(e => global.log(`[MESSAGE:EDIT:ERROR]: ${__filename}`, e))
 				} else {
-					return response.edit(`${prepend}${content}`, options).catch(() => null);
+					return response.edit({ content: `${prepend}${content}`, ...options }).catch(e => global.log(`[MESSAGE:EDIT:ERROR]: ${__filename}`, e))
 				}
 			}
 		}
@@ -453,13 +453,15 @@ module.exports = Structures.extend('Message', Message => {
 			if(typeof text === "object") { options = text; text = undefined; };
 			if(typeof options === "string") { options = {}; text = options; }
 			return this.inlineReply(text || undefined, {
-				embed: {
-					title: `INFO`,
-					description: content, 
-					color: this.client.getColor(this.guild),
-					timestamp: new Date(),
-					author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
-				},
+				embeds: [
+					{
+						title: `INFO`,
+						description: content, 
+						color: this.client.getColor(this.guild),
+						timestamp: new Date(),
+						author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
+					}
+				],
 				...options,
 				reply: true
 			})
@@ -518,11 +520,8 @@ module.exports = Structures.extend('Message', Message => {
 				const responses = this.responses[id];
 				for(let i = this.responsePositions[id] + 1; i < responses.length; i++) {
 					const response = responses[i];
-					if(response instanceof Array) {
-						for(const resp of response) resp.del();
-					} else {
-						response.del();
-					}
+					if(response instanceof Array) for(const resp of response) resp.del();
+					else response.del();
 				}
 			}
 		}
@@ -562,17 +561,15 @@ module.exports = Structures.extend('Message', Message => {
 				content = null;
 			};
 			if(typeof options !== "object") options = { };
+			if(typeof content === "string") options.content = content;
 			if(options?.reply === true) options.allowedMentions = { ...options.allowedMentions, repliedUser: false };
 			delete options["reply"];
 			if(options.embed) {
 				if(options.embeds) options.embeds.push(options.embed);
 				else options.embeds = [ options.embed ];
 			}
-			return this.channel.send({
-				...options,
-				reply: { messageReference: this, failIfNotExists: false }
-			})
-			.catch(() => null);
+			return this.channel.send({ ...options, reply: { messageReference: this, failIfNotExists: false } })
+			.catch((e) => global.log(`[MESSAGE:INLINE_REPLY:ERROR]: ${__filename}`, e));
 		};
 	}
 
