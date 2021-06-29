@@ -336,12 +336,12 @@ class Command {
 				color: message.client.util.colors.purple,
 				timestamp: new Date(),
 				thumbnail: {url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
-				description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.\n\n**Join the [Support Server](${message.client.options.invite})**`,
+				description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.`,
 				footer: {
 					text: `Requested by: @${message.author.tag}`,
 					icon_url: message.author.displayAvatarURL({dynamic: true})
 				}
-			}).then(m => m.del({timeout: 10000}).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
+			}, null, { components: message.client?.f?.button ? [ { type: 1, components: [ message.client.f.button({ style: 5, title: "Support", url: message.client.options.invite, emoji: { id: message.client.util.emojis.rdiscord } }) ] } ] : [] }).then(m => m.del({timeout: 10000}).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
 				reply: { messageReference: message, failIfNotExists: false },
 				embeds: [
@@ -354,7 +354,7 @@ class Command {
 						timestamp: new Date()
 					})
 				]
-			}).then(m => m.del({timeout: 10000}).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
+			}).then(m => m.del({timeout: 10000})).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
 			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
 			default: return null;
 		}
