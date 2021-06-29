@@ -124,12 +124,13 @@ class CommandDispatcher {
 		let responses;
 		if(cmdMsg) {
 			const inhibited = await this.inhibit(cmdMsg);
-
 			if(!inhibited) {
 				if(cmdMsg.command) {
 					if(!cmdMsg.command.isEnabledIn(message.guild)) {
 						let embed = {title: `Command (${cmdMsg.command.name}) is disabled!`, color: 0x36393E, author: {name: message.guild.name, icon_url: message.guild.iconURL()}}
-						responses = await cmdMsg.channel.send({ embeds: [ embed ] }).then(msg => {setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000)});
+						responses = await cmdMsg.channel.send({ embeds: [ embed ] })
+						.then(msg => setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000))
+						.catch((e) => global.log(`[${__filename}|SEND]: Error`, e));
 					} else if(!oldMessage || typeof oldCmdMsg !== 'undefined') {
 						responses = await cmdMsg.run();
 						if(typeof responses === 'undefined') responses = null;
@@ -185,9 +186,7 @@ class CommandDispatcher {
 					inhibit.response instanceof Promise
 				);
 				if(!valid) {
-					throw new TypeError(
-						`Inhibitor "${inhibitor.name}" had an invalid result; must be a string or an Inhibition object.`
-					);
+					throw new TypeError(`Inhibitor "${inhibitor.name}" had an invalid result; must be a string or an Inhibition object.`);
 				}
 				return inhibit;
 			}
@@ -255,11 +254,10 @@ class CommandDispatcher {
 	 * @param {Message} message - The message
 	 * @param {RegExp} pattern - The pattern to match against
 	 * @param {number} commandNameIndex - The index of the command name in the pattern matches
-	 * @param {boolean} prefixless - Whether the match is happening for a prefixless usage
 	 * @return {?CommandoMessage}
 	 * @private
 	 */
-	matchDefault(message, pattern, commandNameIndex = 1, prefixless = false) {
+	matchDefault(message, pattern, commandNameIndex = 1) {
 		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
 		const matches = pattern.exec(content);
 		if(!matches) return null;
