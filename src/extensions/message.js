@@ -559,25 +559,20 @@ module.exports = Structures.extend('Message', Message => {
 		inlineReply(content, options) {
 			if(!options && typeof content === 'object' && !(content instanceof Array)) {
 				options = content;
-				content = '';
+				content = null;
 			};
 			if(typeof options !== "object") options = { };
-			let message_reference = { message_id: this.id, fail_if_not_exists: false };
-			if(options?.reply === true) options.allowedMentions = { ...options.allowedMentions, replied_user: false };
+			if(options?.reply === true) options.allowedMentions = { ...options.allowedMentions, repliedUser: false };
 			delete options["reply"];
+			if(options.embed) {
+				if(options.embeds) options.embeds.push(options.embed);
+				else options.embeds = [ options.embed ];
+			}
 			return this.channel.send({
-				...data,
+				...options,
 				reply: { messageReference: this, failIfNotExists: false }
 			})
 			.catch(() => null);
-
-
-			return this.client.api
-			.channels(this.channel.id)
-			.messages
-			.post({ data: { ...data, message_reference } })
-			.then(r => new (CommandoMessage)(this.client, r, this.channel))
-			.catch(err => err);
 		};
 	}
 
