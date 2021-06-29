@@ -1,4 +1,4 @@
-const { Structures, escapeMarkdown, splitMessage, Util: { verifyString: resolveString }, MessageEmbed } = require('discord.js');
+const { Structures, escapeMarkdown, splitMessage, MessageEmbed } = require('discord.js');
 const { oneLine } = require('common-tags');
 const Command = require('../commands/base');
 const functions = {
@@ -298,7 +298,7 @@ module.exports = Structures.extend('Message', Message => {
 			if(type === 'reply' && this.channel.type === 'dm') type = 'plain';
 			if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has("SEND_MESSAGES")) type = "direct";
 
-			content = resolveString(content);
+			content = typeof content === "string" ? content : null;
 			content = content.replace(new RegExp(this.client.token, "g"), "[N/A]")
 			switch(type) {
 				case 'plain':
