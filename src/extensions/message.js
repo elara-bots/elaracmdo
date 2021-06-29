@@ -561,7 +561,7 @@ module.exports = Structures.extend('Message', Message => {
 				content = null;
 			};
 			if(typeof options !== "object") options = { };
-			if(typeof content === "string") options.content = content;
+			if(content && typeof content === "string") options.content = content;
 			if(options?.reply === true) options.allowedMentions = { ...options.allowedMentions, repliedUser: false };
 			delete options["reply"];
 			if(options.embed) {
