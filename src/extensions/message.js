@@ -149,7 +149,7 @@ module.exports = Structures.extend('Message', Message => {
 				if(!this.guild.members.cache.has(this.author.id)) return this.command.onBlock(this, "member_not_cached");
 				if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
 				if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
-				if(this.guild.commands && (this.guild.commands !== this.channel.id) && !this.member.permissions.has("MANAGE_MESSAGES") && !owner) return this.command.onBlock(this, "channel");
+				if(this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has("MANAGE_MESSAGES") && !owner) return this.command.onBlock(this, "channel");
 			}else {
 				if(this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
 			}
