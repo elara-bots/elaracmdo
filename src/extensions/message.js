@@ -3,10 +3,11 @@ const { oneLine } = require('common-tags');
 const Command = require('../commands/base');
 const functions = {
 	blacklist: (message) => {
+		if(!message || !message.client) return false;
 		if(message.client.isOwner(message.author.id)) return false;
-		if(message?.client?.GlobalUsers?.includes(message.author.id)) return true;
+		if(message.client.GlobalUsers.includes(message.author.id)) return true;
 		if(!message.guild) return false;
-		if(message.client?.config?.ignore?.guilds?.includes(message.guild?.id)) return true;
+		if(message.client.config?.ignore?.guilds?.includes(message.guild?.id)) return true;
 		return false;
 	}
 }
