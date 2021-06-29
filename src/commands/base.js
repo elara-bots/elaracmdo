@@ -316,7 +316,8 @@ class Command {
 		const send = (content, data = []) => {
             if(!message.guild) return message.error(content);
             if(message.channel.permissionsFor(message.client.user).has("EMBED_LINKS")) return message.error(content);
-            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${permissions[c]}\``).join("\n") : ["EMBED_LINKS"].map(c => `▫ \`${c}\``).join("\n")}` }).catch(() => null);
+            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${permissions[c]}\``).join("\n") : ["EMBED_LINKS"].map(c => `▫ \`${c}\``).join("\n")}` })
+			.catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
         }
 		switch(reason) {
 			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
@@ -340,7 +341,7 @@ class Command {
 					text: `Requested by: @${message.author.tag}`,
 					icon_url: message.author.displayAvatarURL({dynamic: true})
 				}
-			}).then(m => m.del({timeout: 10000}).catch(o => {}));
+			}).then(m => m.del({timeout: 10000}).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
 				reply: { messageReference: message, failIfNotExists: false },
 				embeds: [
@@ -349,11 +350,11 @@ class Command {
 						author: {name: message.guild.name, icon_url: message.guild.iconURL({dynamic: true}), url: message.client.options.invite},
 						color: message.guild.getColor(),
 						footer: {text: `This message will be deleted in 10s`, icon_url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
-						description: `You can't use commands in this channel.\n**Go to <#${message.guild.commands}> to use commands!**`,
+						description: `You can't use commands in this channel.\n**Go to <#${message.guild.Commands}> to use commands!**`,
 						timestamp: new Date()
 					})
 				]
-			}).then(m => m.del({timeout: 10000}).catch(o => {}))
+			}).then(m => m.del({timeout: 10000}).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
 			default: return null;
 		}
