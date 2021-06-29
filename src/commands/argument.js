@@ -144,7 +144,7 @@ class Argument {
 
 	/**
 	 * Prompts the user and obtains the value for the argument
-	 * @param {import("../extensions/message").CommandoMessage} msg - Message that triggered the command
+	 * @param {import("../extensions/message")} msg - Message that triggered the command
 	 * @param {string} [val] - Pre-provided value for the argument
 	 * @param {number} [promptLimit=Infinity] - Maximum number of times to prompt for the argument
 	 * @returns {Promise<ArgumentResult>}
@@ -363,7 +363,6 @@ class Argument {
 	static determineType(client, id) {
 		if(!id) return null;
 		if(!id.includes('|')) return client.registry.types.get(id);
-
 		let type = client.registry.types.get(id);
 		if(type) return type;
 		type = new ArgumentUnionType(client, id);
