@@ -160,8 +160,7 @@ class CommandDispatcher {
 	 * @private
 	 */
 	shouldHandleMessage(message, oldMessage) {
-		if(message.partial) return false;
-		if(message.author.bot) return false;
+		if(message.partial || message.author.bot) return false;
 		if(this._awaiting.has(message.author.id + message.channel.id)) return false;
 		if(oldMessage && message.content === oldMessage.content) return false;
 		return true;
@@ -257,7 +256,7 @@ class CommandDispatcher {
 	 * @private
 	 */
 	matchDefault(message, pattern, commandNameIndex = 1) {
-		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
+		let content = message.content?.replace(new RegExp(/”|“/, "gi"), '"')
 		const matches = pattern.exec(content);
 		if(!matches) return null;
 		const commands = this.registry.findCommands(matches[commandNameIndex], true);
