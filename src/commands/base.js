@@ -266,9 +266,7 @@ class Command {
 	hasPermission(message, ownerOverride = true) {
 		if(!this.ownerOnly && !this.userPermissions) return true;
 		if(ownerOverride && this.client.isOwner(message.author)) return true;
-
 		if(this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
-
 		if(message.channel.type === 'text' && this.userPermissions) {
             let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
             if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${permissions[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${permissions[c]}\``).join("\n")}`
@@ -369,15 +367,17 @@ class Command {
 	 */
 	onError(err, message) { // eslint-disable-line no-unused-vars
 		return message.boop({
-			embed: {
-				author: { name: message.client.user.tag, icon_url: message.client.user.displayAvatarURL({dynamic: true}), url: message.client.options.invite },
-				color: message.client.util.colors.purple,
-				title: `Command (\`${message.command.name}\`) Error`,
-				description: `\`\`\`js\n${err}\`\`\``,
-				timestamp: new Date(),
-				footer: { text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`, icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` }
-			}
-		}).catch(() => {})
+			embeds: [
+				{
+					author: { name: message.client.user.tag, icon_url: message.client.user.displayAvatarURL({dynamic: true}), url: message.client.options.invite },
+					color: message.client.util.colors.purple,
+					title: `Command (\`${message.command.name}\`) Error`,
+					description: `\`\`\`js\n${err}\`\`\``,
+					timestamp: new Date(),
+					footer: { text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`, icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` }
+				}
+			]
+		})
 	}
 
 	/**
