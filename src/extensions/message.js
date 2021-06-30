@@ -299,13 +299,13 @@ module.exports = Structures.extend('Message', Message => {
 			if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has("SEND_MESSAGES")) type = "direct";
 
 			content = typeof content === "string" ? content : null;
-			content = content.replace(new RegExp(this.client.token, "g"), "[N/A]")
+			content = content?.replace(new RegExp(this.client.token, "g"), "[N/A]");
 			switch(type) {
 				case 'plain':
 					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'reply':
-					if(!shouldEdit) return super.reply({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
+					if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${__filename}`, e))
 					if(options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
 					return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
 				case 'direct':
@@ -428,8 +428,8 @@ module.exports = Structures.extend('Message', Message => {
 			}
 			return this.respond({ type: 'direct', content, options });
 		}
-		success(content, text, options){ return this.custom(`${this.client.util.emojis.semoji} ${content}`, text, options); };
-		error(content, text, options){ return this.custom(`${this.client.util.emojis.nemoji} ${content}`, text, options); };
+		success(content, text = null, options){ return this.custom(`${this.client.util.emojis.semoji} ${content}`, text, options); };
+		error(content, text = null, options){ return this.custom(`${this.client.util.emojis.nemoji} ${content}`, text, options); };
 		/**
 		 * Responds with an embed
 		 * @param {MessageEmbed|Object} [embed] - Embed to send
@@ -437,9 +437,9 @@ module.exports = Structures.extend('Message', Message => {
 		 * @param {MessageOptions} [options] - Options for the message
 		 * @return {Promise<Message|Message[]>}
 		 */
-		embed(embed, content = '', options) {
+		embed(embed, content = null, options) {
 			if(typeof options !== 'object') options = {};
-			options.embed = embed;
+			options.embeds = [ embed ];
 			return this.respond({ type: 'plain', content, options });
 		}
 		/**
@@ -449,7 +449,7 @@ module.exports = Structures.extend('Message', Message => {
 		 * @returns {Promise<Message|Message[]>}
 		 */
 
-		custom(content, text, options){
+		custom(content, text = null, options){
 			if(text === null) text = undefined;
 			if(typeof text === "object") { options = text; text = undefined; };
 			if(typeof options === "string") { options = {}; text = options; }
