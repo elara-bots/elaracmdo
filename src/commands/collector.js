@@ -28,7 +28,7 @@ class ArgumentCollector {
 
 		let hasInfinite = false;
 		let hasOptional = false;
-		for(let i = 0; i < args.length; i++) {
+		for (let i = 0; i < args.length; i++) {
 			if(hasInfinite) throw new Error('No other argument may come after an infinite argument.');
 			if(args[i].default !== null) hasOptional = true;
 			else if(hasOptional) throw new Error('Required arguments may not come after optional arguments.');
@@ -77,17 +77,17 @@ class ArgumentCollector {
 					this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
 					return {
 						values: null, cancelled: result.cancelled,
-						prompts: [].concat(...results.map(res => res.prompts)), answers: [].concat(...results.map(res => res.answers)) };
-				}
-
+						prompts: [].concat(...results.map(res => res.prompts)), answers: [].concat(...results.map(res => res.answers)) 
+					};
+				};
 				values[arg.key] = result.value;
 				/* eslint-enable no-await-in-loop */
 			}
 		} catch(err) {
+			global.log(`[CMDO:COLLECTOR:OBTAIN]: ERROR`, err);
 			this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
 			throw err;
 		}
-
 		this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
 		return {
 			values,
