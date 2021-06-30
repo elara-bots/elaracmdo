@@ -163,7 +163,7 @@ class Argument {
 			/* eslint-disable no-await-in-loop */
 			if(prompts.length >= promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
 
-			prompts.push(await msg.embed({
+			prompts.push(await msg.channel.send({ embeds: [ {
 				author: {
 					name: msg.client.user.tag,
 					icon_url: msg.client.user.displayAvatarURL({ dynamic: true }),
@@ -182,11 +182,10 @@ class Argument {
 						value: `Respond with **\`cancel\`** to cancel the command.\n*Don't include the prefix and command name*`
 					}
 				]
-			}));
+			} ] }));
 
 			// Get the user's response
-			const responses = await msg.channel.awaitMessages(msg2 => msg2.author.id === msg.author.id, { max: 1, time: wait });
-
+			const responses = await msg.channel.awaitMessages({ filter: msg2 => msg2.author.id === msg.author.id, max: 1, time: wait });
 			// Make sure they actually answered
 			if(responses && responses.size === 1) {
 				answers.push(responses.first());
@@ -249,14 +248,14 @@ class Argument {
 				if(val) {
 					const escaped = escapeMarkdown(val).replace(/@/g, '@\u200b');
 					embed.description = `	${valid ? valid : `You provided an invalid ${this.label}, "${escaped.length < 1850 ? escaped : '[too long to show]'}".\nPlease try again.`}`;
-					prompts.push(await msg.embed(embed));
+					prompts.push(await msg.channel.send({ embeds: [ embed ] }));
 				} else if(results.length === 0) {
 					embed.description = this.prompt;
-					prompts.push(await msg.embed(embed));
+					prompts.push(await msg.channel.send({ embeds: [ embed ] }));
 				}
 
 				// Get the user's response
-				const responses = await msg.channel.awaitMessages(msg2 => msg2.author.id === msg.author.id, { max: 1, time: wait });
+				const responses = await msg.channel.awaitMessages({ filter: msg2 => msg2.author.id === msg.author.id, max: 1, time: wait });
 				// Make sure they actually answered
 				if(responses && responses.size === 1) {
 					answers.push(responses.first());
