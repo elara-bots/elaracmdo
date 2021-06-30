@@ -31,7 +31,7 @@ const perm = {
 	MOVE_MEMBERS: 'Move Members',
 	USE_VAD: 'Use Voice Activity',
 	STREAM: "Stream",
-	USE_SLASH_COMMANDS: "Use Slash Commands",
+	USE_APPLICATION_COMMANDS: "Use Slash Commands",
 	REQUEST_TO_SPEAK: "Request To Speak",
 	MANAGE_THREADS: "Manage Threads",
 	USE_PUBLIC_THREADS: "Use Public Threads",
