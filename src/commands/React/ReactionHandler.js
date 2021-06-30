@@ -31,7 +31,7 @@ class ReactionHandler extends ReactionCollector {
 	 * @param {Emoji[]} emojis The emojis which should be used in this handler
 	 */
 	constructor(message, filter, options, display, emojis) {
-		super(message, filter, options);
+		super(message, { filter, ...options });
 
 		/**
 		 * The RichDisplay/RichMenu this Handler is for
