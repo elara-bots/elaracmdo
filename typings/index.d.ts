@@ -1,7 +1,7 @@
 declare module 'elaracmdo' {
 
 	// @ts-ignore
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, StringResolvable, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake } from 'discord.js';
+	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction } from 'discord.js';
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -130,7 +130,6 @@ declare module 'elaracmdo' {
 		public addInhibitor(inhibitor: Inhibitor): boolean;
 		public removeInhibitor(inhibitor: Inhibitor): boolean;
 	}
-
 	export class CommandGroup {
 		public constructor(client: CommandoClient, id: string, name?: string, guarded?: boolean, commands?: Command[]);
 
@@ -165,8 +164,8 @@ declare module 'elaracmdo' {
 		
 		public anyUsage(command?: string, prefix?: string, user?: User): string;
 		public del(options?: {timeout?: number, reason?: string}): Promise<CommandoMessage>;
-		public direct(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public embed(embed: MessageEmbed | {}, content?: StringResolvable, options?: MessageOptions): Promise<Message | CommandoMessage[]>;
+		public direct(content: string, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public embed(embed: MessageEmbed | {}, content?: string, options?: MessageOptions): Promise<Message | CommandoMessage[]>;
 		public success(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public error(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public custom(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
@@ -175,9 +174,9 @@ declare module 'elaracmdo' {
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
 		
 		// @ts-ignore
-		public reply(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public reply(content: string, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
-		public say(content: StringResolvable, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
+		public say(content: string, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public usage(argString?: string, prefix?: string, user?: User): string;
 	}
 	export type UserSchema = {
@@ -290,6 +289,7 @@ declare module 'elaracmdo' {
 		public webhook(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
 		private send(url: string, pingRole: string, embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
 	}
+
 	export class CommandoClient extends Client {
 		public constructor(options?: CommandoClientOptions);
 
@@ -341,6 +341,12 @@ declare module 'elaracmdo' {
 
 
 		// Discord.js Events 
+
+		on(event: 'interaction', listener: (interaction: Interaction) => void): this;
+		on(event: 'applicationCommandCreate', listener: (command: ApplicationCommand) => void): this;
+		on(event: 'applicationCommandDelete', listener: (command: ApplicationCommand) => void): this;
+		on(event: 'applicationCommandUpdate', listener: (oldCommand: ApplicationCommand, newCommand: ApplicationCommand) => void): this;
+
 		on(event: 'channelCreate', listener: (channel: DMChannel|GuildChannel) => void): this;
 		on(event: 'channelDelete', listener: (channel: DMChannel|GuildChannel) => void): this;
 		on(event: 'channelUpdate', listener: (oldChannel: DMChannel|GuildChannel, newChannel: DMChannel|GuildChannel) => void): this;
@@ -371,6 +377,18 @@ declare module 'elaracmdo' {
 
 		on(event: 'guildUnavailable', listener: (guild: CommandoGuild) => void): this;
 		on(event: 'guildUpdate', listener: (oldGuild: CommandoGuild, newGuild: CommandoGuild) => void): this;
+
+		on(event: 'threadCreate', listener: (channel: ThreadChannel) => void): this;
+		on(event: 'threadDelete', listener: (channel: ThreadChannel) => void): this;
+		on(event: 'threadUpdate', listener: (oldChannel: ThreadChannel, newChannel: ThreadChannel) => void): this;
+		on(event: 'threadMemberUpdate', listener: (oldMember: ThreadMember, newMember: ThreadMember) => void): this;
+		on(event: 'threadMembersUpdate', listener: (oldMembers: Collection<Snowflake, ThreadMember>, newMembers: Collection<Snowflake, ThreadMember>) => void): this;
+		on(event: 'threadListSync', listener: (threads: Collection<Snowflake, ThreadChannel>) => void): this;
+
+		on(event: 'stageInstanceCreate', listener: (stage: StageInstance) => void): this;
+		on(event: 'stageInstanceDelete', listener: (stage: StageInstance) => void): this;
+		on(event: 'stageInstanceUpdate', listener: (oldStage: StageInstance, newState: StageInstance) => void): this;
+
 
 
 		on(event: 'message', listener: (message: CommandoMessage) => void): this;
@@ -544,7 +562,7 @@ declare module 'elaracmdo' {
 		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string>;
 		public getTimeLeft(date: Date, type: string): boolean;
 		public getTimeRemaining(date: Date, type: string): string;
-		public time(date?: Date): string;
+		public time(date?: Date, discordFormat?: boolean, format?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): string;
 		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string|null>;
 		public ms(ms: number, long: boolean): string;
 		public isBooster(client: CommandoClient, userID: string): boolean;
