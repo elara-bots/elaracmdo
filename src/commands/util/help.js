@@ -12,8 +12,8 @@ module.exports = class HelpCommand extends Command {
             examples: [`help`, `help prefix`],
             guarded: true,
             guildOnly: true,
-	        clientPermissions: ["EMBED_LINKS", "ADD_REACTIONS", "SEND_MESSAGES"],
-            throttling: Globalcooldown.default,
+	    clientPermissions: ["EMBED_LINKS", "ADD_REACTIONS", "SEND_MESSAGES"],
+            throttling: { usage: 2, duration: 10 },
             args: [{
                 key: 'command',
                 prompt: 'Which command would you like to view the help for?',
