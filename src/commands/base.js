@@ -323,15 +323,15 @@ class Command {
 			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
 			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has("EMBED_LINKS") ? 
 			message.error(data.missing.length === 1 ? `I need ${permissions[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${permissions[p]}\``).join("\n")}`) : 
-			message.channel.send({ content: `${message.client.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
-			case 'throttling': return message.custom(`${message.client.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
+			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
+			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
 			case "maintenance": return message.embed({
 				author: {
 					name: `${message.client.user.tag} Maintenance`,
 					icon_url: message.client.user.displayAvatarURL({dynamic: true}),
 					url: message.client.options.invite
 				},
-				color: message.client.util.colors.purple,
+				color: global.util.colors.purple,
 				timestamp: new Date(),
 				thumbnail: {url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
 				description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.`,
@@ -339,7 +339,7 @@ class Command {
 					text: `Requested by: @${message.author.tag}`,
 					icon_url: message.author.displayAvatarURL({dynamic: true})
 				}
-			}, null, { components: message.client?.f?.button ? [ { type: 1, components: [ message.client.f.button({ style: 5, title: "Support", url: message.client.options.invite, emoji: { id: message.client.util.emojis.rdiscord } }) ] } ] : [] }).then(m => m.del({timeout: 10000}).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
+			}, null, { components: message.client?.f?.button ? [ { type: 1, components: [ global.support(message.client) ] } ] : [] }).then(m => m.del({ timeout: 10000 }).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
 				reply: { messageReference: message, failIfNotExists: false },
 				embeds: [
@@ -376,7 +376,8 @@ class Command {
 					timestamp: new Date(),
 					footer: { text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`, icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` }
 				}
-			]
+			],
+			components: [ { type: 1, components: [ global.support(message.client) ] } ]
 		})
 	}
 
