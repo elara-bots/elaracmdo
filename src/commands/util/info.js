@@ -49,7 +49,7 @@ module.exports = class BotinfoCommand extends Command {
                 };
             };
             return message.boop({
-                embed: {
+                embeds: [{
                     author: { name: "Discord Snowflake", icon_url: "https://cdn.discordapp.com/emojis/847624594717671476.png", url: this.client.options.invite },
                     title: "Information",
                     thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
@@ -58,7 +58,7 @@ module.exports = class BotinfoCommand extends Command {
                     color: this.client.util.colors.purple,
                     timestamp: new Date(),
                     footer: { text: `Requested by: @${message.author.tag}`, icon_url: message.author.displayAvatarURL({ dynamic: true }) }
-                }
+                }]
             })
         };
         const statuses = {
@@ -96,8 +96,7 @@ module.exports = class BotinfoCommand extends Command {
         .setAuthor(`Information about me`, user.displayAvatarURL({dynamic: true}))
         .setColor(this.client.getColor(message.guild))
         .setThumbnail(user.displayAvatarURL({dynamic: true}))
-        .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${new Date(user.createdAt).toLocaleString("en-US", {timeZone: "America/Los_Angeles"})} (PST)\n\n
-        ${this.s}Misc\n${this.ss}Status: ${this.client.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
+        .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${global.unix(user.createdAt)}\n\n${this.s}Misc\n${this.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
         return message.channel.send({
             reply: { messageReference: message, failIfNotExists: false },
@@ -115,6 +114,6 @@ module.exports = class BotinfoCommand extends Command {
                     ]
                 }
             ] : null 
-        })
+        }).catch(e => global.log(`[CMD:${this.name}:ERROR]`, e));
     }
 }
