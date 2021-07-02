@@ -30,7 +30,7 @@ module.exports = class SCommand extends Command {
                 { 
                     type: 1, 
                     components: [ 
-                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite }) 
+                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite }) 
                     ] 
                 } 
             ] : []
