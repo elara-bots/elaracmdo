@@ -60,11 +60,8 @@ class CommandoRegistry {
 		}
 
 		const existing = this.groups.get(group.id);
-		if(existing) {
-			existing.name = group.name;
-		} else {
-			this.groups.set(group.id, group);
-		}
+		if(existing) existing.name = group.name;
+		else this.groups.set(group.id, group);
 
 		return this;
 	}
