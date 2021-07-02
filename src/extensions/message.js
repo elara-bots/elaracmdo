@@ -142,7 +142,7 @@ module.exports = Structures.extend('Message', Message => {
 			
 			if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
 			if(functions.blacklist(this) && !support) return this.command.onBlock(this, "blacklist");
-			if(this.client.GlobalCmds?.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
+			if(this.client.GlobalCmds.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
 			
 			if(this.guild) {
 				if(!this.member) return this.command.onBlock(this, "no_member");
@@ -482,7 +482,7 @@ module.exports = Structures.extend('Message', Message => {
 				sendObj.embed = new MessageEmbed(options.embed).toJSON();
 			}
 			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(["VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "USE_EXTERNAL_EMOJIS", "EMBED_LINKS"])) return null;
-			return this.inlineReply(sendObj.content ?? "", {...sendObj, reply: true});
+			return this.inlineReply(sendObj.content ?? "", { ...sendObj, reply: true });
 		}
 
 		/**
