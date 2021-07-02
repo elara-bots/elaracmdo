@@ -10,7 +10,7 @@ module.exports = class SCommand extends Command {
             description: "Gives you the invite to the support server",
             group: "bot",
             clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-            throttling: Globalcooldown.default
+            throttling: { usage: 2, duration: 10 }
         })
     }
     async run(message) {
