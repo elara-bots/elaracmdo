@@ -9,7 +9,7 @@ module.exports = class BotinfoCommand extends Command {
             description: "Gives you the bots info, or info on a snowflake you provide.",
             examples: [`${client.commandPrefix}botinfo`, `${client.commandPrefix}botinfo (Snowflake/ID)`],
             clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-            throttling: Globalcooldown.default,
+            throttling: { usage: 2, duration: 10 },
             args: [
                 {
                     key: "id",
@@ -50,10 +50,10 @@ module.exports = class BotinfoCommand extends Command {
             };
             return message.boop({
                 embeds: [{
-                    author: { name: "Discord Snowflake", icon_url: "https://cdn.discordapp.com/emojis/847624594717671476.png", url: this.client.options.invite },
+                    author: { name: "Discord Snowflake", icon_url: `https://cdn.discordapp.com/emojis/${global.util.emojis.rdiscord}.png`, url: this.client.options.invite },
                     title: "Information",
                     thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
-                    description: `${this.s}Date: ${this.client.f.time(info.date)}\n${this.s}Timestamp: ${info.timestamp}\n${this.s}Increment: ${info.increment}\n${this.s}IDs:\n${this.ss}Process: ${info.processID}\n${this.ss}Worker: ${info.workerID}`,
+                    description: `${this.s}Date: ${this.client.f.time(info.date, true)}\n${this.s}Timestamp: ${info.timestamp}\n${this.s}Increment: ${info.increment}\n${this.s}IDs:\n${this.ss}Process: ${info.processID}\n${this.ss}Worker: ${info.workerID}`,
                     fields: fields.length !== 0 ? [ { name: "Extra", value: fields.join("\n") } ] : undefined,
                     color: this.client.util.colors.purple,
                     timestamp: new Date(),
@@ -106,11 +106,11 @@ module.exports = class BotinfoCommand extends Command {
                 {
                     type: 1,
                     components: [
-                        this.client.f.button({ title: `Invite`, style: 5, url: INVITE, emoji: { name: "Invite", id: "841655450512261140" } }),
-                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite }),
+                        this.client.f.button({ title: `Invite`, style: 5, url: INVITE, emoji: { name: "Invite", id: global.util.emojis.rinvite } }),
+                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite }),
                         this.client.f.button({ title: `Vote`, style: 5, url: `https://superchiefyt.xyz/vote`, emoji: { name: "Upvote", id: "784243907029762088" } }),
                         this.client.f.button({ title: `Privacy`, style: 5, url: `https://my.elara.services/privacy`, emoji: { name: "🕵️" } }),
-                        this.client.f.button({ title: `TOS`, style: 5, url: `https://my.elara.services/terms`, emoji: { name: "Mod", id: "847719612846047263" } })
+                        this.client.f.button({ title: `TOS`, style: 5, url: `https://my.elara.services/terms`, emoji: { name: "Mod", id: global.util.emojis.rmod } })
                     ]
                 }
             ] : null 
