@@ -44,7 +44,7 @@ class CommandoClient extends Client {
         this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
-		this.getColor = (guild) => guild?.color ?? this.util.colors.purple
+		this.getColor = (guild) => guild?.color ?? global.util.colors.purple
 	
 	
 		/**
@@ -65,7 +65,7 @@ class CommandoClient extends Client {
 				{
 					title: options?.embed?.title ?? "INFO",
 					description: options?.embed?.description ?? undefined,
-					color: options?.embed?.color ?? util.colors.purple,
+					color: options?.embed?.color ?? global.util.colors.purple,
 					url: options?.embed?.url ?? undefined,
 					image: { url: options?.embed?.image ?? undefined },
 					thumbnail: { url: options?.embed?.thumbnail ?? undefined },

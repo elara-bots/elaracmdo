@@ -134,7 +134,7 @@ class ReactionHandler extends ReactionCollector {
 							timestamp: new Date(),
 							footer: {
 								text: `This message will be deleted in 20s`,
-								icon_url: `${this.client.options.http.cdn}/emojis/${this.client.util.emojis.rload}.gif`
+								icon_url: `${this.client.options.http.cdn}/emojis/${global.util.emojis.rload}.gif`
 							}
 						}
 					]

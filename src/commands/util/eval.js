@@ -57,7 +57,7 @@ async run(message, args) {
 		message.client.f,
 		(id) => this.client.guilds.cache.get(id),
 		(t, s = 2) => JSON.stringify(t, undefined, s),
-		new MessageEmbed().setAuthor(this.client.user.tag, this.client.user.displayAvatarURL({ dynamic: true })).setColor(this.client.util.colors.default).setTimestamp(),
+		new MessageEmbed().setAuthor(this.client.user.tag, this.client.user.displayAvatarURL({ dynamic: true })).setColor(global.util.colors.default).setTimestamp(),
 		(thing, options = { code: 'json', split: true, string: true }) => msg.say({ content: options.string ? string(thing) : thing, ...options })
 	];
 	  // eslint-disable-next-line space-before-function-paren

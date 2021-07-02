@@ -44,7 +44,7 @@ module.exports = require('discord.js').Structures.extend('Guild', Guild => {
 		/**
 		 * @returns {string}
 		 */
-		getColor(){ return this.color ?? this.client.util.colors.purple; };
+		getColor(){ return this.color ?? global.util.colors.purple; };
 		
 		setPrefix(thing){
 			this.commandPrefix = thing;

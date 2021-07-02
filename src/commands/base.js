@@ -370,7 +370,7 @@ class Command {
 			embeds: [
 				{
 					author: { name: message.client.user.tag, icon_url: message.client.user.displayAvatarURL({dynamic: true}), url: message.client.options.invite },
-					color: message.client.util.colors.purple,
+					color: global.util.colors.purple,
 					title: `Command (\`${message.command.name}\`) Error`,
 					description: `\`\`\`js\n${err}\`\`\``,
 					timestamp: new Date(),

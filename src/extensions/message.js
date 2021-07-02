@@ -428,8 +428,8 @@ module.exports = Structures.extend('Message', Message => {
 			}
 			return this.respond({ type: 'direct', content, options });
 		}
-		success(content, text = null, options){ return this.custom(`${this.client.util.emojis.semoji} ${content}`, text, options); };
-		error(content, text = null, options){ return this.custom(`${this.client.util.emojis.nemoji} ${content}`, text, options); };
+		success(content, text = null, options){ return this.custom(`${global.util.emojis.semoji} ${content}`, text, options); };
+		error(content, text = null, options){ return this.custom(`${global.util.emojis.nemoji} ${content}`, text, options); };
 		/**
 		 * Responds with an embed
 		 * @param {MessageEmbed|Object} [embed] - Embed to send
