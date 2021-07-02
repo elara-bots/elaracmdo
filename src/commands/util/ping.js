@@ -31,11 +31,11 @@ module.exports = class PingCommand extends Command {
                     author, footer,
                     timestamp: new Date(), 
                     color: this.client.getColor(msg.guild), 
-                    description: `${this.client.util.emojis.eload} One moment.`
+                    description: `${global.util.emojis.eload} One moment.`
                 },
                 components: this.inServer(msg.author.id) ? undefined : components
             }),
-            robot = this.client.util.emojis.robot;
+            robot = global.util.emojis.robot;
 	    if(!message) return null
         if(!this.client.isSupport(msg.author.id)) return message.edit({
             embed: {
@@ -63,7 +63,7 @@ module.exports = class PingCommand extends Command {
             embeds: [
                 {
                     author,
-                    title: `${this.client.util.emojis.robot} Status ${this.client.util.emojis.robot}`,
+                    title: `${robot} Status ${robot}`,
                     color: this.client.getColor(message.guild),
                     timestamp: new Date(),
                     fields: [
