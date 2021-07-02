@@ -12,7 +12,7 @@ module.exports = class PingCommand extends Command {
             description: 'Shows the ping for the bot',
             examples: ['ping'],
 	    clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-            throttling: Globalcooldown.default,
+            throttling: { usage: 2, duration: 10 }
         });
         this.field = (name, value, inline = false) => ({ name, value, inline });
     }
@@ -23,22 +23,22 @@ module.exports = class PingCommand extends Command {
             components = this.client.f?.button ? [ 
                 { 
                     type: 1, 
-                    components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite })  ] 
+                    components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite })  ] 
                 } 
             ] : [],
             message = await msg.boop({
-                embed: {
+                embeds: [{
                     author, footer,
                     timestamp: new Date(), 
                     color: this.client.getColor(msg.guild), 
                     description: `${global.util.emojis.eload} One moment.`
-                },
+                }],
                 components: this.inServer(msg.author.id) ? undefined : components
             }),
             robot = global.util.emojis.robot;
 	    if(!message) return null
         if(!this.client.isSupport(msg.author.id)) return message.edit({
-            embed: {
+            embeds: [{
                 author, footer,
                 title: `${robot} Status ${robot}`,
                 color: this.client.getColor(message.guild),
@@ -47,7 +47,7 @@ module.exports = class PingCommand extends Command {
                     this.field(`API Latency`, `${Math.round(this.client.ws.ping)}ms`, true),
                     this.field(`Uptime`, `${getFormat(this.client.uptime, false)}`, true)
                 ]
-            },
+            }],
             components: this.inServer(msg.author.id) ? undefined : components
         });
         function secondsToHms(seconds){ // day, h, m and s
