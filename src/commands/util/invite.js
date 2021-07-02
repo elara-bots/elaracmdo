@@ -9,7 +9,7 @@ module.exports = class NCommand extends Command {
             description: "Gives you a invite for the bot id you provide.",
             group: "info",
             clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-            throttling: Globalcooldown.default,
+            throttling: { usage: 2, duration: 10 },
             args: [
                 {
                     key: 'user',
@@ -33,11 +33,11 @@ module.exports = class NCommand extends Command {
         let components = this.client.f?.button ? [ 
             { 
                 type: 1, 
-                components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: "847624594717671476" }, style: 5, url: this.client.options.invite })  ] 
+                components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite })  ] 
             } 
         ] : [];
         return message.boop({
-          embed: {
+          embeds: [{
               author: {
                   name: `Invite for: @${user.tag}`,
                   icon_url: user.displayAvatarURL({dynamic: true}),
@@ -47,7 +47,7 @@ module.exports = class NCommand extends Command {
               title: "Permissions",
               description: links.join("\n"),
               footer: { text: `Permissions | Permissions + / Slash Commands` }
-          },
+          }],
           components: this.isOfficialClient(user.id) ? components : undefined
       })
     };
