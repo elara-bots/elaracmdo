@@ -127,7 +127,7 @@ class CommandDispatcher {
 			if(!inhibited) {
 				if(cmdMsg.command) {
 					if(!cmdMsg.command.isEnabledIn(message.guild)) {
-						responses = await cmdMsg.channel.send({ embeds: [ {title: `Command (${cmdMsg.command.name}) is disabled!`, color: 0x36393E, author: {name: message.guild.name, icon_url: message.guild.iconURL()}} ] })
+						responses = await cmdMsg.channel.send({ embeds: [ {title: `Command (${cmdMsg.command.name}) is disabled!`, color: global.util.colors.purple, author: {name: message.guild.name, icon_url: message.guild.iconURL()}} ] })
 						.then(msg => setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000))
 						.catch((e) => global.log(`[${__filename}|SEND]: Error`, e));
 					} else if(!oldMessage || typeof oldCmdMsg !== 'undefined') {
