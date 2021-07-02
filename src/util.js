@@ -39,21 +39,13 @@ const perm = {
 }
 module.exports = {
 	escapeRegex: str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&'),
-	disambiguation: (items, label, property = "name") => {
-		const itemList = items.map(item => `"${(property ? item[property] : item).replace(/ /g, '\xa0')}"`).join(',   ');
-		return `Multiple ${label} found, please be more specific: ${itemList}`;
-	},
+	disambiguation: (items, label, property = "name") => `Multiple ${label} found, please be more specific: ${items.map(item => `"${(property ? item[property] : item).replace(/ /g, '\xa0')}"`).join(', ')}`,
 	paginate: (items, page = 1, pageLength = 10) => {
 		const maxPage = Math.ceil(items.length / pageLength);
 		if(page < 1) page = 1;
 		if(page > maxPage) page = maxPage;
 		const startIndex = (page - 1) * pageLength;
-		return {
-			items: items.length > pageLength ? items.slice(startIndex, startIndex + pageLength) : items,
-			page,
-			maxPage,
-			pageLength
-		};
+		return { items: items.length > pageLength ? items.slice(startIndex, startIndex + pageLength) : items, page, maxPage, pageLength };
 	},
 	permissions: perm,
 	perms: perm,
@@ -95,47 +87,6 @@ module.exports = {
 		USE_PUBLIC_THREADS: 34359738368,
 		USE_PRIVATE_THREADS: 68719476736
 	},
-	SystemJoinMessages: [
-		"%user% just joined the server - glhf!",
-		"%user% just joined. Everyone, look busy!",
-		"%user% just joined. Can I get a heal?",
-		"%user% joined your party.",
-		"%user% joined. You must construct additional pylons.",
-		"Ermagherd. %user% is here.",
-		"Welcome, %user%. Stay awhile and listen.",
-		"Welcome, %user%. We were expecting you ( ͡° ͜ʖ ͡°)",
-		"Welcome, %user%. We hope you brought pizza.",
-		"Welcome %user%. Leave your weapons by the door.",
-		"A wild %user% appeared.",
-		"Swoooosh. %user% just landed.",
-		"Brace yourselves. %user% just joined the server.",
-		"%user% just joined... or did they?",
-		"%user% just arrived. Seems OP - please nerf.",
-		"%user% just slid into the server.",
-		"A %user% has spawned in the server.",
-		"Big %user% showed up!",
-		"Where’s %user%? In the server!",
-		"%user% hopped into the server. Kangaroo!!",
-		"%user% just showed up. Hold my beer.",
-		"Challenger approaching - %user% has appeared!",
-		"It's a bird! It's a plane! Nevermind, it's just %user%.",
-		"It's %user%! Praise the sun! \\\\[T]/",
-		"Never gonna give %user% up. Never gonna let %user% down.",
-		"%user% has joined the battle bus.",
-		"Cheers, love! %user%'s here!",
-		"Hey! Listen! %user% has joined!",
-		"We've been expecting you %user%",
-		"It's dangerous to go alone, take %user%!",
-		"%user% has joined the server! It's super effective!",
-		"Cheers, love! %user% is here!",
-		"%user% is here, as the prophecy foretold.",
-		"%user% has arrived. Party's over.",
-		"Ready player %user%",
-		"%user% is here to kick butt and chew bubblegum. And %user% is all out of gum.",
-		"Hello. Is it %user% you're looking for?",
-		"%user% has joined. Stay a while and listen!",
-		"Roses are red, violets are blue, %user% joined this server with you"
-	],
 	emojis: {
     
 		// Full Emojis
@@ -168,13 +119,6 @@ module.exports = {
 		rinfo: "847397714677334066",
 		rdiscord: "847624594717671476"
 	},
-	status: {
-		online: "<a:online:506430888670920704>",
-		idle: "<a:Idle:506430934359343104>",
-		dnd: "<a:dnd:506430977065877505>",
-		offline: "<a:offline:506431026604539904>",
-		invisible: "<a:offline:506431026604539904>"
-	},
 	colors: {
 		red: 0xFF0000,
 		green: 0xFF000,
@@ -183,43 +127,5 @@ module.exports = {
 		cyan: 0x00ffe9,
 		purple: 0xb28dff,
 		default: 0x36393E
-	},
-	throws: [
-		"Car", "Bus", "Elara", "Plane", "Poop", "Heart", 
-		"Hearts", "Love", "Hate", "Developer", "Scams", 
-		"Train", "Trains", "Yourself", "Cat", 	"Cats", 
-		"Dog", "Dogs", "Groovy", "Chicken", "A Building", 
-		"Tea", "Lemons", "Lemon", "Coins", "Money", 
-		"Coffee", "Chips", "Crisps", "Cake", "Pringles", 
-		"Black Hole", "Chair", "House", "iPhone", 
-		"Banana", "Meme", "Memes", "Staff", "Truck", 
-		"SpongeBob", "Gummy Bears", "Toys", "kitten", 
-		"kittens", "puppy", "puppies", "o.o", "Speakers", 
-		"Amp", "Microphone", "Piano", "Drum", "Drum Kit", 
-		"Drum Sticks","Fruit", "Tennis Ball", "Rugby Ball", 
-		"Tennis Racket", "Guitar","Hockey Stick","Car tire",
-		"Horse Shoe", "Cricket Bat","Music","Flower",
-		"Cricket Ball", "Soccer Ball","Football","Insults",
-		"Paper Plane", "Eggs","Grass","Stones","Dirt",
-		"Flower Pot","Sprouts", "Music","Bulb","Coat Hanger",
-		"Desk","Computer","Laptop", "Cabbage","Bucket","Ball",
-		"Fan","Fork","Spoon","Cow","Horse", "Mug","Chicken",
-		"Plate","Tree","Pig","Glass"
-	],
-	jobs: [
-		`You worked at Mcdonalds for {amount} {symbol}`, 
-		`You worked at the local shop for {amount} {symbol}`, 
-		`You worked at Amazon for {amount} {symbol}`, 
-		`You worked at Target for {amount} {symbol}`,
-		`You worked at Walmart for {amount} {symbol}`, 
-		`You worked at Subway for {amount} {symbol}`, 
-		`You worked as a pilot for {amount} {symbol}`, 
-		`You worked as a FireFighter for {amount} {symbol}`, 
-		`You worked as a Police Officer for {amount} {symbol}`,
-		`You worked as a Doctor for {amount} {symbol}`, 
-		`You worked at Discord for {amount} {symbol}`, 
-		`You worked at the local coffee shop for {amount} {symbol}`, 
-		`You worked at the local pizza resturant for {amount} {symbol}`,
-		`You worked as a Time Traveler for {amount} {symbol}`
-	],
+	}
 };
