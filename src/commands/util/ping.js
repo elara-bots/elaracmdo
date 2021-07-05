@@ -11,21 +11,17 @@ module.exports = class PingCommand extends Command {
             memberName: 'ping',
             description: 'Shows the ping for the bot',
             examples: ['ping'],
-	    clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+	        clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 }
         });
+
         this.field = (name, value, inline = false) => ({ name, value, inline });
     }
 
     async run(msg) {
         let author = { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({dynamic: true}), url: this.client.options.invite },  
             footer = { text: `Requested by: @${msg.author.tag}`, icon_url: msg.author.displayAvatarURL({dynamic: true}) },
-            components = this.client.f?.button ? [ 
-                { 
-                    type: 1, 
-                    components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite })  ] 
-                } 
-            ] : [],
+            components = this.client.f?.button ? [ { type: 1, components: [ global.support(this.client)] } ] : [],
             message = await msg.boop({
                 embeds: [{
                     author, footer,

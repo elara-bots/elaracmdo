@@ -10,7 +10,7 @@ module.exports = class Purger {
         this.channel = channel;
         this.amount = Number(amount ?? 1);
         this.cmd = Boolean(cmd ?? false);
-        this.permissions = [ 'EMBED_LINKS', 'SEND_MESSAGES', 'VIEW_CHANNEL', 'MANAGE_MESSAGES', 'READ_MESSAGE_HISTORY' ]
+        this.permissions = [ ...global.PERMS.basic, global.PERMS.manage.messages ];
     };
 
     /**

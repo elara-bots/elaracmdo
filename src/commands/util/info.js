@@ -8,7 +8,7 @@ module.exports = class BotinfoCommand extends Command {
             aliases: [`info`, `binfo`],
             description: "Gives you the bots info, or info on a snowflake you provide.",
             examples: [`${client.commandPrefix}botinfo`, `${client.commandPrefix}botinfo (Snowflake/ID)`],
-            clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+            clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 },
             args: [
                 {
@@ -93,9 +93,9 @@ module.exports = class BotinfoCommand extends Command {
             ]
         let user = this.client.user;
         let embed = new Discord.MessageEmbed()
-        .setAuthor(`Information about me`, user.displayAvatarURL({dynamic: true}))
+        .setAuthor(`Information about me`, user.displayAvatarURL({ dynamic: true }))
         .setColor(this.client.getColor(message.guild))
-        .setThumbnail(user.displayAvatarURL({dynamic: true}))
+        .setThumbnail(user.displayAvatarURL({ dynamic: true }))
         .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${global.unix(user.createdAt)}\n\n${this.s}Misc\n${this.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
         return message.channel.send({

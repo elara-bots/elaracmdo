@@ -1,4 +1,4 @@
-const perm = {
+const perms = {
 	ADMINISTRATOR: 'Administrator',
 	VIEW_AUDIT_LOG: 'View Audit Log',
 	MANAGE_GUILD: 'Manage Server',
@@ -47,8 +47,7 @@ module.exports = {
 		const startIndex = (page - 1) * pageLength;
 		return { items: items.length > pageLength ? items.slice(startIndex, startIndex + pageLength) : items, page, maxPage, pageLength };
 	},
-	permissions: perm,
-	perms: perm,
+	perms,
 	permbits: {
 		CREATE_INSTANT_INVITE: 1,
 		KICK_MEMBERS: 2,

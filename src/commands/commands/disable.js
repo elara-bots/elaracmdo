@@ -1,5 +1,4 @@
-const { oneLine } = require('common-tags');
-const Command = require('../base');
+const Command = require("../base");
 
 module.exports = class DisableCommandCommand extends Command {
 	constructor(client) {
@@ -9,18 +8,12 @@ module.exports = class DisableCommandCommand extends Command {
 			group: 'commands',
 			memberName: 'disable',
 			description: 'Disables a command or command group.',
-			details: oneLine`
-				The argument must be the name/ID (partial or whole) of a command or command group.
-				Only administrators may use this command.
-			`,
+			details: `The argument must be the name/ID (partial or whole) of a command or command group.\nOnly people with manage server permission can use this command.`,
 			examples: ['disable util', 'disable Utility', 'disable prefix'],
-			clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-			userGuildPermissions: ["ADMINISTRATOR"],
+			clientPermissions: global.PERMS.basic,
+			userGuildPermissions: global.PERMS.manage.server,
 			guarded: true,
-			throttling: {
-                	usages: 2,
-                	duration: 20
-            		},
+			throttling: { usages: 2, duration: 20 },
 			args: [
 				{
 					key: 'cmdOrGrp',

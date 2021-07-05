@@ -78,7 +78,7 @@ class CommandoClient extends Client {
 			if(!sendObj.content && !sendObj.embeds?.length) return null;
 			const permcheck = (c = null) => {
 				if(!c) return message.send(sendObj).catch(global.log)
-				if(c.permissionsFor(c.guild.me).has(["EMBED_LINKS", "SEND_MESSAGES", "USE_EXTERNAL_EMOJIS", "READ_MESSAGE_HISTORY"])) return c.send(sendObj).catch(global.log);
+				if(c.permissionsFor(c.guild.me).has(global.PERMS.basic)) return c.send(sendObj).catch(global.log);
 				return null;
 			}
 			if(message instanceof User || message instanceof GuildMember) return permcheck();

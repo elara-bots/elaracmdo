@@ -1,35 +1,33 @@
 {
 	"name": "elaracmdo",
-	"version": "4.0.0",
-	"description": "Modified Commando Framework.",
+	"version": "5.0.0",
+	"description": "Heavily modified version of discordjs/Commando.",
 	"license": "",
-	"author": "SUPERCHIEFYT (Elara-Discord-Bots)",
+	"author": "SUPERCHIEFYT (Elara-Discord-Bots, Elara-Services)",
 	"scripts": {
 		"test": "npm run lint && npm run docs:test",
 		"lint": "eslint src",
-		"lint:fix": "eslint --fix src",
-		"docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
-		"docs:test": "docgen --source src --custom docs/index.yml"
+		"lint:fix": "eslint --fix src"
 	},
 	"main": "src/index",
 	"types": "./typings/index.d.ts",
 	"dependencies": {
 		"common-tags": "^1.8.0",
-		"discord.js": "github:discordjs/discord.js#master",
 		"moment": "^2.24.0",
 		"moment-duration-format": "^2.2.2",
-		"querystring": "^0.2.0",
-		"request": "^2.88.0",
 		"require-all": "^3.0.0",
 		"xml2js": "^0.4.22"
 	},
 	"devDependencies": {
 		"@types/node": "^12.0.7",
-		"discord.js-docgen": "discordjs/docgen",
 		"eslint": "^5.1.0",
 		"typescript": "^3.1.6"
 	},
 	"engines": {
 		"node": ">=14.15.3"
+	},
+	"optionalDependencies": {
+		"discord.js": "github:elara-bots/discord.js#master",
+		"superagent": "^6.1.0"
 	}
 }

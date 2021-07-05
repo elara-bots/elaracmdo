@@ -3,25 +3,25 @@ const { Command } = require('elaracmdo');
 module.exports = class NCommand extends Command {
          constructor(client) {
            super(client, {
-             name: 'prefix',
-             memberName: 'prefix',
-             aliases: [`setprefix`],
-             examples: [`${client.commandPrefix}prefix`],
-             description: 'Checks the prefix',
-             group: 'bot',
-             guarded: true,
-             clientPermissions: ['EMBED_LINKS', 'SEND_MESSAGES'],
-             throttling: { usage: 3, duration: 10 },
-            args: [
-              {
-                key: 'prefix',
-                prompt: 'What do you want the new prefix to be?',
-                type: 'string',
-                default: '',
-                min: 1,
-                max: 150
-              }
-            ]
+              name: 'prefix',
+              memberName: 'prefix',
+              aliases: [`setprefix`],
+              examples: [`${client.commandPrefix}prefix`],
+              description: 'Checks the prefix',
+              group: 'bot',
+              guarded: true,
+              clientPermissions: global.PERMS.basic,
+              throttling: { usage: 3, duration: 10 },
+              args: [
+                  {
+                    key: 'prefix',
+                    prompt: 'What do you want the new prefix to be?',
+                    type: 'string',
+                    default: '',
+                    min: 1,
+                    max: 150
+                  }
+              ]
   });
 }
     async run(message, { prefix }) {

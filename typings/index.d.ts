@@ -794,9 +794,8 @@ declare module 'elaracmdo' {
 			maxPage: number,
 			pageLength: number
 		};
-		public static readonly permissions: { [K in PermissionString]: string };
+		public static readonly perms: { [K in PermissionString]: string };
 	}
-	export function Morse(string: string): { name: string; text: string; };
 
 	type ArgumentCollectorResult<T = object> = {
 		values: T | null;

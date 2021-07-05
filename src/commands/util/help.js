@@ -12,7 +12,7 @@ module.exports = class HelpCommand extends Command {
             examples: [`help`, `help prefix`],
             guarded: true,
             guildOnly: true,
-	    clientPermissions: ["EMBED_LINKS", "ADD_REACTIONS", "SEND_MESSAGES"],
+	        clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 },
             args: [{
                 key: 'command',
@@ -24,6 +24,7 @@ module.exports = class HelpCommand extends Command {
     }
 
     async run(message, args) { 
+        return message.error(`This command is disabled, and won't be updated.`);
       try{
         let user = this.client.user;
         let color = message.guild ? message.member.displayColor : message.guild.color;
@@ -51,9 +52,7 @@ module.exports = class HelpCommand extends Command {
                   .setColor(color)
                   .setTitle(`Command Help`)
                 
-                  .setDescription(`
-                  ${s}Name: ${cmd.name}\n${s}Aliases: ${cmd.aliases.length === 0 ? "N/A": cmd.aliases.map(c => `\`${c}\``).join(", ")}\n${s}Group: ${cmd.group.name} (\`${cmd.group.id}\`)\n${s}Details: ${cmd.details || "No extra details"}\n${s}Description: ${cmd.description || "No description set"}\n${s}Guarded: ${this.client.f.developer.Enabled(cmd.guarded)}\n${s}Permissions\n${ss}Bot: ${this.permFormat(cmd.clientPermissions, ["SEND_MESSAGES", "EMBED_LINKS", "VIEW_CHANNEL"])}\n${ss}Member: ${this.permFormat(cmd.userPermissions, ["SEND_MESSAGES", "VIEW_CHANNEL"])}\n${s}Only\n${ss}Server: ${this.client.f.developer.Enabled(cmd.guildOnly)}\n${ss}DMs: ${this.client.f.developer.Enabled(cmd.dmOnly)}\n${ss}NSFW: ${this.client.f.developer.Enabled(cmd.nsfw)}
-                  `);
+                  .setDescription(`${s}Name: ${cmd.name}\n${s}Aliases: ${cmd.aliases.length === 0 ? "N/A": cmd.aliases.map(c => `\`${c}\``).join(", ")}\n${s}Group: ${cmd.group.name} (\`${cmd.group.id}\`)\n${s}Details: ${cmd.details || "No extra details"}\n${s}Description: ${cmd.description || "No description set"}\n${s}Guarded: ${this.client.f.developer.Enabled(cmd.guarded)}\n${s}Permissions\n${ss}Bot: ${this.permFormat(cmd.clientPermissions, [ "SEND_MESSAGES", "EMBED_LINKS", "VIEW_CHANNEL" ])}\n${ss}Member: ${this.permFormat(cmd.userPermissions, ["SEND_MESSAGES", "VIEW_CHANNEL"])}\n${s}Only\n${ss}Server: ${this.client.f.developer.Enabled(cmd.guildOnly)}\n${ss}DMs: ${this.client.f.developer.Enabled(cmd.dmOnly)}\n${ss}NSFW: ${this.client.f.developer.Enabled(cmd.nsfw)}`);
                   if(cmd.examples.filter(c => c.toUpperCase() !== "NO_EXAMPLE_ADDED").length !== 0){
                       e.addField(`Examples`, cmd.examples.map(c => `${!c.startsWith(message.guild.getPrefix()) ? message.guild.getPrefix() : ""}${c}`).join("\n").slice(0, 1000));
                   }

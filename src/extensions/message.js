@@ -150,7 +150,7 @@ module.exports = Structures.extend('Message', Message => {
 				if(!this.guild.members.cache.has(this.author.id)) return this.command.onBlock(this, "member_not_cached");
 				if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
 				if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
-				if(this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has("MANAGE_MESSAGES") && !owner) return this.command.onBlock(this, "channel");
+				if(this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.PERMS.manage.messages) && !owner) return this.command.onBlock(this, "channel");
 			}else {
 				if(this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
 			}
@@ -219,7 +219,7 @@ module.exports = Structures.extend('Message', Message => {
 					if(this.guild && this.client.dbs?.getSettings){
 						let db = await this.client.dbs.getSettings(this.guild);
 						if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
-							let candelete = this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES") || false;
+							let candelete = this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages) || false;
 							let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
 							if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
 							this.channel.bulkDelete(IDS, true).catch(() => {});
@@ -228,11 +228,11 @@ module.exports = Structures.extend('Message', Message => {
 					return this.error(`Command Cancelled`);
 				}
 				if(this.guild && this.client.dbs?.getSettings){
-				let db = await this.client.dbs.getSettings(this.guild);
-				if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
-					let candelete = this.channel.permissionsFor(this.guild.me).has("MANAGE_MESSAGES") || false;
-					let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
-					if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
+					let db = await this.client.dbs.getSettings(this.guild);
+					if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
+						let candelete = this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages) || false;
+						let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
+						if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
 						this.channel.bulkDelete(IDS, true).catch(() => {});
 					}
 				}
@@ -296,7 +296,7 @@ module.exports = Structures.extend('Message', Message => {
 			}
 
 			if(type === 'reply' && this.channel.type === 'dm') type = 'plain';
-			if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has("SEND_MESSAGES")) type = "direct";
+			if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has(global.PERMS.messages.send)) type = "direct";
 
 			content = typeof content === "string" ? content : null;
 			content = content?.replace(new RegExp(this.client.token, "g"), "[N/A]");
@@ -481,7 +481,7 @@ module.exports = Structures.extend('Message', Message => {
 				if(options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
 				sendObj.embed = new MessageEmbed(options.embed).toJSON();
 			}
-			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(["VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "USE_EXTERNAL_EMOJIS", "EMBED_LINKS"])) return null;
+			if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(global.PERMS.basic)) return null;
 			return this.inlineReply(sendObj.content ?? "", { ...sendObj, reply: true });
 		}
 

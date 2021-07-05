@@ -9,7 +9,7 @@ module.exports = class SCommand extends Command {
             examples: [`${client.commandPrefix}support`],
             description: "Gives you the invite to the support server",
             group: "bot",
-            clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+            clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 }
         })
     }
@@ -26,14 +26,7 @@ module.exports = class SCommand extends Command {
                     timestamp: new Date()
                 }
             ],
-            components: this.client.f?.button ? [ 
-                { 
-                    type: 1, 
-                    components: [ 
-                        this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite }) 
-                    ] 
-                } 
-            ] : []
+            components: this.client.f?.button ? [ { type: 1, components: [ global.support(this.client) ] } ] : []
         });
     }
 }

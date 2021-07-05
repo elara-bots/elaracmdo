@@ -1,4 +1,3 @@
-const { oneLine } = require('common-tags');
 const Command = require('../base');
 
 module.exports = class EnableCommandCommand extends Command {
@@ -9,18 +8,12 @@ module.exports = class EnableCommandCommand extends Command {
 			group: 'commands',
 			memberName: 'enable',
 			description: 'Enables a command or command group.',
-			details: oneLine`
-				The argument must be the name/ID (partial or whole) of a command or command group.
-				Only administrators may use this command.
-			`,
+			details: `The argument must be the name/ID (partial or whole) of a command or command group.\nOnly people with manage server permission use this command.`,
 			examples: ['enable util', 'enable Utility', 'enable prefix'],
-			clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
-			userGuildPermissions: ["ADMINISTRATOR"],
+			clientPermissions: global.PERMS.basic,
+			userGuildPermissions: global.PERMS.manage.server,
 			guarded: true,
-			throttling: {
-                usages: 2,
-            	duration: 20
-            },
+			throttling: { usages: 2, duration: 20 },
 			args: [
 				{
 					key: 'cmdOrGrp',

@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js'),
 	  ArgumentCollector = require('./collector'),
-	  { permissions } = require('../util'),
-	  CommandCooldown = new Set()
+	  { perms } = require('../util'),
+	  CommandCooldown = new Set();
 
 /** A command that can be run in a client */
 class Command {
@@ -269,10 +269,9 @@ class Command {
 		if(this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
 		if(message.channel.type === 'text' && this.userPermissions) {
             let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
-            if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${permissions[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${permissions[c]}\``).join("\n")}`
+            if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${perms[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${perms[c]}\``).join("\n")}`
             const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
-            
-            if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${permissions[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${permissions[pm]}\``).join("\n")}`
+            if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${perms[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${perms[pm]}\``).join("\n")}`
 		}
 		return true;
 	}
@@ -313,16 +312,16 @@ class Command {
 		setTimeout(() => CommandCooldown.delete(message.author.id), 5000);
 		const send = (content, data = []) => {
             if(!message.guild) return message.error(content);
-            if(message.channel.permissionsFor(message.client.user).has("EMBED_LINKS")) return message.error(content);
-            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${permissions[c]}\``).join("\n") : ["EMBED_LINKS"].map(c => `▫ \`${c}\``).join("\n")}` })
+            if(message.channel.permissionsFor(message.client.user).has(perms.EMBED_LINKS)) return message.error(content);
+            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${perms[c]}\``).join("\n") : [ perms.EMBED_LINKS ].map(c => `▫ \`${c}\``).join("\n")}` })
 			.catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
         }
 		switch(reason) {
 			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
 			case 'nsfw': return send(`Command (\`${this.name}\`) can only be used in channels marked as NSFW`);
 			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
-			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has("EMBED_LINKS") ? 
-			message.error(data.missing.length === 1 ? `I need ${permissions[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${permissions[p]}\``).join("\n")}`) : 
+			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(perms.EMBED_LINKS) ? 
+			message.error(data.missing.length === 1 ? `I need ${perms[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${perms[p]}\``).join("\n")}`) : 
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
 			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
 			case "maintenance": return message.embed({
@@ -352,7 +351,7 @@ class Command {
 						timestamp: new Date()
 					})
 				]
-			}).then(m => m.del({timeout: 10000})).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
+			}).then(m => m.del({ timeout: 10000 })).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
 			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
 			default: return null;
 		}
@@ -391,11 +390,7 @@ class Command {
 		if(!this.throttling || this.client.isOwner(userID) || this.client.config?.ignore?.cooldown?.includes(userID)) return null;
 		let throttle = this._throttles.get(userID);
 		if(!throttle) {
-			throttle = {
-				start: Date.now(),
-				usages: 0,
-				timeout: this.client.setTimeout(() => this._throttles.delete(userID), this.throttling.duration * 1000)
-			};
+			throttle = { start: Date.now(), usages: 0, timeout: setTimeout(() => this._throttles.delete(userID), this.throttling.duration * 1000) };
 			this._throttles.set(userID, throttle);
 		}
 
@@ -439,7 +434,7 @@ class Command {
 	 */
 	isUsable(message = null) {
 		if(!message) return this._globalEnabled;
-		if(this.guildOnly && message && !message.guild) return false;
+		if(this.guildOnly && !message?.guild) return false;
 		const hasPermission = this.hasPermission(message);
 		return this.isEnabledIn(message.guild) && hasPermission && typeof hasPermission !== 'string';
 	}
@@ -489,12 +484,8 @@ class Command {
 		if(typeof info !== 'object') throw new TypeError('Command info must be an Object.');
 		if(typeof info.name !== 'string') throw new TypeError('Command name must be a string.');
 		if(info.name !== info.name.toLowerCase()) throw new Error('Command name must be lowercase.');
-		if(info.aliases && (!Array.isArray(info.aliases) || info.aliases.some(ali => typeof ali !== 'string'))) {
-			throw new TypeError('Command aliases must be an Array of strings.');
-		}
-		if(info.aliases && info.aliases.some(ali => ali !== ali.toLowerCase())) {
-			throw new RangeError('Command aliases must be lowercase.');
-		}
+		if(info.aliases && (!Array.isArray(info.aliases) || info.aliases.some(ali => typeof ali !== 'string'))) throw new TypeError('Command aliases must be an Array of strings.');
+		if(info.aliases && info.aliases.some(ali => ali !== ali.toLowerCase())) throw new RangeError('Command aliases must be lowercase.');
 		if(typeof info.group !== 'string') throw new TypeError('Command group must be a string.');
 		if(info.group !== info.group.toLowerCase()) throw new RangeError('Command group must be lowercase.');
 		if(typeof info.memberName !== 'string') throw new TypeError('Command memberName must be a string.');
@@ -503,39 +494,29 @@ class Command {
 		if('format' in info && typeof info.format !== 'string') throw new TypeError('Command format must be a string.');
 		if('details' in info && typeof info.details !== 'string') throw new TypeError('Command details must be a string.');
 		if(info.flags && !Array.isArray(info.flags)) throw new TypeError("Command flags must be an array.");
-		if(info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) {
-			throw new TypeError('Command examples must be an Array of strings.');
-		}
+		if(info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) throw new TypeError('Command examples must be an Array of strings.');
 		if(info.clientPermissions) {
-			if(!Array.isArray(info.clientPermissions)) {
-				throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
-			}
+			if(!Array.isArray(info.clientPermissions)) throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
 			for(const perm of info.clientPermissions) {
-				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
+				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
 			}
 		}
 		if(info.clientGuildPermissions) {
-			if(!Array.isArray(info.clientGuildPermissions)) {
-				throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
-			}
+			if(!Array.isArray(info.clientGuildPermissions)) throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
 			for(const perm of info.clientGuildPermissions) {
-				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
+				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
 			}
 		}
 		if(info.userGuildPermissions) {
-			if(!Array.isArray(info.userGuildPermissions)) {
-				throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
-			}
+			if(!Array.isArray(info.userGuildPermissions)) throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
 			for(const perm of info.userGuildPermissions) {
-				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
+				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
 			}
 		}
 		if(info.userPermissions) {
-			if(!Array.isArray(info.userPermissions)) {
-				throw new TypeError('Command userPermissions must be an Array of permission key strings.');
-			}
+			if(!Array.isArray(info.userPermissions)) throw new TypeError('Command userPermissions must be an Array of permission key strings.');
 			for(const perm of info.userPermissions) {
-				if(!permissions[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
+				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
 			}
 		}
 		if(info.throttling) {
@@ -544,21 +525,11 @@ class Command {
 			if(info.throttling.duration < 1) throw new RangeError('Command throttling duration must be at least 1.');
 		}
 		if(info.args && !Array.isArray(info.args)) throw new TypeError('Command args must be an Array.');
-		if('argsPromptLimit' in info && typeof info.argsPromptLimit !== 'number') {
-			throw new TypeError('Command argsPromptLimit must be a number.');
-		}
-		if('argsPromptLimit' in info && info.argsPromptLimit < 0) {
-			throw new RangeError('Command argsPromptLimit must be at least 0.');
-		}
-		if(info.argsType && !['single', 'multiple'].includes(info.argsType)) {
-			throw new RangeError('Command argsType must be one of "single" or "multiple".');
-		}
-		if(info.argsType === 'multiple' && info.argsCount && info.argsCount < 2) {
-			throw new RangeError('Command argsCount must be at least 2.');
-		}
-		if(info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) {
-			throw new TypeError('Command patterns must be an Array of regular expressions.');
-		}
+		if('argsPromptLimit' in info && typeof info.argsPromptLimit !== 'number') throw new TypeError('Command argsPromptLimit must be a number.');
+		if('argsPromptLimit' in info && info.argsPromptLimit < 0) throw new RangeError('Command argsPromptLimit must be at least 0.');
+		if(info.argsType && !['single', 'multiple'].includes(info.argsType)) throw new RangeError('Command argsType must be one of "single" or "multiple".');
+		if(info.argsType === 'multiple' && info.argsCount && info.argsCount < 2) throw new RangeError('Command argsCount must be at least 2.');
+		if(info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) throw new TypeError('Command patterns must be an Array of regular expressions.');
 	}
 }
 

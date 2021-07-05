@@ -8,7 +8,7 @@ module.exports = class NCommand extends Command {
             examples: [`${client.commandPrefix}invite <bot id here>`],
             description: "Gives you a invite for the bot id you provide.",
             group: "info",
-            clientPermissions: ["EMBED_LINKS", "SEND_MESSAGES"],
+            clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 },
             args: [
                 {
