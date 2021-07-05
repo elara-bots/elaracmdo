@@ -1,7 +1,7 @@
 declare module 'elaracmdo' {
 
 	// @ts-ignore
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction } from 'discord.js';
+	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction, Sticker } from 'discord.js';
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -423,6 +423,10 @@ declare module 'elaracmdo' {
 		on(event: 'voiceStateUpdate', listener: (oldState: VoiceState, newState: VoiceState) => void): this;
 		on(event: 'warn', listener: (info: string) => void): this;
 		on(event: 'webhookUpdate', listener: (channel: TextChannel) => void): this;
+
+		on(event: 'stickerCreate', listener: (sticker: Sticker) => void): this;
+		on(event: 'stickerDelete', listener: (sticker: Sticker) => void): this;
+		on(event: 'stickerUpdate', listener: (sticker: Sticker) => void): this;
 	}
 	export type MessageDB = {
 		id: string;
