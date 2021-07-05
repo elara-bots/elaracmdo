@@ -1,4 +1,3 @@
-const { stripIndents } = require('common-tags');
 const Command = require('../base');
 
 module.exports = class ListGroupsCommand extends Command {
@@ -16,11 +15,11 @@ module.exports = class ListGroupsCommand extends Command {
 		});
 	}
 	run(msg) {
-		return msg.reply(stripIndents`
+		return msg.reply(global.strip(`
 			__**Groups**__
 			${this.client.registry.groups.map(grp =>
 				`**${grp.name}:** ${grp.isEnabledIn(msg.guild) ? 'Enabled' : 'Disabled'}`
 			).join('\n')}
-		`);
+		`));
 	}
 };

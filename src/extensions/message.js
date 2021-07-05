@@ -1,5 +1,4 @@
 const { Structures, escapeMarkdown, splitMessage, MessageEmbed } = require('discord.js');
-const { oneLine } = require('common-tags');
 const Command = require('../commands/base');
 const functions = {
 	blacklist: (message) => {
@@ -259,12 +258,7 @@ module.exports = Structures.extend('Message', Message => {
 				 */
 				this.client.emit('commandRun', this.command, promise, this, args, fromPattern, collResult);
 				const retVal = await promise;
-				if(!(retVal instanceof Message || retVal instanceof Array || retVal === null || retVal === undefined)) {
-					throw new TypeError( oneLine`
-						Command ${this.command.name}'s run() resolved with an unknown type
-						(${retVal !== null ? retVal && retVal.constructor ? retVal.constructor.name : (typeof retVal) : null}).
-						Command run methods must return a Promise that resolve with a Message, Array of Messages, or null/undefined.`);
-				}
+				if(!(retVal instanceof Message || retVal instanceof Array || retVal === null || retVal === undefined)) throw new TypeError(`Command ${this.command.name}'s run() resolved with an unknown type\n(${retVal !== null ? retVal && retVal.constructor ? retVal.constructor.name : (typeof retVal) : null}).\nCommand run methods must return a Promise that resolve with a Message, Array of Messages, or null/undefined.`);
 				return retVal;
 			} catch(err) {
 				/**

@@ -1,7 +1,6 @@
 const Command = require('../base'),
-      moment = require('moment'),
-      getFormat = (date, compare = true) => moment.duration(compare ? new Date().getTime() - date.getTime() : date).format("D[d], H[h], m[m], s[s]");
-require("moment-duration-format");
+      getFormat = (date, compare = true) => require('moment').duration(compare ? new Date().getTime() - date.getTime() : date).format("D[d], H[h], m[m], s[s]");
+
 module.exports = class PingCommand extends Command {
     constructor(client) {
         super(client, {

@@ -11,7 +11,7 @@ module.exports = class EnableCommandCommand extends Command {
 			details: `The argument must be the name/ID (partial or whole) of a command or command group.\nOnly people with manage server permission use this command.`,
 			examples: ['enable util', 'enable Utility', 'enable prefix'],
 			clientPermissions: global.PERMS.basic,
-			userGuildPermissions: global.PERMS.manage.server,
+			userGuildPermissions: [ global.PERMS.manage.server ],
 			guarded: true,
 			throttling: { usages: 2, duration: 20 },
 			args: [
