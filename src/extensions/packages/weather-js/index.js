@@ -3,7 +3,7 @@ let xml2JS = require("xml2js");
 
 module.exports = class Weather {
     constructor(){ };
-    find(options, callback){
+    async find(options, callback){
         let xmlParser = new xml2JS.Parser({ charkey: "C$", attrkey: "A$", explicitArray: true });
 
         if(typeof callback !== 'function') callback = function callback(err, result) { return err || result; };
@@ -12,15 +12,14 @@ module.exports = class Weather {
         let result     = [],
             lang       = options.lang || "en-US",
             degreeType = options.degreeType || "F",
-            timeout    = options.timeout || 10000,
             search     = new URLSearchParams(options.search ?? "").toString();
+      
       require("superagent")
       .get(`http://weather.service.msn.com/find.aspx?src=outlook&weadegreetype=${degreeType}&culture=${lang}&weasearchstr=${search}`, (err, res) => {
       if(err) return callback(err);
       if(res.status !== 200) return callback(new Error(`request failed (${res.status})`));
-      const body = res.body;
+      const body = res.text;
       if(!body) return callback(new Error('failed to get body content'));
-
       // Check body content
       if(body.indexOf('<') !== 0) {
         if(body.search(/not found/i) !== -1) return callback(null, result);
