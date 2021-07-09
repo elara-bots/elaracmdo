@@ -1,7 +1,7 @@
 declare module 'elaracmdo' {
 
 	// @ts-ignore
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction, Sticker, MessageComponentOptions } from 'discord.js';
+	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction, Sticker, MessageComponentOptions, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -302,7 +302,6 @@ declare module 'elaracmdo' {
 		public main: boolean;
 		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
-		public util: util;
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
 		public config: ConfigFile;
 		public f: FunctionsList;
@@ -557,7 +556,17 @@ declare module 'elaracmdo' {
 		public proper(name: string): string;
 		public convertMS(seconds: number): string;
 		public button(options: ButtonOptionsCustom): ButtonOptions;
+		public dropdown(options: DropdownCustom): MessageSelectOptionData;
 	}
+
+	export type DropdownCustom = {
+		id: string;
+		holder?: string;
+		min?: number;
+		max?: number;
+		type?: number;
+		options: MessageSelectMenuOptions[]
+	};
 
 	export type ButtonOptions = {
 		custom_id: string;
