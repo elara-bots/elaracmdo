@@ -1,7 +1,6 @@
 const { MessageEmbed } = require('discord.js'),
-	  ArgumentCollector = require('./collector'),
-	  { perms } = require('../util'),
-	  CommandCooldown = new Set();
+		ArgumentCollector = require('./collector'),
+		CommandCooldown = new Set();
 
 /** A command that can be run in a client */
 class Command {
@@ -17,7 +16,6 @@ class Command {
 	 * @property {string[]} [aliases] - Alternative names for the command (all must be lowercase)
 	 * @property {boolean} [autoAliases=true] - Whether automatic aliases should be added
 	 * @property {string} group - The ID of the group the command belongs to (must be lowercase)
-	 * @property {string} memberName - The member name of the command in the group (must be lowercase)
 	 * @property {string} description - A short description of the command
 	 * @property {string} [format] - The command usage format string - will be automatically generated if not specified,
 	 * and `args` is specified
@@ -97,12 +95,6 @@ class Command {
 		 * @type {?CommandGroup}
 		 */
 		this.group = null;
-
-		/**
-		 * Name of the command within the group
-		 * @type {string}
-		 */
-		this.memberName = info.memberName || this.name || info.name;
 
 		/**
 		 * Short description of the command
@@ -269,9 +261,9 @@ class Command {
 		if(this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
 		if(message.channel.type === 'text' && this.userPermissions) {
             let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
-            if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${perms[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${perms[c]}\``).join("\n")}`
+            if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${global.util.perms[c]}\``).join("\n")}`
             const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
-            if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${perms[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${perms[pm]}\``).join("\n")}`
+            if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${global.util.perms[pm]}\``).join("\n")}`
 		}
 		return true;
 	}
@@ -312,40 +304,45 @@ class Command {
 		setTimeout(() => CommandCooldown.delete(message.author.id), 5000);
 		const send = (content, data = []) => {
             if(!message.guild) return message.error(content);
-            if(message.channel.permissionsFor(message.client.user).has(perms.EMBED_LINKS)) return message.error(content);
-            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${perms[c]}\``).join("\n") : [ perms.EMBED_LINKS ].map(c => `▫ \`${c}\``).join("\n")}` })
+            if(message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed)) return message.error(content);
+            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${global.util.perms[c]}\``).join("\n") : [ global.PERMS.messages.embed ].map(c => `▫ \`${c}\``).join("\n")}` })
 			.catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
         }
 		switch(reason) {
 			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
 			case 'nsfw': return send(`Command (\`${this.name}\`) can only be used in channels marked as NSFW`);
 			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
-			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(perms.EMBED_LINKS) ? 
-			message.error(data.missing.length === 1 ? `I need ${perms[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${perms[p]}\``).join("\n")}`) : 
+			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed) ? 
+			message.error(data.missing.length === 1 ? `I need ${global.util.perms[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${global.util.perms[p]}\``).join("\n")}`) : 
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
 			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
-			case "maintenance": return message.embed({
-				author: {
-					name: `${message.client.user.tag} Maintenance`,
-					icon_url: message.client.user.displayAvatarURL({dynamic: true}),
-					url: message.client.options.invite
-				},
-				color: global.util.colors.purple,
-				timestamp: new Date(),
-				thumbnail: {url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
-				description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.`,
-				footer: {
-					text: `Requested by: @${message.author.tag}`,
-					icon_url: message.author.displayAvatarURL({dynamic: true})
-				}
-			}, null, { components: message.client?.f?.button ? [ { type: 1, components: [ global.support(message.client) ] } ] : [] }).then(m => m.del({ timeout: 10000 }).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
+			case "maintenance": return message.channel.send({
+				embeds: [
+					{
+						author: {
+							name: `${message.client.user.tag} Maintenance`,
+							icon_url: message.client.user.displayAvatarURL({dynamic: true}),
+							url: message.client.options.invite
+						},
+						color: global.util.colors.purple,
+						timestamp: new Date(),
+						thumbnail: {url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
+						description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.`,
+						footer: {
+							text: `Requested by: @${message.author.tag}`,
+							icon_url: message.author.displayAvatarURL({dynamic: true})
+						}
+					}
+				],
+				components: message.client?.f?.button ? [ { type: 1, components: [ global.support(message.client) ] } ] : []
+			}).then(m => m.del({ timeout: 10000 }).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
 				reply: { messageReference: message, failIfNotExists: false },
 				embeds: [
 					new MessageEmbed({
 						title: `INFO`,
 						author: {name: message.guild.name, icon_url: message.guild.iconURL({dynamic: true}), url: message.client.options.invite},
-						color: message.guild.getColor(),
+						color: message.client.getColor(message.guild),
 						footer: {text: `This message will be deleted in 10s`, icon_url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
 						description: `You can't use commands in this channel.\n**Go to <#${message.guild.Commands}> to use commands!**`,
 						timestamp: new Date()
@@ -488,8 +485,6 @@ class Command {
 		if(info.aliases && info.aliases.some(ali => ali !== ali.toLowerCase())) throw new RangeError('Command aliases must be lowercase.');
 		if(typeof info.group !== 'string') throw new TypeError('Command group must be a string.');
 		if(info.group !== info.group.toLowerCase()) throw new RangeError('Command group must be lowercase.');
-		if(typeof info.memberName !== 'string') throw new TypeError('Command memberName must be a string.');
-		if(info.memberName !== info.memberName.toLowerCase()) throw new Error('Command memberName must be lowercase.');
 		if(typeof info.description !== 'string') throw new TypeError('Command description must be a string.');
 		if('format' in info && typeof info.format !== 'string') throw new TypeError('Command format must be a string.');
 		if('details' in info && typeof info.details !== 'string') throw new TypeError('Command details must be a string.');
@@ -498,25 +493,25 @@ class Command {
 		if(info.clientPermissions) {
 			if(!Array.isArray(info.clientPermissions)) throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
 			for(const perm of info.clientPermissions) {
-				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
+				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
 			}
 		}
 		if(info.clientGuildPermissions) {
 			if(!Array.isArray(info.clientGuildPermissions)) throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
 			for(const perm of info.clientGuildPermissions) {
-				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
+				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
 			}
 		}
 		if(info.userGuildPermissions) {
 			if(!Array.isArray(info.userGuildPermissions)) throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
 			for(const perm of info.userGuildPermissions) {
-				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
+				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
 			}
 		}
 		if(info.userPermissions) {
 			if(!Array.isArray(info.userPermissions)) throw new TypeError('Command userPermissions must be an Array of permission key strings.');
 			for(const perm of info.userPermissions) {
-				if(!perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
+				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
 			}
 		}
 		if(info.throttling) {

@@ -1,5 +1,5 @@
-const { MessageEmbed: Embed } = require('discord.js');
-const ReactionHandler = require('./ReactionHandler');
+const { MessageEmbed } = require('discord.js'),
+		ReactionHandler = require('./handler');
 
 class RichDisplay {
 
@@ -30,7 +30,7 @@ class RichDisplay {
 	 * @since 0.4.0
 	 * @param {external:MessageEmbed} [embed=new MessageEmbed()] A Template embed to apply to all pages
 	 */
-	constructor(embed = new Embed()) {
+	constructor(embed = new MessageEmbed()) {
 		/**
 		 * The embed template
 		 * @since 0.4.0
@@ -79,13 +79,6 @@ class RichDisplay {
 		 * @type {string}
 		 */
 		this.footerPrefix = '';
-
-		/**
-		 * Adds a suffix to all footers (after page/pages)
-		 * @since 0.5.0
-		 * @type {string}
-		 */
-		this.footerSuffix = '';
 	}
 
 	/**
@@ -95,19 +88,7 @@ class RichDisplay {
 	 * @readonly
 	 */
 	get template() {
-		return new Embed(this.embedTemplate);
-	}
-
-	/**
-	 * Sets emojis to a new set of emojis
-	 * @since 0.4.0
-	 * @param {RichDisplayEmojisObject} emojis An object containing replacement emojis to use instead
-	 * @returns {this}
-	 * @chainable
-	 */
-	setEmojis(emojis) {
-		Object.assign(this.emojis, emojis);
-		return this;
+		return new MessageEmbed(this.embedTemplate);
 	}
 
 	/**
@@ -124,30 +105,6 @@ class RichDisplay {
 	}
 
 	/**
-	 * Sets a suffix for all footers
-	 * @since 0.5.0
-	 * @param {string} suffix The suffix you want to add
-	 * @returns {this}
-	 * @chainable
-	 */
-	setFooterSuffix(suffix) {
-		this.footered = false;
-		this.footerSuffix = suffix;
-		return this;
-	}
-
-	/**
-	 * Turns off the footer altering function
-	 * @since 0.5.0
-	 * @returns {this}
-	 * @chainable
-	 */
-	useCustomFooters() {
-		this.footered = true;
-		return this;
-	}
-
-	/**
 	 * Adds a page to the RichDisplay
 	 * @since 0.4.0
 	 * @param {(Function|external:MessageEmbed)} embed A callback with the embed template passed and the embed returned, or an embed
@@ -156,18 +113,6 @@ class RichDisplay {
 	 */
 	addPage(embed) {
 		this.pages.push(this._handlePageGeneration(embed));
-		return this;
-	}
-
-	/**
-	 * Adds an info page to the RichDisplay
-	 * @since 0.4.0
-	 * @param {(Function|external:MessageEmbed)} embed A callback with the embed template passed and the embed returned, or an embed
-	 * @returns {this}
-	 * @chainable
-	 */
-	setInfoPage(embed) {
-		this.infoPage = this._handlePageGeneration(embed);
 		return this;
 	}
 
@@ -210,18 +155,10 @@ class RichDisplay {
 			color: message.client.getColor(message.guild)
 		}});
 		if(!waitmsg) return message.error(`I was unable to post or edit the loading menu message.`);
-		for await (const emoji of emojis) {
-			if(!waitmsg.deleted) await waitmsg.react(emoji).catch(() => {});
-		}
+		for await (const emoji of emojis.filter(m => !m.deleted)) await waitmsg.react(emoji).catch(() => {});
 		setTimeout(async () => {
 			const msg = waitmsg.editable ? await waitmsg.edit({ embeds: [ this.pages[options.startPage || 0] ] }) : await message.channel.send({ embeds: [ this.pages[options.startPage || 0] ] }).catch(() => null);
-			return new ReactionHandler(
-				msg,
-				(r, u) => emojis.includes(r.emoji.name) && !u.bot && options.filter(r, u),
-				options,
-				this,
-				emojis
-			);
+			return new ReactionHandler(msg, (r, u) => emojis.includes(r.emoji.name) && !u.bot && options.filter(r, u), options, this, emojis);
 		}, 2000 + message.client.options.restTimeOffset)
 	}
 
@@ -232,7 +169,7 @@ class RichDisplay {
 	 * @private
 	 */
 	async _footer() {
-		for (let i = 1; i <= this.pages.length; i++) this.pages[i - 1].setFooter(`${this.footerPrefix}${i}/${this.pages.length}${this.footerSuffix}`);
+		for (let i = 1; i <= this.pages.length; i++) this.pages[i - 1].setFooter(`${this.footerPrefix}${i}/${this.pages.length}`);
 		if (this.infoPage) this.infoPage.setFooter('ℹ');
 	}
 
@@ -247,8 +184,7 @@ class RichDisplay {
 	 */
 	_determineEmojis(emojis, stop, firstLast) {
 		if (this.pages.length > 1 || this.infoPage) {
-			if (firstLast) emojis.push(this.emojis.first, this.emojis.back, this.emojis.forward, this.emojis.last);
-			else emojis.push(this.emojis.back, this.emojis.forward);
+			if (firstLast) emojis.push(this.emojis.first, this.emojis.back, this.emojis.forward, this.emojis.last); else emojis.push(this.emojis.back, this.emojis.forward);
 		}
 		if (this.infoPage) emojis.push(this.emojis.info);
 		if (stop) emojis.push(this.emojis.stop);
@@ -263,8 +199,8 @@ class RichDisplay {
 	 * @private
 	 */
 	_handlePageGeneration(cb) {
-		if(cb instanceof Embed) return cb;
-		if(typeof cb === "function" && cb(this.template) instanceof Embed) return cb(this.template);
+		if(cb instanceof MessageEmbed) return cb;
+		if(typeof cb === "function" && cb(this.template) instanceof MessageEmbed) return cb(this.template);
 		throw new Error('Expected a MessageEmbed or Function returning a MessageEmbed');
 	}
 

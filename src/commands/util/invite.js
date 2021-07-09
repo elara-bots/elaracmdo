@@ -3,7 +3,6 @@ module.exports = class NCommand extends Command {
     constructor(client) {
         super(client, {
             name: "invite",
-            memberName: "invite",
             aliases: ["botinvite", `inv`, `bot`],
             examples: [`${client.commandPrefix}invite <bot id here>`],
             description: "Gives you a invite for the bot id you provide.",
@@ -24,18 +23,13 @@ module.exports = class NCommand extends Command {
         if(!user.bot) return message.error(`That is a user account, not a bot..`);
         let p = (name, num, slashCommands = true) => `[${name}](${this.client.options.http.api.replace("/api", "")}/oauth2/authorize?client_id=${this.convertID(user.id)}&permissions=${num}&scope=bot${slashCommands ? "%20applications.commands" : ""}${this.isOfficialClient(user.id) ? `&response_type=code&redirect_uri=${this.client.options.invite}` : ""})`,
             links = [
-                `${p("All", "2137517567", false)} | ${p("All + /", "2137517567")}`,
+                `${p("All", "-1", false)} | ${p("All + /", "-1")}`,
                 `${p("Administrator", "8", false)} | ${p("Administrator + /", "8")}`,
                 `${p("Moderator", "1543892167", false)} | ${p("Moderator + /", "1543892167")}`,
                 `${p("Normal", "67488833", false)} | ${p("Normal + /", "67488833")}`,
                 `${p("None", "0", false)} | ${p("None + /", "0")}`,
             ]
-        let components = this.client.f?.button ? [ 
-            { 
-                type: 1, 
-                components: [ this.client.f.button({ title: `Support`, emoji: { name: "Discord", id: global.util.emojis.rdiscord }, style: 5, url: this.client.options.invite })  ] 
-            } 
-        ] : [];
+        let components = this.client.f?.button ? [{ type: 1, components: [ global.support(this.client) ] }] : [];
         return message.boop({
           embeds: [{
               author: {
@@ -50,7 +44,7 @@ module.exports = class NCommand extends Command {
           }],
           components: this.isOfficialClient(user.id) ? components : undefined
       })
-    };
+    }
     isOfficialClient(id) {
         return [
             '480881356935790622', // @Kitten#1552
@@ -59,7 +53,7 @@ module.exports = class NCommand extends Command {
             '491635097599082497', // @Elara#2878
             '607752722753519646', // @RoCord#8902
           ].includes(id);
-    };
+    }
     convertID(id) {
         switch(id) {
             // Dyno
@@ -73,6 +67,6 @@ module.exports = class NCommand extends Command {
             // Tatsumaki/Tatsu
             case "172002275412279296": return "172002255350792192";
             default: return id;
-        };
-    };
+        }
+    }
 };

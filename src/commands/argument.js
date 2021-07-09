@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-const { escapeMarkdown } = require('discord.js');
-const ArgumentUnionType = require('../types/union');
+const { Util: { escapeMarkdown } } = require('discord.js'),
+		ArgumentUnionType = require('../types/union');
 
 /** A fancy argument */
 class Argument {
@@ -190,9 +190,7 @@ class Argument {
 			if(responses && responses.size === 1) {
 				answers.push(responses.first());
 				val = answers[answers.length - 1].content;
-			} else {
-				return { value: null, cancelled: 'time', prompts, answers };
-			}
+			} else return { value: null, cancelled: 'time', prompts, answers };
 
 			// See if they want to cancel
 			if(val.toLowerCase() === 'cancel') return { value: null, cancelled: 'user', prompts, answers };

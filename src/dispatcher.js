@@ -1,6 +1,3 @@
-const { escapeRegex } = require('./util');
-
-/** Handles parsing messages and running commands from them */
 class CommandDispatcher {
 	/**
 	 * @param {CommandoClient} client - Client the dispatcher is for
@@ -75,7 +72,7 @@ class CommandDispatcher {
 	 * });
 	 * @example
 	 * client.dispatcher.addInhibitor(msg => {
-	 * 	if(!coolUsers.has(msg.author.id)) return ['cool', msg.reply('You\'re not cool enough!')];
+	 * 	if(!coolUsers.has(msg.author.id)) return ['cool', msg.channel.send('You\'re not cool enough!')];
 	 * });
 	 */
 	addInhibitor(inhibitor) {
@@ -129,14 +126,12 @@ class CommandDispatcher {
 					if(!cmdMsg.command.isEnabledIn(message.guild)) {
 						responses = await cmdMsg.channel.send({ embeds: [ {title: `Command (${cmdMsg.command.name}) is disabled!`, color: global.util.colors.purple, author: {name: message.guild.name, icon_url: message.guild.iconURL()}} ] })
 						.then(msg => setTimeout(() => {msg.del().catch(() => {}); cmdMsg.del().catch(() => {})}, 10000))
-						.catch((e) => global.log(`[${__filename}|SEND]: Error`, e));
+						.catch((e) => global.log(`[${global.__filename}|SEND]: Error`, e));
 					} else if(!oldMessage || typeof oldCmdMsg !== 'undefined') {
 						responses = await cmdMsg.run();
 						if(typeof responses === 'undefined') responses = null;
 						if(Array.isArray(responses)) responses = await Promise.all(responses);
 					}
-				} else {
-					
 				}
 			} else {
 				responses = await inhibited.response;
@@ -240,7 +235,7 @@ class CommandDispatcher {
 			`${this.client.user.username}${extra},` 
 		]) {
 			if(content?.toLowerCase()?.startsWith(pre.toLowerCase())) prefix = pre.toLowerCase();
-		};
+		}
 		if(!this._commandPatterns[prefix]) this.buildCommandPattern(prefix);
 		let cmdMsg = this.matchDefault(message, this._commandPatterns[prefix], 2);
 		if(!cmdMsg && !message.guild) cmdMsg = this.matchDefault(message, /^([^\s]+)/i, 1, true);
@@ -274,7 +269,7 @@ class CommandDispatcher {
 	buildCommandPattern(prefix) {
 		let pattern;
 		if(prefix) {
-			const escapedPrefix = escapeRegex(prefix);
+			const escapedPrefix = prefix.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 			pattern = new RegExp(`^(<@!?${this.client.user.id}>\\s+(?:${escapedPrefix}\\s*)?|${escapedPrefix}\\s*)([^\\s]+)`, 'i');
 		} else {
 			pattern = new RegExp(`(^<@!?${this.client.user.id}>\\s+)([^\\s]+)`, 'i');

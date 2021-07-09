@@ -1,7 +1,7 @@
 declare module 'elaracmdo' {
 
 	// @ts-ignore
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction, Sticker } from 'discord.js';
+	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction, Sticker, MessageComponentOptions } from 'discord.js';
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -66,7 +66,6 @@ declare module 'elaracmdo' {
 		private static validateInfo(client: CommandoClient, info: CommandInfo);
 		public readonly client: CommandoClient;
 		public name: string;
-		public memberName: string;
 		public aliases: string[];
 		public flags: CommandFlags[]|string[];
 		public argsCount: number;
@@ -145,13 +144,10 @@ declare module 'elaracmdo' {
 
 	export class CommandoMessage extends Message {
 		public constructor(message: Message, command?: Command, argString?: string, patternMatches?: string[]);
-
-		private deleteRemainingResponses(): void;
 		private editCurrentResponse(id: string, options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
-		private editResponse(response: CommandoMessage | CommandoMessage[], options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
 		private finalize(responses: CommandoMessage | CommandoMessage[]): void;
 		private respond(options?: {}): CommandoMessage | CommandoMessage[];
-		public typing(timeout?: number): boolean;
+		public  typing(timeout?: number): boolean;
 
 		public argString: string;
 		public readonly client: CommandoClient;
@@ -161,23 +157,14 @@ declare module 'elaracmdo' {
 		public patternMatches: string[];
 		public responsePositions: {};
 		public responses: {};
-		
-		public anyUsage(command?: string, prefix?: string, user?: User): string;
 		public del(options?: {timeout?: number, reason?: string}): Promise<CommandoMessage>;
-		public direct(content: string, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public embed(embed: MessageEmbed | {}, content?: string, options?: MessageOptions): Promise<Message | CommandoMessage[]>;
 		public success(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public error(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public custom(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public boop(options: SayOptions, message_options: MessageOptions): Promise<CommandoMessage|CommandoMessage[]>;
 		public parseArgs(): string | string[];
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
-		
-		// @ts-ignore
-		public reply(content: string, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
-		public say(content: string, options?: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
-		public usage(argString?: string, prefix?: string, user?: User): string;
 	}
 	export type UserSchema = {
 		userTag: string;
@@ -315,7 +302,7 @@ declare module 'elaracmdo' {
 		public main: boolean;
 		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
-		public util: ElaraUtil;
+		public util: util;
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
 		public config: ConfigFile;
 		public f: FunctionsList;
@@ -461,9 +448,6 @@ declare module 'elaracmdo' {
 		public removeAllMessages(dryRun?: boolean): Promise<MessageDB[]>;
 		public findAndRemoveExpired(dryRun?: boolean): Promise<number>;
 		public formatMessage(data: MessageDBData): Promise<MessageDB>;
-	}
-	export class Weather {
-		public find(options: { timeout: number; lang: string; degreeType: string; search: string; }, callback: Function): void;
 	}
 	export class ConfigFile{
 		public clientOptions: CommandoClientOptions;
@@ -662,8 +646,7 @@ declare module 'elaracmdo' {
 		public Commands: string;
 		public color: string;
 		public currency: string;
-		
-		public getColor(): string;
+
 		public getPrefix(): string;
 		public setPrefix(prefix: string): void;
 
@@ -671,57 +654,6 @@ declare module 'elaracmdo' {
 		public isGroupEnabled(group: CommandGroupResolvable): boolean;
 		public setCommandEnabled(command: CommandResolvable, enabled: boolean): void;
 		public setGroupEnabled(group: CommandGroupResolvable, enabled: boolean): void;
-	}
-	export class ElaraUtil {
-		public colors: {
-			red: string;
-			green: string;
-			cyan: string;
-			default: string;
-			purple: string;
-			orange: string;
-			yellow: string;
-		};
-		public emojis: {
-			s: string;
-			ss: string;
-			sreact: string;
-			nreact: string;
-			rload: string;
-			rplan: string;
-			semoji: string;
-			eplan: string;
-			nemoji: string;
-			eload: string;
-			robot: string;
-			staff: string;
-			dev: string;
-			owner: string;
-			info: string;
-			discord: string;
-			eminus: string;
-			rminus: string;
-			eplus: string;
-			rplus: string;
-			rn: string;
-			en: string;
-			rd: string;
-			ed: string;
-			rdiscord: string;
-			rinfo: string;
-		};
-		public jobs: string[];
-		public throws: string[];
-		public status: {
-			online: string;
-			idle: string;
-			dnd: string;
-			offline: string;
-			invisible: string;
-		};
-		public perms: PermissionResolvable;
-		public permbits: object;
-		public SystemJoinMessages: string[];
 	}
 	export class CommandoRegistry {
 		public constructor(client?: CommandoClient);
@@ -738,7 +670,7 @@ declare module 'elaracmdo' {
 		public registerCommand(command: Command | Function): CommandoRegistry;
 		public registerCommands(commands: Command[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
 		public registerCommandsIn(options: string | {}): CommandoRegistry;
-		public registerDefaultCommands(commands?: { help?: boolean, prefix?: boolean, eval?: boolean, ping?: boolean, commandState?: boolean }): CommandoRegistry;
+		public registerDefaultCommands(commands?: { prefix?: boolean, eval?: boolean, ping?: boolean, commandState?: boolean }): CommandoRegistry;
 		public registerDefaultGroups(): CommandoRegistry;
 		public registerDefaultTypes(types?: { string?: boolean, integer?: boolean, float?: boolean, boolean?: boolean, user?: boolean, member?: boolean, role?: boolean, channel?: boolean, message?: boolean, command?: boolean, group?: boolean, duration?: boolean }): CommandoRegistry;
 		public registerEvalObject(key: string, obj: {}): CommandoRegistry;
@@ -749,7 +681,6 @@ declare module 'elaracmdo' {
 		public registerTypes(type: ArgumentType[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
 		public registerTypesIn(options: string | {}): CommandoRegistry;
 		public resolveCommand(command: CommandResolvable): Command;
-		public resolveCommandPath(groups: string, memberName: string): string;
 		public resolveGroup(group: CommandGroupResolvable): CommandGroup;
 	}
 
@@ -760,7 +691,6 @@ declare module 'elaracmdo' {
 		public infoPage: string|object;
 		public footered: boolean;
 		public footerPrefix: string;
-		public footerSuffix: string;
 		public emojis: {
 			first: string,
 			back: string,
@@ -770,12 +700,8 @@ declare module 'elaracmdo' {
 			stop: string
 		};
 		public template(): object;
-		public setEmojis(emojis: string[]): void;
 		public setFooterPrefix(prefix: string): void;
-		public setFooterSuffix(suffix: string): void;
-		public useCustomFooters(): void;
 		public addPage(callback: (embed: MessageEmbed) => void): void;
-		public setInfoPage(callback: (embed: MessageEmbed) => void): void;
 		public run(message: CommandoMessage, options: {
 			filter(reaction: MessageReaction, user: User): Function;
 			stop: string;
@@ -792,13 +718,6 @@ declare module 'elaracmdo' {
 	}
 	export class util {
 		public static disambiguation(items: any[], label: string, property?: string): string;
-		public static paginate<T>(items: T[], page?: number, pageLength?: number): {
-			items: T[],
-			page: number,
-			maxPage: number,
-			pageLength: number
-		};
-		public static readonly perms: { [K in PermissionString]: string };
 	}
 
 	type ArgumentCollectorResult<T = object> = {
@@ -838,7 +757,6 @@ declare module 'elaracmdo' {
 		aliases?: string[];
 		autoAliases?: boolean;
 		group: string;
-		memberName: string;
 		description: string;
 		format?: string;
 		details?: string;
@@ -872,10 +790,6 @@ declare module 'elaracmdo' {
 	};
 
 	type CommandResolvable = Command | string;
-	type StatsGuildOptions = {
-		guildID: string;
-		name: string;
-	}
 	type StatsTypes = {
 		self: CommandoClient;
 		url: string;
@@ -891,22 +805,18 @@ declare module 'elaracmdo' {
 		guilds(joins: boolean): number | string;
 		
 		client(type: string): Promise<number | string>;
-		guild(options: StatsGuildOptions): Promise<number | string>;
+		guild(options: { guildID: string, name: string }): Promise<number | string>;
 		
 		getClient(id: string): Promise<object>;
-		getClients(): Promise<ClientResponse[]>;
+		getClients(): Promise<{ status: boolean; data: ClientResponseData[] }[]>;
 
 		getGuild(guildID: string, clientID: string): Promise<object>;
-		getGuilds(id: string): Promise<GuildResponse[]>;
+		getGuilds(id: string): Promise<{ status: boolean; data: GuildResponseData[] }[]>;
 		
 		post(url): Promise<number | string>;
 		get(url): Promise<object>;
 	}
 
-	type ClientResponse = {
-		status: boolean;
-		data: ClientResponseData[]
-	}
 	type ClientResponseData = {
 		clientID: string;
 		_id: string;
@@ -935,11 +845,6 @@ declare module 'elaracmdo' {
 		}
 	}
 
-
-	type GuildResponse = {
-		status: boolean;
-		data: GuildResponseData[]
-	}
 	type GuildResponseData = {
 		clientID: string;
 		guildID: string;
@@ -968,6 +873,7 @@ declare module 'elaracmdo' {
 	export type SayOptions = {
 		content?: string|null;
 		embeds?: MessageEmbed[];
+		components?: MessageComponentOptions[];
 		embed?: {
 			title: string;
 			timestamp: Date|string;

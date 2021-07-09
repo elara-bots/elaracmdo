@@ -7,10 +7,9 @@ module.exports = class PingCommand extends Command {
             name: 'ping',
             aliases: ["pong", "pung", `uptime`],
             group: 'bot',
-            memberName: 'ping',
             description: 'Shows the ping for the bot',
             examples: ['ping'],
-	        clientPermissions: global.PERMS.basic,
+            clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 }
         });
 
@@ -31,7 +30,7 @@ module.exports = class PingCommand extends Command {
                 components: this.inServer(msg.author.id) ? undefined : components
             }),
             robot = global.util.emojis.robot;
-	    if(!message) return null
+        if(!message) return null
         if(!this.client.isSupport(msg.author.id)) return message.edit({
             embeds: [{
                 author, footer,
@@ -62,17 +61,18 @@ module.exports = class PingCommand extends Command {
                     color: this.client.getColor(message.guild),
                     timestamp: new Date(),
                     fields: [
-                        this.field(`💾 Memory`, `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`, true),
+                        this.field(`💾 Memory`, `${(global.process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`, true),
                         this.field(`🏓 Latency`, `▫Message: **\`\`${message.createdTimestamp - msg.createdTimestamp}ms\`\`**\n▫API: **\`\`${this.client.ws.ping}ms\`\`**`, true),
                         this.field(`📡 Uptime`, `▫Host: ${secondsToHms(require("os").uptime())}\n▫Process: ${getFormat(this.client.uptime, false)}`, true)
                     ]
                 }
             ]
         });
-    };
+    }
+
     inServer(id){
         let guild = this.client.guilds.cache.get("499409162661396481");
         if(!guild || !guild.available || !guild.members.cache.get(id)) return false;
         return true;
-    };
+    }
 };

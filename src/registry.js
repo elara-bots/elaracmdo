@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 const { Collection } = require("discord.js"),
-	  	Command = require('./commands/base'),
-	  	CommandGroup = require('./commands/group'),
-	  	CommandoMessage = require('./extensions/message'),
-	  	ArgumentType = require('./types/base');
+		Command = require('./commands/base'),
+		CommandGroup = require('./commands/group'),
+		CommandoMessage = require('./extensions/message'),
+		ArgumentType = require('./types/base');
 
 /** Handles registration and searching of commands and groups */
 class CommandoRegistry {
@@ -117,8 +117,8 @@ class CommandoRegistry {
 		}
 		const group = this.groups.find(grp => grp.id === command.groupID);
 		if(!group) throw new Error(`Group "${command.groupID}" is not registered.`);
-		if(group.commands.some(cmd => cmd.memberName === command.memberName)) {
-			throw new Error(`A command with the member name "${command.memberName}" is already registered in ${group.id}`);
+		if(group.commands.some(cmd => cmd.name === command.name)) {
+			throw new Error(`A command with the member name "${command.name}" is already registered in ${group.id}`);
 		}
 
 		// Add the command
@@ -227,14 +227,12 @@ class CommandoRegistry {
 	 * @return {CommandoRegistry}
 	 */
 	registerDefaultGroups() {
-		return this.registerGroups([ ['commands', 'Commands', true], ['util', 'Utility'] ]);
+		return this.registerGroup("util", "Utility");
 	}
 
 	/**
 	 * Registers the default commands to the registry
 	 * @param {Object} [commands] - Object specifying which commands to register
-	 * @param {boolean} [commands.help=true] - Whether to register the built-in help command
-	 * (requires "util" group and "string" type)
 	 * @param {boolean} [commands.prefix=true] - Whether to register the built-in prefix command
 	 * (requires "util" group and "string" type)
 	 * @param {boolean} [commands.eval=true] - Whether to register the built-in eval command
@@ -246,13 +244,12 @@ class CommandoRegistry {
 	 * @return {CommandoRegistry}
 	 */
 	registerDefaultCommands(commands = {}) {
-		commands = { help: true, prefix: true, ping: true, eval: true, commandState: true, extra: true, ...commands };
-		if(commands.help) this.registerCommand(require('./commands/util/help'));
+		commands = { prefix: true, ping: true, eval: true, commandState: true, extra: true, ...commands };
 		if(commands.prefix) this.registerCommand(require('./commands/util/prefix'));
 		if(commands.ping) this.registerCommand(require('./commands/util/ping'));
 		if(commands.eval) this.registerCommand(require('./commands/util/eval'));
 		if(commands.extra) this.registerCommands([ require("./commands/util/support"), require("./commands/util/invite"), require("./commands/util/info") ])
-		if(commands.commandState) this.registerCommands([  require('./commands/commands/enable'), require('./commands/commands/disable') ]);
+		if(commands.commandState) this.registerCommands([  require('./commands/util/enable'), require('./commands/util/disable') ]);
 		return this;
 	}
 
@@ -359,9 +356,7 @@ class CommandoRegistry {
 
 		// Find all matches
 		const lcSearch = searchString.toLowerCase();
-		const matchedCommands = Array.from(this.commands.filter(
-			exact ? commandFilterExact(lcSearch) : commandFilterInexact(lcSearch)
-		).values());
+		const matchedCommands = Array.from(this.commands.filter(exact ? commandFilterExact(lcSearch) : commandFilterInexact(lcSearch)).values());
 		if(exact) return matchedCommands;
 
 		// See if there's an exact match
@@ -396,16 +391,6 @@ class CommandoRegistry {
 		}
 		throw new Error('Unable to resolve command.');
 	}
-
-	/**
-	 * Resolves a command file path from a command's group ID and memberName
-	 * @param {string} group - ID of the command's group
-	 * @param {string} memberName - Member name of the command
-	 * @return {string} Fully-resolved path to the corresponding command file
-	 */
-	resolveCommandPath(group, memberName) {
-		return require("path").join(this.commandsPath, group, `${memberName}.js`);
-	}
 }
 
 function groupFilterExact(search) {
@@ -419,12 +404,12 @@ function groupFilterInexact(search) {
 function commandFilterExact(search) {
 	return cmd => cmd.name === search ||
 		(cmd.aliases && cmd.aliases.some(ali => ali === search)) ||
-		`${cmd.groupID}:${cmd.memberName}` === search;
+		`${cmd.groupID}:${cmd.name}` === search;
 }
 
 function commandFilterInexact(search) {
 	return cmd => cmd.name.includes(search) ||
-		`${cmd.groupID}:${cmd.memberName}` === search ||
+		`${cmd.groupID}:${cmd.name}` === search ||
 		(cmd.aliases && cmd.aliases.some(ali => ali.includes(search)));
 }
 

@@ -79,7 +79,7 @@ class ArgumentCollector {
 						values: null, cancelled: result.cancelled,
 						prompts: [].concat(...results.map(res => res.prompts)), answers: [].concat(...results.map(res => res.answers)) 
 					};
-				};
+				}
 				values[arg.key] = result.value;
 				/* eslint-enable no-await-in-loop */
 			}

@@ -1,13 +1,17 @@
-const {Command} = require('elaracmdo'), Discord = require('discord.js');
+const { Command } = require('elaracmdo'),
+      { MessageEmbed } = require('discord.js');
+
 module.exports = class BotinfoCommand extends Command {
     constructor(client) {
         super(client, {
             name: "botinfo",
             group: "bot",
-            memberName: "botinfo",
             aliases: [`info`, `binfo`],
             description: "Gives you the bots info, or info on a snowflake you provide.",
-            examples: [`${client.commandPrefix}botinfo`, `${client.commandPrefix}botinfo (Snowflake/ID)`],
+            examples: [
+                `${global.PREFIX}botinfo`, 
+                `${global.PREFIX}botinfo (Snowflake/ID)`
+            ],
             clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 },
             args: [
@@ -18,9 +22,7 @@ module.exports = class BotinfoCommand extends Command {
                     default: ""
                 }
             ]
-        })
-        this.ss = "◽";
-        this.s = "▫";
+        });
     }
 
     /**
@@ -39,28 +41,28 @@ module.exports = class BotinfoCommand extends Command {
                     message.guild.channels.cache.get(id),
                     message.guild.emojis.cache.get(id)
                 ];
-                if(message.guild.id === id) fields.push(`${this.s}Server: ${message.guild.name} (${message.guild.id})`);
-                if(role) fields.push(`${this.s}Role: ${role.toString()} \`@${role.name}\` (${role.id})`);
-                if(channel) fields.push(`${this.s}Channel: ${channel.toString()} \`#${channel.name}\` (${channel.id})`);
-                if(emoji) fields.push(`${this.s}Emoji: ${emoji.toString()} \`${emoji.name}\` (${emoji.id})`);
+                if(message.guild.id === id) fields.push(`${global.s}Server: ${message.guild.name} (${message.guild.id})`);
+                if(role) fields.push(`${global.s}Role: ${role.toString()} \`@${role.name}\` (${role.id})`);
+                if(channel) fields.push(`${global.s}Channel: ${channel.toString()} \`#${channel.name}\` (${channel.id})`);
+                if(emoji) fields.push(`${global.s}Emoji: ${emoji.toString()} \`${emoji.name}\` (${emoji.id})`);
                 if(!role || !channel || !emoji) {
                     let user = this.client.users.cache.get(id) ?? await this.client.users.fetch(id, true).catch(() => null);
-                    if(user) fields.push(`${this.s}User: ${user.toString()} \`@${user.tag}\` (${user.id})`)
-                };
-            };
+                    if(user) fields.push(`${global.s}User: ${user.toString()} \`@${user.tag}\` (${user.id})`)
+                }
+            }
             return message.boop({
                 embeds: [{
                     author: { name: "Discord Snowflake", icon_url: `https://cdn.discordapp.com/emojis/${global.util.emojis.rdiscord}.png`, url: this.client.options.invite },
                     title: "Information",
                     thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
-                    description: `${this.s}Date: ${this.client.f.time(info.date, true)}\n${this.s}Timestamp: ${info.timestamp}\n${this.s}Increment: ${info.increment}\n${this.s}IDs:\n${this.ss}Process: ${info.processID}\n${this.ss}Worker: ${info.workerID}`,
+                    description: `${global.s}Date: ${this.client.f.time(info.date, true)}\n${global.s}Timestamp: ${info.timestamp}\n${global.s}Increment: ${info.increment}\n${global.s}IDs:\n${global.ss}Process: ${info.processID}\n${global.ss}Worker: ${info.workerID}`,
                     fields: fields.length !== 0 ? [ { name: "Extra", value: fields.join("\n") } ] : undefined,
                     color: global.util.colors.purple,
                     timestamp: new Date(),
                     footer: { text: `Requested by: @${message.author.tag}`, icon_url: message.author.displayAvatarURL({ dynamic: true }) }
                 }]
             })
-        };
+        }
         const statuses = {
             "online": "Online", 
             "idle": "Idle",
@@ -92,11 +94,11 @@ module.exports = class BotinfoCommand extends Command {
                 `${emojis.dbl} ${a(`Discord Bot List`, `https://discordbotlist.com/bots/${botID}`)}`
             ]
         let user = this.client.user;
-        let embed = new Discord.MessageEmbed()
+        let embed = new MessageEmbed()
         .setAuthor(`Information about me`, user.displayAvatarURL({ dynamic: true }))
         .setColor(this.client.getColor(message.guild))
         .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-        .setDescription(`${this.s}User\n${this.ss}Name: ${user.tag}\n${this.ss}ID: ${user.id}\n${this.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${this.ss}Created: ${global.unix(user.createdAt)}\n\n${this.s}Misc\n${this.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${this.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${this.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${this.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${this.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
+        .setDescription(`${global.s}User\n${global.ss}Name: ${user.tag}\n${global.ss}ID: ${user.id}\n${global.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${global.ss}Created: ${global.unix(user.createdAt)}\n\n${global.s}Misc\n${global.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${global.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${global.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${global.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${global.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
         return message.channel.send({
             reply: { messageReference: message, failIfNotExists: false },

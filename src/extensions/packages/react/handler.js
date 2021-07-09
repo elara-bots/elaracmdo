@@ -55,13 +55,6 @@ class ReactionHandler extends ReactionCollector {
 		this.currentPage = this.options.startPage || 0;
 
 		/**
-		 * The prompt to use when jumping pages
-		 * @since 0.4.0
-		 * @type {string}
-		 */
-		this.prompt = this.options.prompt || "What page do you want to jump to?";
-
-		/**
 		 * The amount of time before the jump menu should close
 		 * @since 0.4.0
 		 * @type {number}
@@ -104,19 +97,14 @@ class ReactionHandler extends ReactionCollector {
 		 * @type {boolean}
 		 */
 		this.reactionsDone = false;
-		if(emojis.length){
-			this._queueEmojiReactions(emojis);
-		}else{
-			return this.stop();
-		}
-		// if (emojis.length) this._queueEmojiReactions(emojis.slice());
-		// else return this.stop();
+		if(emojis.length) this._queueEmojiReactions(emojis);
+		else return this.stop();
 
 		this.on('collect', (reaction, user) => {
 			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has(global.PERMS.manage.messages) && !this.message.deleted) reaction.users.remove(user.id).catch(() => null);
 			this[this.methodMap.get(reaction.emoji.name)](user);
 		});
-		setTimeout(() => {this.emit("end")}, this.time || 120000)
+		setTimeout(() => this.emit("end"), this.time || 120000)
 		this.on('end', () => {
 			if (this.reactionsDone && !this.message.deleted && this.message.guild) this.message.reactions.removeAll().catch(() => null);
 				setTimeout(async () => {
@@ -139,9 +127,7 @@ class ReactionHandler extends ReactionCollector {
 						}
 					]
 				})
-				.then(() => {
-					if(!this.message.deleted) this.message.del({ timeout: 20000, reason: "Auto" });
-				})
+				.then(() => this.message.del({ timeout: 20000, reason: "Auto" }))
 			}, 5000)
 			})
 }

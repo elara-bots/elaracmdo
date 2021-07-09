@@ -40,17 +40,13 @@ module.exports = require('discord.js').Structures.extend('Guild', Guild => {
 			 */
 			this.Commands = "";
 		}
-
-		/**
-		 * @returns {string}
-		 */
-		getColor(){ return this.color ?? global.util.colors.purple; };
 		
 		setPrefix(thing){
 			this.commandPrefix = thing;
 			this._commandPrefix = thing;
 			return thing;
-		};
+		}
+
 		/**
 		 * Command prefix in the guild. An empty string indicates that there is no prefix, and only mentions will be used.
 		 * Setting to `null` means that the prefix from {@link CommandoClient#commandPrefix} will be used instead.

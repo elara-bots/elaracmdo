@@ -1,29 +1,30 @@
 const { Command } = require('elaracmdo');
 
 module.exports = class NCommand extends Command {
-         constructor(client) {
-           super(client, {
-              name: 'prefix',
-              memberName: 'prefix',
-              aliases: [`setprefix`],
-              examples: [`${client.commandPrefix}prefix`],
-              description: 'Checks the prefix',
-              group: 'bot',
-              guarded: true,
-              clientPermissions: global.PERMS.basic,
-              throttling: { usage: 3, duration: 10 },
-              args: [
-                  {
-                    key: 'prefix',
-                    prompt: 'What do you want the new prefix to be?',
-                    type: 'string',
-                    default: '',
-                    min: 1,
-                    max: 150
-                  }
-              ]
-  });
-}
+    constructor(client) {
+        super(client, {
+          name: 'prefix',
+          aliases: [`setprefix`],
+          examples: [
+              `${global.PREFIX}prefix`
+          ],
+          description: 'Checks the prefix',
+          group: 'bot',
+          guarded: true,
+          clientPermissions: global.PERMS.basic,
+          throttling: { usage: 3, duration: 10 },
+          args: [
+              {
+                key: 'prefix',
+                prompt: 'What do you want the new prefix to be?',
+                type: 'string',
+                default: '',
+                min: 1,
+                max: 150
+              }
+          ]
+    });
+  }
     async run(message, { prefix }) {
           if(!message.guild) return message.custom(`My prefix is: \`${this.client.commandPrefix}\``);
           let db = await this.client.dbs.getSettings(message.guild);
@@ -39,7 +40,7 @@ module.exports = class NCommand extends Command {
           message.guild._commandPrefix = this.client.commandPrefix;
           db.save().catch(() => {});
           return message.success(`The prefix is now: \`${message.client.commandPrefix}\` or \`@${message.client.user.tag}\``);
-        };
+        }
         db.prefix = change.toLowerCase();
         db.save().catch(() => {});
         message.guild.commandPrefix = change.toLowerCase();

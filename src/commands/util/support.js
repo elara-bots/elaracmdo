@@ -4,9 +4,10 @@ module.exports = class SCommand extends Command {
     constructor(client) {
         super(client, {
             name: "support",
-            memberName: "support",
             aliases: [`botsupport`],
-            examples: [`${client.commandPrefix}support`],
+            examples: [
+                `${global.PREFIX}support`
+            ],
             description: "Gives you the invite to the support server",
             group: "bot",
             clientPermissions: global.PERMS.basic,

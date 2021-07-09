@@ -1,8 +1,7 @@
 const { Client, User, Message, Collection, SnowflakeUtil, GuildMember, Channel } = require('discord.js'),
-	   util = require("./util"),
-	   CommandoRegistry = require('./registry'),
-	   CommandDispatcher = require('./dispatcher'),
-	   sleep = (ms) => new Promise((res) => setTimeout(res, ms))
+		CommandoRegistry = require('./registry'),
+		CommandDispatcher = require('./dispatcher'),
+		sleep = (ms) => new Promise((res) => setTimeout(res, ms))
 /**
  * Discord.js Client with a command framework
  * @extends {Client}
@@ -40,7 +39,6 @@ class CommandoClient extends Client {
 		 * @type {CommandDispatcher}
 		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
-		this.util = util
         this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
@@ -53,15 +51,13 @@ class CommandoClient extends Client {
 		 * @private
 		 */
 		this._commandPrefix = null;
-
-		this.say = (message, options = { content: null, embeds: [], embed: {} }, ...messageOptions) => {
-			let sendObj = {
-				...messageOptions
-			};
+		this.say = (message, options = { content: null, embeds: [ ], embed: { }, components: [  ] }, messageOptions) => {
+			let sendObj = { ...messageOptions };
 
 			if(options.embeds && Array.isArray(options.embeds)) sendObj.embeds = options.embeds;
 			if(options.content) sendObj.content = options.content;
-			if(options.embed) sendObj.embeds = [
+			if(options.components) sendObj.components = options.components;
+			if(options.embed && !options.embeds) sendObj.embeds = [
 				{
 					title: options?.embed?.title ?? "INFO",
 					description: options?.embed?.description ?? undefined,
@@ -106,11 +102,11 @@ class CommandoClient extends Client {
 						}else{
 							this.users.fetch(options[type])
 							.catch((err) => {
-								this.emit("warn", `Unable to fetch ${type}: ${owner}`);
+								this.emit("warn", `Unable to fetch ${type}: ${options[type]}`);
 								this.emit("error", err);
 							})
 						}
-					};
+					}
 				};
 				fetch([ "owner", "support" ]);
 			})
@@ -158,7 +154,8 @@ class CommandoClient extends Client {
 		let support = [];
 		for(const sup of this.options.support) support.push(this.users.cache.get(sup));
 		return support;
-	};
+	}
+
 	/**
 	 * Checks whether a user is an owner of the bot (in {@link CommandoClientOptions#owner})
 	 * @param {UserResolvable} user - User to check for ownership
@@ -174,7 +171,7 @@ class CommandoClient extends Client {
 			if(this.options.owner instanceof Set) return this.options.owner.has(user.id);
 			throw new RangeError('The client\'s "owner" option is an unknown value.');
 		}catch(err){
-	 	   	return false;
+			return false;
 		}
 	}
 	/**
@@ -195,16 +192,19 @@ class CommandoClient extends Client {
 		}catch(err){
 			return false;
 		}
-	};
+	}
+
 	chunk(s = [], c = 10) {
 		let R = [];
 		for (var i = 0; i < s.length; i += c) R.push(s.slice(i, i + c));
 		return R;
-	};
-	getPrefix(guild){ return guild?.commandPrefix ?? this.commandPrefix; };
+	}
 
-	async destroy() { await super.destroy(); };
-	  /**
+	getPrefix(guild){ return guild?.commandPrefix ?? this.commandPrefix; }
+
+	async destroy() { await super.destroy(); }
+
+	/**
     * Get previous messages in a channel
 	* @arg {import("discord.js").TextChannel} [channel]
     * @arg {Number} [limit=50] The max number of messages to get
@@ -230,7 +230,8 @@ class CommandoClient extends Client {
             return get(before, after);
         }
         return (await channel.messages.fetch({ limit, before, after, around }).catch(() => new Collection())).array();
-    };
+    }
+
 	async deleteMessages(channel, messageIDs) {
 		if(messageIDs.length <= 0) throw new Error(`[CLIENT:deleteMessages]: No messages provided!`);
 		messageIDs = messageIDs.filter(id => Date.now() - SnowflakeUtil.deconstruct(id).timestamp < 1209600000)
@@ -238,7 +239,7 @@ class CommandoClient extends Client {
 		if(messageIDs.length <= 100) {
 			await channel.bulkDelete(messageIDs, true).catch(() => new Collection());
 			return messageIDs;
-		};
+		}
 		let [ chunks, i ] = [
 			this.chunk(messageIDs, 100),
 			0
@@ -246,9 +247,10 @@ class CommandoClient extends Client {
 		for (const chunk of chunks) {
 			i++;
 			setTimeout(() => channel.bulkDelete(chunk, true).catch(() => new Collection()), i * 2000);
-		};
+		}
 		return messageIDs;
-	};
+	}
+
 	async purgeChannel(channelID, limit, filter, before, after) {
 		let channel = this.channels.resolve(channelID)
 		if(!channel) return 0;
@@ -297,7 +299,7 @@ class CommandoClient extends Client {
         };
         await del(before, after);
         return checkToDelete();
-    };
+    }
 }
 
 module.exports = CommandoClient;
