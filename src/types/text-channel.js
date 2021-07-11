@@ -12,7 +12,7 @@ class TextChannelArgumentType extends ArgumentType {
 		if(matches) {
 			try {
 				const channel = msg.guild.channels.resolve(matches[1]);
-				if(!channel || channel.type !== 'text') return false;
+				if(!channel || channel.type !== 'GUILD_TEXT') return false;
 				if(arg.oneOf && !arg.oneOf.includes(channel.id)) return false;
 				return true;
 			} catch(err) {
@@ -55,11 +55,11 @@ class TextChannelArgumentType extends ArgumentType {
 }
 
 function channelFilterExact(search) {
-	return chan => chan.type === 'text' && chan.name.toLowerCase() === search;
+	return chan => chan.type === 'GUILD_TEXT' && chan.name.toLowerCase() === search;
 }
 
 function channelFilterInexact(search) {
-	return chan => chan.type === 'text' && chan.name.toLowerCase().includes(search);
+	return chan => chan.type === 'GUILD_TEXT' && chan.name.toLowerCase().includes(search);
 }
 
 module.exports = TextChannelArgumentType;

@@ -90,7 +90,7 @@ module.exports = class BotinfoCommand extends Command {
                 `${emojis.dboats} ${a(`Discord Boats`, `https://discord.boats/bot/${botID}`)}`,
                 `${emojis.dbots} ${a(`Discord Bots`, `https://discord.bots.gg/bots/${botID}`)}`,
                 `${emojis.del} ${a(`Discord Extreme List`, `https://discordextremelist.xyz/en-US/bots/${botID}`)}`,
-                `${emojis.bfd} ${a(`Bots For Discord`, `https://botsfordiscord.com/bot/${botID}`)}`,
+                `${emojis.bfd} ${a(`Bots For Discord`, `https://discords.com/bot/${botID}`)}`,
                 `${emojis.dbl} ${a(`Discord Bot List`, `https://discordbotlist.com/bots/${botID}`)}`
             ]
         let user = this.client.user;

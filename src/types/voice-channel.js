@@ -12,7 +12,7 @@ class VoiceChannelArgumentType extends ArgumentType {
 		if(matches) {
 			try {
 				const channel = msg.guild.channels.resolve(matches[1]);
-				if(!channel || channel.type !== 'voice') return false;
+				if(!channel || channel.type !== 'GUILD_VOICE') return false;
 				if(arg.oneOf && !arg.oneOf.includes(channel.id)) return false;
 				return true;
 			} catch(err) {
@@ -55,11 +55,11 @@ class VoiceChannelArgumentType extends ArgumentType {
 }
 
 function channelFilterExact(search) {
-	return chan => chan.type === 'voice' && chan.name.toLowerCase() === search;
+	return chan => chan.type === 'GUILD_VOICE' && chan.name.toLowerCase() === search;
 }
 
 function channelFilterInexact(search) {
-	return chan => chan.type === 'voice' && chan.name.toLowerCase().includes(search);
+	return chan => chan.type === 'GUILD_VOICE' && chan.name.toLowerCase().includes(search);
 }
 
 module.exports = VoiceChannelArgumentType;

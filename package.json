@@ -18,8 +18,5 @@
 	},
 	"engines": {
 		"node": ">=14.15.3"
-	},
-	"optionalDependencies": {
-		"discord.js": "github:elara-bots/discord.js#master"
 	}
 }
