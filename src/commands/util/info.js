@@ -55,7 +55,7 @@ module.exports = class BotinfoCommand extends Command {
                     author: { name: "Discord Snowflake", icon_url: `https://cdn.discordapp.com/emojis/${global.util.emojis.rdiscord}.png`, url: this.client.options.invite },
                     title: "Information",
                     thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
-                    description: `${global.s}Date: ${this.client.f.time(info.date, true)}\n${global.s}Timestamp: ${info.timestamp}\n${global.s}Increment: ${info.increment}\n${global.s}IDs:\n${global.ss}Process: ${info.processID}\n${global.ss}Worker: ${info.workerID}`,
+                    description: `${global.s}Date: ${this.client.f.time(info.date, true)}\n${global.s}Timestamp: ${info.timestamp}\n${global.s}Increment: ${info.increment}\n${global.s}IDs:\n${global.ss}Process: ${info.processId}\n${global.ss}Worker: ${info.workerId}`,
                     fields: fields.length !== 0 ? [ { name: "Extra", value: fields.join("\n") } ] : undefined,
                     color: global.util.colors.purple,
                     timestamp: new Date(),
