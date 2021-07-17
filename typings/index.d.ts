@@ -517,32 +517,6 @@ declare module 'elaracmdo' {
 			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<GuildMember|null>;
 			coinsCheck(guild: CommandoGuild): Promise<boolean>;
 		};
-		
-		public developer: {
-			Format(amount: number): string;
-			Enabled(boolean: boolean): string;
-			shards(id: number, event: string, color: string, footer: { text: string, icon_url: string }|string, error: string): Promise<void>;
-		};
-		
-		public embed(message: CommandoMessage, options: {
-			title: string,
-			timestamp: string,
-			description: string,
-			color: string,
-			image: string,
-			thumbnail: string,
-			fields: { name: string, value: string, inline: boolean }[],
-			author: {
-				name: string,
-				icon_url: string;
-				url: string;
-			},
-			footer: {
-				text: string,
-				icon_url: string
-			}
-		}): Promise<void>;
-
 		public errors: {
 			event(client: CommandoClient, event: string, error: string, guild: CommandoGuild): Promise<void>;
 		};
