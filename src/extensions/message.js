@@ -99,7 +99,7 @@ register("typing", function (timeout = 5000) {
 });
 
 register("run", async function () { // eslint-disable-line complexity
-    if(!this.author || !this.author.bot || this.webhookID) return;
+    if(!this.author || this.author.bot || this.webhookID) return;
     if(!this.client || !this.client.user) return;
     let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
     if(blacklist(this) && !support) return;
