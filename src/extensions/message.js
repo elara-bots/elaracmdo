@@ -81,10 +81,10 @@ module.exports = Structures.extend('Message', Message => {
     		const { timeout = 0, reason } = options;
         	if (timeout <= 0) return this.channel.messages.delete(this.id, reason).then(() => this);	
             return new Promise(resolve => {	
-                this.client.setTimeout(() => {	
+                  setTimeout(() => {	
                   	if(this.deleted) return resolve(`The message was already deleted.`); 
                   	resolve(this.del({ reason }));	
-                }, timeout);	
+                }, timeout).unref();
             });
 		}
 		/**
