@@ -1,16 +1,11 @@
-const { Message, MessageEmbed, Util: { escapeMarkdown, splitMessage } } = require("discord.js");
-const functions = {
-	blacklist: (message) => {
-		if(!message || !message.client) return false;
-		if(message.client.isOwner(message.author.id)) return false;
-		if(message.client.GlobalUsers.includes(message.author.id)) return true;
-		if(!message.guild) return false;
-		if(message.client.config?.ignore?.guilds?.includes(message.guild?.id)) return true;
-		return false;
-	}
-}
-
-const register = (name, value) => Message.prototype[name] = value;
+const { Message, MessageEmbed, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
+        blacklist = (message) => {
+		    if(message.client.GlobalUsers.includes(message.author.id)) return true;
+		    if(!message.guild) return false;
+		    if(message.client.config?.ignore?.guilds?.includes(message.guild.id)) return true;
+		    return false;
+        },
+        register = (name, value) => Message.prototype[name] = value;
 
 for (const name of [ "command", "argString", "patternMatches", "responses", "responsePositions" ]) register(name, null);
 
@@ -97,56 +92,46 @@ register("success", function (content, text, options) { return this.custom(`${gl
 register("error", function (content, text, options) { return this.custom(`${global.util.emojis.nemoji} ${content}`, text, options); });
 
 register("typing", function (timeout = 5000) {
+    if(this.channel.sendTyping) return this.channel.sendTyping()?.catch?.(() => null);
     this.channel.startTyping(true);
     setTimeout(() => this.channel.stopTyping(true), timeout);
     return true;
 });
 
-register("run", async function() { // eslint-disable-line complexity
-    if(!this.author) return this.command.onBlock(this, `no_author`);
-    if(this.author.bot || this.webhookID) return this.command.onBlock(this, "bot_or_webhook");
+register("run", async function () { // eslint-disable-line complexity
+    if(!this.author || !this.author.bot || this.webhookID) return;
+    if(!this.client || !this.client.user) return;
     let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
-    
+    if(blacklist(this) && !support) return;
     if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
-    if(functions.blacklist(this) && !support) return this.command.onBlock(this, "blacklist");
     if(this.client.GlobalCmds.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
-    
+    let db = null;
     if(this.guild) {
-        if(!this.member) return this.command.onBlock(this, "no_member");
-        if(this.client.config?.ignore?.guilds?.includes(this.guild.id) && !support) return this.command.onBlock(this, "guild_ignored");
-        if(!this.guild.members.cache.has(this.author.id)) return this.command.onBlock(this, "member_not_cached");
+        if(!this.member) return;
+        if(this.client.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
+        if(!this.guild.members.cache.has(this.author.id)) return;
         if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
         if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
         if(this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.PERMS.manage.messages) && !owner) return this.command.onBlock(this, "channel");
+        if(this.client.dbs?.getSettings) db = await this.client.dbs.getSettings(this.guild);
     }else {
         if(this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
     }
-    /**
-     * @returns {Promise<boolean>}
-     */
     const checkPerms = () => {
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (_) => {
-            if(!this.member) return _(false);
-            if(this.member.roles.cache.filter(c => c.id !== this.guild.id).size === 0) return _(false);
-            if(!this.client || !this.client.user) return _(false);
-            if(!this.client.dbs?.getSettings) return _(false);
-            if(this.command.ownerOnly && !this.client.isOwner(this.author.id)) return _(false);
-            if(this.client.isOwner(this.author.id)) return _(false);
-            let db = await this.client.dbs.getSettings(this.guild);
-            if(!db) return _(false);
-            if(!db.commands || !Array.isArray(db.commands)) return _(false);
-            let find = db.commands.find(c => c.name === this.command.name);
-            if(!find) return _(false);
-            if(this.member.roles.cache.filter(c => find.roles?.includes(c)).size !== 0) return _(true);
-            return _(false); 
-        })
+        if(this.member.roles.cache.filter(c => c.id !== this.guild.id).size === 0) return false;
+        if(!db) return false;
+        if(this.client.isOwner(this.author.id)) return false;
+        if(!Array.isArray(db.commands)) return false;
+        let find = db.commands.find(c => c.name === this.command.name);
+        if(!find) return false;
+        if(this.member.roles.cache.filter(c => find.roles?.includes(c)).size !== 0) return true;
+        return false; 
     };
     // Ensure the user has permission to use the command
     const hasPermission = this.command.hasPermission(this);
     if(!hasPermission || typeof hasPermission === 'string') {
         let perm = false;
-        if(this.guild && this.member) perm = await checkPerms();
+        if(this.guild) perm = checkPerms();
         if(!perm) {
             const data = { response: typeof hasPermission === 'string' ? hasPermission : undefined };
             return this.command.onBlock(this, 'permission', data);
@@ -185,9 +170,8 @@ register("run", async function() { // eslint-disable-line complexity
         collResult = await this.command.argsCollector.obtain(this, provided);
         if(collResult.cancelled) {
             if(collResult.prompts.length === 0) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
-            if(this.guild && this.client.dbs?.getSettings){
-                let db = await this.client.dbs.getSettings(this.guild);
-                if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
+            if(this.guild && db){
+                if(db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
                     let candelete = this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages) || false;
                     let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
                     if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
@@ -196,9 +180,8 @@ register("run", async function() { // eslint-disable-line complexity
             }
             return this.error(`Command Cancelled`);
         }
-        if(this.guild && this.client.dbs?.getSettings){
-            let db = await this.client.dbs.getSettings(this.guild);
-            if(db && db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
+        if(this.guild && db){
+            if(db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
                 let candelete = this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages) || false;
                 let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
                 if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
@@ -209,41 +192,15 @@ register("run", async function() { // eslint-disable-line complexity
     }
     if(!args) args = this.parseArgs();
     const fromPattern = Boolean(this.patternMatches);
-
-    // Run the command
     if(throttle) throttle.usages++;
-    const typingCount = this.channel.typingCount;
     try {
         const promise = this.command.run(this, args, fromPattern, collResult);
-        /**
-         * Emitted when running a command
-         * @event CommandoClient#commandRun
-         * @param {Command} command - Command that is being run
-         * @param {Promise} promise - Promise for the command result
-         * @param {CommandoMessage} message - Command message that the command is running from (see {@link Command#run})
-         * @param {Object|string|string[]} args - Arguments for the command (see {@link Command#run})
-         * @param {boolean} fromPattern - Whether the args are pattern matches (see {@link Command#run})
-         * @param {?ArgumentCollectorResult} result - Result from obtaining the arguments from the collector
-         * (if applicable - see {@link Command#run})
-         */
         this.client.emit('commandRun', this.command, promise, this, args, fromPattern, collResult);
         const retVal = await promise;
         if(!(retVal instanceof Message || retVal instanceof Array || retVal === null || retVal === undefined)) throw new TypeError(`Command ${this.command.name}'s run() resolved with an unknown type\n(${retVal !== null ? retVal && retVal.constructor ? retVal.constructor.name : (typeof retVal) : null}).\nCommand run methods must return a Promise that resolve with a Message, Array of Messages, or null/undefined.`);
         return retVal;
     } catch(err) {
-        /**
-         * Emitted when a command produces an error while running
-         * @event CommandoClient#commandError
-         * @param {Command} command - Command that produced an error
-         * @param {Error} err - Error that was thrown
-         * @param {CommandoMessage} message - Command message that the command is running from (see {@link Command#run})
-         * @param {Object|string|string[]} args - Arguments for the command (see {@link Command#run})
-         * @param {boolean} fromPattern - Whether the args are pattern matches (see {@link Command#run})
-         * @param {?ArgumentCollectorResult} result - Result from obtaining the arguments from the collector
-         * (if applicable - see {@link Command#run})
-         */
         this.client.emit('commandError', this.command, err, this, args, fromPattern, collResult);
-        if(this.channel.typingCount > typingCount) this.channel.stopTyping();
         return this.command.onError(err?.message ?? err, this, args, fromPattern, collResult);
     }
 });

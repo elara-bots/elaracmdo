@@ -1,4 +1,4 @@
-const { Command } = require('elaracmdo');
+const Command = require("../base");
 
 module.exports = class NCommand extends Command {
     constructor(client) {
@@ -6,7 +6,8 @@ module.exports = class NCommand extends Command {
           name: 'prefix',
           aliases: [`setprefix`],
           examples: [
-              `${global.PREFIX}prefix`
+              `${global.PREFIX}prefix`,
+              `${global.PREFIX}prefix <new_prefix>`
           ],
           description: 'Checks the prefix',
           group: 'bot',

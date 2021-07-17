@@ -1,11 +1,7 @@
 const { DISCORD_INVITE, LINK } = { DISCORD_INVITE: /(discord\.(gg|io|me|li|com)\/.+|discordapp\.com\/invite\/.+|discord\.com\/invite\/.+)/gi, LINK: /http(s)?:\/\//gi  };
 
 module.exports = class Purger {
-    /**
-     * @param {import("discord.js").TextChannel} channel 
-     * @param {number} amount
-     * @param {boolean} cmd
-     */
+
     constructor(channel, amount = 1, cmd = false) {
         this.channel = channel;
         this.amount = Number(amount ?? 1);
@@ -13,39 +9,20 @@ module.exports = class Purger {
         this.permissions = [ ...global.PERMS.basic, global.PERMS.manage.messages ];
     }
 
-    /**
-    * @param {number} amount 
-    */
     links(amount) { return this.purge(m => !m.pinned && !m.content?.match(LINK), amount) }
-    /**
-    * @param {number} amount 
-    */
+
     bots(amount) { return this.purge(m => !m.pinned && m.author.bot, amount) }
-    /**
-    * @param {number} amount 
-    */
+
     images(amount) { return this.purge(m => !m.pinned && !m.content?.match(LINK) && !m.attachments.size, amount) }
-    /**
-    * @param {number} amount 
-    */
+
     text(amount) { return this.purge(m => !m.pinned && !m.attachments.size && !m.embeds.length && !m.content?.match(LINK), amount) }
-    /**
-    * @param {number} amount 
-    */
+
     embeds(amount) { return this.purge(m => !m.pinned && m.embeds.length !== 0, amount); }
-    /**
-    * @param {number} amount 
-    */
+
     client(amount) { return this.purge(m => !m.pinned && m.author.bot === m.client.user.id, amount) }
-    /**
-    * @param {number} amount 
-    */
+
     invites(amount) { return this.purge(m => !m.pinned && m.content?.match(DISCORD_INVITE), amount) }
-    /**
-     * 
-     * @param {import("discord.js").User} user 
-     * @param {number} amount 
-     */
+
     user(user, amount) { return this.purge(m => !m.pinned && m.author.id === user.id, amount); }
 
     normal(amount) { return this.purge(m => !m.pinned, amount) }
@@ -82,11 +59,6 @@ module.exports = class Purger {
             default: return this.normal(amount)
         }
     }
-
-    /**
-     * @param {Function} filter 
-     * @param {number} amount 
-     */
 
     async purge(filter, amount) {
         let messages = await this.fetch();

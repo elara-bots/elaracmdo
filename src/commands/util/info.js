@@ -1,5 +1,5 @@
-const { Command } = require('elaracmdo'),
-      { MessageEmbed } = require('discord.js');
+const  Command = require("../base"),
+    { MessageEmbed } = require('discord.js');
 
 module.exports = class BotinfoCommand extends Command {
     constructor(client) {

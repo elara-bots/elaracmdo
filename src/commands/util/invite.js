@@ -1,10 +1,13 @@
-const { Command } = require('elaracmdo');
+const Command = require("../base");
+
 module.exports = class NCommand extends Command {
     constructor(client) {
         super(client, {
             name: "invite",
             aliases: ["botinvite", `inv`, `bot`],
-            examples: [`${client.commandPrefix}invite <bot id here>`],
+            examples: [
+                `${global.PREFIX}invite (BOT_ID)`
+            ],
             description: "Gives you a invite for the bot id you provide.",
             group: "info",
             clientPermissions: global.PERMS.basic,

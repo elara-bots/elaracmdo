@@ -1,10 +1,9 @@
 const Command = require("../base");
 
-module.exports = class DisableCommandCommand extends Command {
+module.exports = class DisableCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'disable',
-			aliases: ['disable-command', 'cmd-off', 'command-off'],
 			group: 'util',
 			description: 'Disables a command or command group.',
 			details: `The argument must be the name/ID (partial or whole) of a command or command group.\nOnly people with manage server permission can use this command.`,

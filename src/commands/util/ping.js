@@ -1,5 +1,6 @@
 const Command = require('../base'),
-      getFormat = (date, compare = true) => require('moment').duration(compare ? new Date().getTime() - date.getTime() : date).format("D[d], H[h], m[m], s[s]");
+      moment = require("moment"),
+      getFormat = (date, compare = true) => moment.duration(compare ? new Date().getTime() - date.getTime() : date).format("D[d], H[h], m[m], s[s]");
 
 module.exports = class PingCommand extends Command {
     constructor(client) {
@@ -8,7 +9,9 @@ module.exports = class PingCommand extends Command {
             aliases: ["pong", "pung", `uptime`],
             group: 'bot',
             description: 'Shows the ping for the bot',
-            examples: ['ping'],
+            examples: [
+                `${global.PREFIX}ping`
+            ],
             clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 }
         });

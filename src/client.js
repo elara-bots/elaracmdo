@@ -82,10 +82,9 @@ class CommandoClient extends Client {
 			if(message instanceof Channel) return permcheck(message);
 			return null;
 		}
-		// Set up command handling
-		const msgErr = (err) => this.emit('error', err);
-		this.on('messageCreate', message => this.dispatcher.handleMessage(message).catch(msgErr));
-		this.on('messageUpdate', (oldMessage, newMessage) => this.dispatcher.handleMessage(newMessage, oldMessage).catch(msgErr));
+		
+		this.on('messageCreate', message => this.dispatcher.handleMessage(message).catch((err) => this.emit('error', err)));
+		this.on('messageUpdate', (oldMessage, newMessage) => this.dispatcher.handleMessage(newMessage, oldMessage).catch((err) => this.emit('error', err)));
 
 		if(options.owner || options.support){
 			this.once("ready", () => {
