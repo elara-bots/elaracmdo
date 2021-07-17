@@ -517,14 +517,9 @@ declare module 'elaracmdo' {
 			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<GuildMember|null>;
 			coinsCheck(guild: CommandoGuild): Promise<boolean>;
 		};
-		public errors: {
-			event(client: CommandoClient, event: string, error: string, guild: CommandoGuild): Promise<void>;
-		};
-		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string>;
 		public getTimeLeft(date: Date, type: string): boolean;
 		public getTimeRemaining(date: Date, type: string): string;
 		public time(date?: Date, discordFormat?: boolean, format?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): string;
-		public getMessage(guild: CommandoGuild, type: string, user: User, def: string): Promise<string|null>;
 		public ms(ms: number, long: boolean): string;
 		public isBooster(client: CommandoClient, userID: string): boolean;
 		public proper(name: string): string;
