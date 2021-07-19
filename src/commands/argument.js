@@ -91,6 +91,7 @@ class Argument {
 			[], [], [], 0
 		];
 
+		// eslint-disable-next-line no-constant-condition
 		while(true) {
 			let val = vals && vals[currentVal] ? vals[currentVal] : null;
 			let valid = val ? await this.validate(val, msg) : false;
@@ -174,24 +175,12 @@ class Argument {
 		if(typeof info.prompt !== 'string') throw new TypeError('Argument prompt must be a string.');
 		if(info.error && typeof info.error !== 'string') throw new TypeError('Argument error must be a string.');
 		if(info.type && typeof info.type !== 'string') throw new TypeError('Argument type must be a string.');
-		if(info.type && !info.type.includes('|') && !client.registry.types.has(info.type)) {
-			throw new RangeError(`Argument type "${info.type}" isn't registered.`);
-		}
-		if(!info.type && !info.validate) {
-			throw new Error('Argument must have either "type" or "validate" specified.');
-		}
-		if(info.validate && typeof info.validate !== 'function') {
-			throw new TypeError('Argument validate must be a function.');
-		}
-		if(info.parse && typeof info.parse !== 'function') {
-			throw new TypeError('Argument parse must be a function.');
-		}
-		if(!info.type && (!info.validate || !info.parse)) {
-			throw new Error('Argument must have both validate and parse since it doesn\'t have a type.');
-		}
-		if(typeof info.wait !== 'undefined' && (typeof info.wait !== 'number' || Number.isNaN(info.wait))) {
-			throw new TypeError('Argument wait must be a number.');
-		}
+		if(info.type && !info.type.includes('|') && !client.registry.types.has(info.type)) throw new RangeError(`Argument type "${info.type}" isn't registered.`);
+		if(!info.type && !info.validate) throw new Error('Argument must have either "type" or "validate" specified.');
+		if(info.validate && typeof info.validate !== 'function') throw new TypeError('Argument validate must be a function.');
+		if(info.parse && typeof info.parse !== 'function') throw new TypeError('Argument parse must be a function.');
+		if(!info.type && (!info.validate || !info.parse)) throw new Error('Argument must have both validate and parse since it doesn\'t have a type.');
+		if(typeof info.wait !== 'undefined' && (typeof info.wait !== 'number' || Number.isNaN(info.wait))) throw new TypeError('Argument wait must be a number.');
 	}
 
 	static determineType(client, id) {

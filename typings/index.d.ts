@@ -694,9 +694,6 @@ declare module 'elaracmdo' {
 		public addOption(name: string, value: string, inline: boolean): void;
 		public run(message: CommandoMessage, options: object): Promise<void>;
 	}
-	export class util {
-		public static disambiguation(items: any[], label: string, property?: string): string;
-	}
 
 	type ArgumentCollectorResult<T = object> = {
 		values: T | null;

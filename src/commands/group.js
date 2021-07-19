@@ -21,8 +21,8 @@ class CommandGroup {
 	}
 
 	setEnabledIn(guild, enabled) {
-		if(typeof guild === 'undefined') throw new TypeError('Guild must not be undefined.');
-		if(typeof enabled === 'undefined') throw new TypeError('Enabled must not be undefined.');
+		if(!guild) throw new TypeError("You need to provide a guild.");
+		if(typeof enabled !== 'boolean') throw new TypeError("Enabled isn't a boolean");
 		if(this.guarded) throw new Error('The group is guarded.');
 		if(!guild) {
 			this._globalEnabled = enabled;
@@ -35,8 +35,7 @@ class CommandGroup {
 	isEnabledIn(guild) {
 		if(this.guarded) return true;
 		if(!guild) return this._globalEnabled;
-		guild = this.client.guilds.resolve(guild);
-		return guild.isGroupEnabled(this);
+		return this.client.guilds.resolve(guild).isGroupEnabled(this);
 	}
 }
 

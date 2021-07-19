@@ -11,7 +11,7 @@ register("Commands", "");
 register("setPrefix", function(thing) {
     this.commandPrefix = thing;
     this._commandPrefix = thing;
-    return thing;
+    return;
 });
 
 Reflect.defineProperty(Guild.prototype, "commandPrefix", {

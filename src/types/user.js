@@ -1,6 +1,5 @@
-const ArgumentType = require('./base');
-const { disambiguation } = require('../util');
-const { Util: { escapeMarkdown } } = require('discord.js');
+const ArgumentType = require('./base'),
+	{ Util: { escapeMarkdown } } = require('discord.js');
 
 class UserArgumentType extends ArgumentType {
 	constructor(client) {
@@ -34,7 +33,7 @@ class UserArgumentType extends ArgumentType {
 		}
 		if(exactMembers.size > 0) members = exactMembers;
 		return members.size <= 15 ?
-			`${disambiguation(
+			`${this.disambiguation(
 				members.map(mem => `${escapeMarkdown(mem.user.username)}#${mem.user.discriminator}`), 'users', null
 			)}\n` :
 			'Multiple users found. Please be more specific.';

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 class ArgumentType {
 
 	constructor(client, id) {
@@ -20,6 +21,9 @@ class ArgumentType {
 	isEmpty(val, msg, arg) { 
 		if(Array.isArray(val)) return val.length === 0;
 		return !val;
+	}
+	disambiguation(items, label, property = "name") {
+		return `Multiple ${label} found, please be more specific: ${items.map(item => `"${(property ? item[property] : item).replace(/ /g, '\xa0')}"`).join(', ')}`
 	}
 }
 

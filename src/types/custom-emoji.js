@@ -1,6 +1,5 @@
-const ArgumentType = require('./base');
-const { disambiguation } = require('../util');
-const { Util: { escapeMarkdown } } = require('discord.js');
+const ArgumentType = require('./base'),
+	{ Util: { escapeMarkdown } } = require('discord.js');
 
 class CustomEmojiArgumentType extends ArgumentType {
 	constructor(client) {
@@ -19,7 +18,7 @@ class CustomEmojiArgumentType extends ArgumentType {
 		if(exactEmojis.size === 1) return true;
 		if(exactEmojis.size > 0) emojis = exactEmojis;
 		return emojis.size <= 15 ?
-			`${disambiguation(emojis.map(emoji => escapeMarkdown(emoji.name)), 'emojis', null)}\n` :
+			`${this.disambiguation(emojis.map(emoji => escapeMarkdown(emoji.name)), 'emojis', null)}\n` :
 			'Multiple emojis found. Please be more specific.';
 	}
 

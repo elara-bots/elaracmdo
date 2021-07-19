@@ -11,6 +11,5 @@ module.exports = {
 	RichDisplay: require('./extensions/packages/react/display'),
 	RichMenu: require('./extensions/packages/react/menu'),
 	ReactionHandler: require('./extensions/packages/react/handler'),
-	Purger: require('./extensions/packages/purger/index'),
-	util: require('./util')
+	Purger: require('./extensions/packages/purger/index')
 };

@@ -1,9 +1,9 @@
 const { Message, MessageEmbed, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
         blacklist = (message) => {
-		    if(message.client.GlobalUsers.includes(message.author.id)) return true;
-		    if(!message.guild) return false;
-		    if(message.client.config?.ignore?.guilds?.includes(message.guild.id)) return true;
-		    return false;
+            if(message.client.GlobalUsers.includes(message.author.id)) return true;
+            if(!message.guild) return false;
+            if(message.client.config?.ignore?.guilds?.includes(message.guild.id)) return true;
+            return false;
         },
         register = (name, value) => Message.prototype[name] = value;
 
