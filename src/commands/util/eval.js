@@ -1,6 +1,6 @@
-const 	Command = require('../base'),
-      { inspect } = require('util'),
-		time = [];
+const Command = require('../base'),
+    { inspect } = require('util'),
+	time = [];
 
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
@@ -13,11 +13,7 @@ module.exports = class EvalCommand extends Command {
 			guarded: true,
             hidden: true,
 			args: [
-				{
-					key: 'script',
-					prompt: 'What code would you like to evaluate?',
-					type: 'string'
-				}
+				{ key: 'script', prompt: 'What code would you like to evaluate?', type: 'string' }
 			]
 		});
 		this.lastResult = null;
@@ -26,17 +22,19 @@ module.exports = class EvalCommand extends Command {
 
 	async run(message, args) {
 		if([ 'client[', 'bot[', '.token', '["token"]', "['token']", '[`token`]' ].filter(c => message.content.toLowerCase().includes(c)).length !== 0) return message.error(`How about you go shove your hands in a blender and turn it on, that sounds like a better idea, now if you don't mind.. please fuck off.`);
+		// eslint-disable-next-line no-unused-vars
 		let [ client, guild, evalembed ] = [
 			message.client,
 			(id) => this.client.guilds.cache.get(id) || this.client.guilds.cache.find(c => c.name && c.name.toLowerCase().includes(id.toLowerCase())),
 			{ title: "Results", author: { name: this.client.user.tag, icon_url: this.client.user.displayAvatarURL({ dynamic: true }) }, color: global.util.colors.purple, timestamp: new Date() },
 		];
 
+		// eslint-disable-next-line no-unused-vars
 		const doReply = async (val) => {
-			if(val instanceof Error) return message.channel.send({ embeds: [ { ...evalembed, title: "Callback Error", description: `\`${val}\`` } ] }).catch(() => null);
+			if(val instanceof Error) return message.channel.send({ embeds: [ { ...evalembed, title: "Callback Error", description: `\`${val}\`` } ] })
 			const result = await this.makeResultMessages(val, global.process.hrtime(this.hrStart));
-			if(Array.isArray(result)) for(const item of result) message.channel.send({ embeds: [ { ...evalembed, description: item } ] }).catch(() => null);
-			else return message.channel.send({ embeds: [ { ...evalembed, description: result } ] }).catch(() => null);
+			if(Array.isArray(result)) for(const item of result) message.channel.send({ embeds: [ { ...evalembed, description: item } ] })
+			else return message.channel.send({ embeds: [ { ...evalembed, description: result } ] })
 		};
 		let hrDiff;
 		try {
@@ -50,14 +48,14 @@ module.exports = class EvalCommand extends Command {
 			if(this.lastResult === undefined && message.content.toLowerCase().match(/-ignore|-i/gi)) return null;
 			hrDiff = global.process.hrtime(hrStart);
 		} catch(err) {
-			return message.channel.send({ embeds: [ { ...evalembed, title: "ERROR", description: `\`\`\`diff\n- ${err}\`\`\`` } ] }).catch(() => null);
+			return message.channel.send({ embeds: [ { ...evalembed, title: "ERROR", description: `\`\`\`diff\n- ${err}\`\`\`` } ] })
 		}
 		this.hrStart = global.process.hrtime();
 		let response = await this.makeResultMessages(this.lastResult, hrDiff, args.script, message.editable);
 		if (message.editable) {
             if (response instanceof Array) {
                 if (response.length > 0) response = response.slice(1, response.length - 1);
-                for (const re of response) message.channel.send({ content: re }).catch(() => null);
+                for (const re of response) message.channel.send({ content: re })
                 return null;
             } else {
 				if(response.length > 4096) return message.channel.send({ 
@@ -68,7 +66,7 @@ module.exports = class EvalCommand extends Command {
 						}
 					],
 					components: [ { type: 1, components: [ { label: "Output", style: 5, type: 2, url: await this.client.f.misc.bin('Output', await this.pastebinresponse(this.lastResult, hrDiff, args.script, message.editable)) } ] } ]
-				}).catch(() => null);
+				})
                 return message.channel.send({ 
 					embeds: [ 
 						{
@@ -77,7 +75,7 @@ module.exports = class EvalCommand extends Command {
 							footer: { text: `Executed in: ${time[0]}` }
 						}
 					] 
-				}).catch(() => null);
+				})
             }
         }else{
 			if(response.length > 4096) return message.channel.send({ 
@@ -88,7 +86,7 @@ module.exports = class EvalCommand extends Command {
 					}
 				],
 				components: [ { type: 1, components: [ { label: "Output", style: 5, type: 2, url: await this.client.f.misc.bin('Output', await this.pastebinresponse(this.lastResult, hrDiff, args.script, message.editable)) } ] } ]
-			}).catch(() => null);
+			})
 			return message.channel.send({ 
 				embeds: [ 
 					{
@@ -97,7 +95,7 @@ module.exports = class EvalCommand extends Command {
 						footer: { text: `Executed in: ${time[0]}` }
 					}
 				] 
-			}).catch(() => null);
+			})
         }
 	}
 
