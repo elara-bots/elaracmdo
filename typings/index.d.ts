@@ -303,7 +303,6 @@ declare module 'elaracmdo' {
 		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
-		public config: ConfigFile;
 		public f: FunctionsList;
 		public isOwner(user: UserResolvable): boolean;
 		public isSupport(user: UserResolvable): boolean;

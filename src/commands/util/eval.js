@@ -122,7 +122,7 @@ module.exports = class EvalCommand extends Command {
 		}
 	}
 	filterArgs(args){
-		return args.replace(new RegExp(this.client.config.token, 'g'), '');
+		return args.replace(new RegExp(this.client.token, 'g'), '');
 	}
 	get sensitivePattern() {
 		if(!this._sensitivePattern) {

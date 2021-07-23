@@ -165,7 +165,7 @@ class Command {
 	}
 
 	throttle(userID) {
-		if(!this.throttling || this.client.isOwner(userID) || this.client.config?.ignore?.cooldown?.includes(userID)) return null;
+		if(!this.throttling || this.client.isOwner(userID) || global.config?.ignore?.cooldown?.includes(userID)) return null;
 		let throttle = this._throttles.get(userID);
 		if(!throttle) {
 			throttle = { start: Date.now(), usages: 0, timeout: setTimeout(() => this._throttles.delete(userID), this.throttling.duration * 1000) };

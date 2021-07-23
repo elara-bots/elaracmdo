@@ -2,7 +2,7 @@ const { Message, MessageEmbed, Util: { escapeMarkdown, splitMessage } } = requir
         blacklist = (message) => {
             if(message.client.GlobalUsers.includes(message.author.id)) return true;
             if(!message.guild) return false;
-            if(message.client.config?.ignore?.guilds?.includes(message.guild.id)) return true;
+            if(global.config?.ignore?.guilds?.includes(message.guild.id)) return true;
             return false;
         },
         register = (name, value) => Message.prototype[name] = value;
@@ -108,7 +108,7 @@ register("run", async function () { // eslint-disable-line complexity
     let db = null;
     if(this.guild) {
         if(!this.member) return;
-        if(this.client.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
+        if(global.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
         if(!this.guild.members.cache.has(this.author.id)) return;
         if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
         if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
