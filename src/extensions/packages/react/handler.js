@@ -26,6 +26,7 @@ class ReactionHandler extends ReactionCollector {
 		else return this.stop();
 
 		this.on('collect', (reaction, user) => {
+			if(user.bot) return null;
 			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has(global.PERMS.manage.messages) && !this.message.deleted) reaction.users.remove(user.id).catch(() => null);
 			this[this.methodMap.get(reaction.emoji.name)](user);
 		});

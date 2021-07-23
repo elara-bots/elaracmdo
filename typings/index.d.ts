@@ -305,7 +305,6 @@ declare module 'elaracmdo' {
 		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
 		public config: ConfigFile;
 		public f: FunctionsList;
-		public services: ServicesList;
 		public isOwner(user: UserResolvable): boolean;
 		public isSupport(user: UserResolvable): boolean;
 		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;

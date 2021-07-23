@@ -43,6 +43,7 @@ class RichDisplay {
 	async run(message, options = {}) {
 		if (!this.footered) this._footer();
 		if (!options.filter) options.filter = () => true;
+		let slash = Boolean(options.isSlash);
 		const emojis = this._determineEmojis(
 			[],
 			!('stop' in options) || ('stop' in options && options.stop),
@@ -60,11 +61,11 @@ class RichDisplay {
 				color: message.client.getColor(message.guild)
 			}
 		]
-		const waitmsg = message.editable ? await message.edit({ embeds }).catch(() => null) : await message.boop({ embeds });
+		const waitmsg = message.editable ? await message.edit({ embeds, components: slash ? [] : undefined }).catch(() => null) : await message.boop({ embeds, components: slash ? [] : undefined });
 		if(!waitmsg) return message.error(`I was unable to post or edit the loading menu message.`);
 		for await (const emoji of emojis.filter(m => !m.deleted)) await waitmsg.react(emoji).catch(() => {});
 		setTimeout(async () => {
-			const msg = waitmsg.editable ? await waitmsg.edit({ embeds: [ this.pages[options.startPage || 0] ] }) : await message.channel.send({ embeds: [ this.pages[options.startPage || 0] ] }).catch(() => null);
+			const msg = waitmsg.editable ? await waitmsg.edit({ embeds: [ this.pages[options.startPage || 0] ], components: slash ? [] : undefined }) : await message.channel.send({ embeds: [ this.pages[options.startPage || 0] ], components: slash ? [] : undefined }).catch(() => null);
 			return new ReactionHandler(msg, (r, u) => emojis.includes(r.emoji.name) && !u.bot && options.filter(r, u), options, this, emojis);
 		}, 2000 + message.client.options.restTimeOffset)
 	}
