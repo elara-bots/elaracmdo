@@ -9,8 +9,8 @@ module.exports = class BotinfoCommand extends Command {
             aliases: [`info`, `binfo`],
             description: "Gives you the bots info, or info on a snowflake you provide.",
             examples: [
-                `${global.PREFIX}botinfo`, 
-                `${global.PREFIX}botinfo (Snowflake/ID)`
+                `%PREFIX%botinfo`, 
+                `%PREFIX%botinfo (Snowflake/ID)`
             ],
             clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 },

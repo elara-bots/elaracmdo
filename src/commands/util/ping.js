@@ -10,7 +10,7 @@ module.exports = class PingCommand extends Command {
             group: 'bot',
             description: 'Shows the ping for the bot',
             examples: [
-                `${global.PREFIX}ping`
+                `%PREFIX%ping`
             ],
             clientPermissions: global.PERMS.basic,
             throttling: { usage: 2, duration: 10 }

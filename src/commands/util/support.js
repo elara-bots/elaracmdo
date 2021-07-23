@@ -6,7 +6,7 @@ module.exports = class SCommand extends Command {
             name: "support",
             aliases: [`botsupport`],
             examples: [
-                `${global.PREFIX}support`
+                `%PREFIX%support`
             ],
             description: "Gives you the invite to the support server",
             group: "bot",

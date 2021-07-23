@@ -6,7 +6,7 @@ module.exports = class NCommand extends Command {
             name: "invite",
             aliases: ["botinvite", `inv`, `bot`],
             examples: [
-                `${global.PREFIX}invite (BOT_ID)`
+                `%PREFIX%invite (BOT_ID)`
             ],
             description: "Gives you a invite for the bot id you provide.",
             group: "info",
