@@ -41,13 +41,13 @@ module.exports = class BotinfoCommand extends Command {
                     message.guild.channels.cache.get(id),
                     message.guild.emojis.cache.get(id)
                 ];
-                if(message.guild.id === id) fields.push(`${global.s}Server: ${message.guild.name} (${message.guild.id})`);
-                if(role) fields.push(`${global.s}Role: ${role.toString()} \`@${role.name}\` (${role.id})`);
-                if(channel) fields.push(`${global.s}Channel: ${channel.toString()} \`#${channel.name}\` (${channel.id})`);
-                if(emoji) fields.push(`${global.s}Emoji: ${emoji.toString()} \`${emoji.name}\` (${emoji.id})`);
+                if(message.guild.id === id) fields.push(`${global.util.emojis.s}Server: ${message.guild.name} (${message.guild.id})`);
+                if(role) fields.push(`${global.util.emojis.s}Role: ${role.toString()} \`@${role.name}\` (${role.id})`);
+                if(channel) fields.push(`${global.util.emojis.s}Channel: ${channel.toString()} \`#${channel.name}\` (${channel.id})`);
+                if(emoji) fields.push(`${global.util.emojis.s}Emoji: ${emoji.toString()} \`${emoji.name}\` (${emoji.id})`);
                 if(!role || !channel || !emoji) {
                     let user = this.client.users.cache.get(id) ?? await this.client.users.fetch(id, true).catch(() => null);
-                    if(user) fields.push(`${global.s}User: ${user.toString()} \`@${user.tag}\` (${user.id})`)
+                    if(user) fields.push(`${global.util.emojis.s}User: ${user.toString()} \`@${user.tag}\` (${user.id})`)
                 }
             }
             return message.boop({
@@ -55,7 +55,7 @@ module.exports = class BotinfoCommand extends Command {
                     author: { name: "Discord Snowflake", icon_url: `https://cdn.discordapp.com/emojis/${global.util.emojis.rdiscord}.png`, url: this.client.options.invite },
                     title: "Information",
                     thumbnail: { url: "https://cdn.discordapp.com/emojis/847624594717671476.png" },
-                    description: `${global.s}Date: ${this.client.f.time(info.date, true)}\n${global.s}Timestamp: ${info.timestamp}\n${global.s}Increment: ${info.increment}\n${global.s}IDs:\n${global.ss}Process: ${info.processId}\n${global.ss}Worker: ${info.workerId}`,
+                    description: `${global.util.emojis.s}Date: ${this.client.f.time(info.date, true)}\n${global.util.emojis.s}Timestamp: ${info.timestamp}\n${global.util.emojis.s}Increment: ${info.increment}\n${global.util.emojis.s}IDs:\n${global.util.emojis.ss}Process: ${info.processId}\n${global.util.emojis.ss}Worker: ${info.workerId}`,
                     fields: fields.length !== 0 ? [ { name: "Extra", value: fields.join("\n") } ] : undefined,
                     color: global.util.colors.purple,
                     timestamp: new Date(),
@@ -98,7 +98,7 @@ module.exports = class BotinfoCommand extends Command {
         .setAuthor(`Information about me`, user.displayAvatarURL({ dynamic: true }))
         .setColor(this.client.getColor(message.guild))
         .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-        .setDescription(`${global.s}User\n${global.ss}Name: ${user.tag}\n${global.ss}ID: ${user.id}\n${global.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${global.ss}Created: ${global.unix(user.createdAt)}\n\n${global.s}Misc\n${global.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${global.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${global.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${global.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${global.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
+        .setDescription(`${global.util.emojis.s}User\n${global.util.emojis.ss}Name: ${user.tag}\n${global.util.emojis.ss}ID: ${user.id}\n${global.util.emojis.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${global.util.emojis.ss}Created: ${global.unix(user.createdAt)}\n\n${global.util.emojis.s}Misc\n${global.util.emojis.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${global.util.emojis.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${global.util.emojis.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${global.util.emojis.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${global.util.emojis.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
         .addField(`Bot Lists`, botlists.join("\n"))
         return message.channel.send({
             reply: { messageReference: message, failIfNotExists: false },
