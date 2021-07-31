@@ -1,4 +1,4 @@
-const { Client, User, Message, Collection, SnowflakeUtil, GuildMember, Channel } = require('discord.js'),
+const { Client, User, Message, Collection, SnowflakeUtil, GuildMember, Channel, Util: { resolveColor } } = require('discord.js'),
 		CommandoRegistry = require('./registry'),
 		CommandDispatcher = require('./dispatcher'),
 		sleep = (ms) => new Promise((res) => setTimeout(res, ms))
@@ -42,7 +42,7 @@ class CommandoClient extends Client {
         this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
-		this.getColor = (guild) => guild?.color ?? global.util.colors.purple
+		this.getColor = (guild) => resolveColor(guild?.color ?? global.util.colors.purple)
 	
 	
 		/**
