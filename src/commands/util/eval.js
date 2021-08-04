@@ -20,6 +20,11 @@ module.exports = class EvalCommand extends Command {
 		this._sensitivePattern = null;
 	}
 
+	/**
+	 * @param {import("elaracmdo").CommandoMessage} message 
+	 * @param {object} args 
+	 * @param {string} [args.script]
+	*/
 	async run(message, args) {
 		if([ 'client[', 'bot[', '.token', '["token"]', "['token']", '[`token`]' ].filter(c => message.content.toLowerCase().includes(c)).length !== 0) return message.error(`How about you go shove your hands in a blender and turn it on, that sounds like a better idea, now if you don't mind.. please fuck off.`);
 		// eslint-disable-next-line no-unused-vars
@@ -38,6 +43,17 @@ module.exports = class EvalCommand extends Command {
 		};
 		let hrDiff;
 		try {
+			if(args.script.match(/-file/gi)) {
+				args.script = args.script.replace(/-file/gi, "");
+				if(!message.attachments.size) return message.error(`You didn't provide a file.`);
+				let file = message.attachments.find(c => c.name.endsWith(".txt") || c.name.endsWith(".js"));
+				if(!file) return message.error(`No file found!`);
+				let r = await require("superagent").get(file.url).catch((e) => e);
+				if(r.body instanceof Buffer) r.text = r.body.toString();
+				if(r.status !== 200 || !r.text) return message.error(`No data returned.`);
+				args.script += r.text;
+			}
+			
 			let sync = [ '-a', '-async', '--async', '{async}' ];
 			let c = sync.filter(d => message.content.toLowerCase().includes(d.toLowerCase()));
 			const hrStart = global.process.hrtime();
