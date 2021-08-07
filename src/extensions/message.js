@@ -102,7 +102,6 @@ register("run", async function () { // eslint-disable-line complexity
     if(!this.author || this.author.bot || this.webhookID) return;
     if(!this.client || !this.client.user) return;
     let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
-    if(!this.guild && this.channel?.guild) this.guild = this.channel.guild;
     if(blacklist(this) && !support) return;
     if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
     if(this.client.GlobalCmds.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
