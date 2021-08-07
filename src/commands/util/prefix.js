@@ -6,8 +6,7 @@ module.exports = class NCommand extends Command {
           name: 'prefix',
           aliases: [`setprefix`],
           examples: [
-              `%PREFIX%prefix`,
-              `%PREFIX%prefix <new_prefix>`
+              `%PREFIX%prefix (prefix)`
           ],
           description: 'Checks the prefix',
           group: 'bot',

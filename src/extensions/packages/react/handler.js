@@ -41,9 +41,9 @@ class ReactionHandler extends ReactionCollector {
 					embeds: [
 						{
 							author: {
-								name: message.guild ? message.guild.name : message.author.tag,
-								icon_url: message.guild ? message.guild.iconURL({dynamic: true}) : this.message.author.displayAvatarURL({dynamic: true}),
-								url: `https://superchiefyt.xyz/support`
+								name: this.message.guild?.name ?? this.message.author.tag,
+								icon_url: this.message.guild?.iconURL?.({dynamic: true}) ?? this.message.author.displayAvatarURL({dynamic: true}),
+								url: this.message.client.options.invite
 							},
 							title: `Menu Closed`,
 							color: 0xFF0000,

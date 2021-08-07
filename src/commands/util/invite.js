@@ -4,7 +4,7 @@ module.exports = class NCommand extends Command {
     constructor(client) {
         super(client, {
             name: "invite",
-            aliases: ["botinvite", `inv`, `bot`],
+            aliases: [ "botinvite", `inv`, `bot`, `support`, `botsupport` ],
             examples: [
                 `%PREFIX%invite (BOT_ID)`
             ],
