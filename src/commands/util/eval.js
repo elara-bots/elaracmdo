@@ -78,7 +78,7 @@ module.exports = class EvalCommand extends Command {
 					embeds: [
 						{
 							...evalembed,
-							footer: { text: `Executed in: ${time[0]}` },
+							fields: [ global.Constants.field(`\u200b`, `${time[0]}`) ],
 						}
 					],
 					components: [ { type: 1, components: [ { label: "Output", style: 5, type: 2, url: await this.client.f.misc.bin('Output', await this.pastebinresponse(this.lastResult, hrDiff, args.script, message.editable)) } ] } ]
@@ -88,7 +88,8 @@ module.exports = class EvalCommand extends Command {
 						{
 							...evalembed,
 							description: response,
-							footer: { text: `Executed in: ${time[0]}` }
+							fields: [ global.Constants.field(`\u200b`, `${time[0]}`) ],
+							footer: { text: `ID: ${message.author.id}` }
 						}
 					],
 					components: [ { type: 1, components: [ global.Constants.buttons.delete(message, "Delete", 1, global.util.emojis.rdelete) ] } ]
@@ -99,7 +100,7 @@ module.exports = class EvalCommand extends Command {
 				embeds: [
 					{
 						...evalembed,
-						footer: { text: `Executed in: ${time[0]}` },
+						fields: [ global.Constants.field(`\u200b`, `${time[0]}`) ],
 					}
 				],
 				components: [ { type: 1, components: [ { label: "Output", style: 5, type: 2, url: await this.client.f.misc.bin('Output', await this.pastebinresponse(this.lastResult, hrDiff, args.script, message.editable)) } ] } ]
@@ -109,7 +110,8 @@ module.exports = class EvalCommand extends Command {
 					{
 						...evalembed,
 						description: response,
-						footer: { text: `Executed in: ${time[0]}` }
+						fields: [ global.Constants.field(`\u200b`, `${time[0]}`) ],
+						footer: { text: `ID: ${message.author.id}` }
 					}
 				],
 				components: [ { type: 1, components: [ global.Constants.buttons.delete(message, "Delete", 1, global.util.emojis.rdelete) ] } ]
