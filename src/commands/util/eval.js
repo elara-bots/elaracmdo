@@ -1,7 +1,7 @@
 const Command = require('../base'),
     { inspect } = require('util'),
 	time = [];
-
+let _sensitivePattern = null;
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
 		super(client, {
@@ -17,7 +17,6 @@ module.exports = class EvalCommand extends Command {
 			]
 		});
 		this.lastResult = null;
-		this._sensitivePattern = null;
 	}
 
 	/**
@@ -145,11 +144,11 @@ module.exports = class EvalCommand extends Command {
 		return args.replace(new RegExp(this.client.token, 'g'), '');
 	}
 	get sensitivePattern() {
-		if(!this._sensitivePattern) {
+		if(!_sensitivePattern) {
 			let pattern = '';
 			if(this.client.token) pattern += this.client.token.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-			this._sensitivePattern = new RegExp(pattern, 'gi');
+			_sensitivePattern = new RegExp(pattern, 'gi');
 		}
-		return this._sensitivePattern;
+		return _sensitivePattern;
 	}
 };
