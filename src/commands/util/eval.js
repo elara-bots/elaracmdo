@@ -90,7 +90,8 @@ module.exports = class EvalCommand extends Command {
 							description: response,
 							footer: { text: `Executed in: ${time[0]}` }
 						}
-					] 
+					],
+					components: [ { type: 1, components: [ global.Constants.buttons.delete(message, "Delete", 1, global.util.emojis.rdelete) ] } ]
 				})
             }
         }else{
@@ -110,7 +111,8 @@ module.exports = class EvalCommand extends Command {
 						description: response,
 						footer: { text: `Executed in: ${time[0]}` }
 					}
-				] 
+				],
+				components: [ { type: 1, components: [ global.Constants.buttons.delete(message, "Delete", 1, global.util.emojis.rdelete) ] } ]
 			})
         }
 	}
