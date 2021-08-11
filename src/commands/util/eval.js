@@ -89,7 +89,7 @@ module.exports = class EvalCommand extends Command {
 							...evalembed,
 							description: response,
 							fields: [ global.Constants.field(`\u200b`, `${time[0]}`) ],
-							footer: { text: `ID: ${message.author.id}` }
+							footer: { text: `ID: ${message.author.id} | mID: ${message.id}` }
 						}
 					],
 					components: [ { type: 1, components: [ global.Constants.buttons.delete(message, "Delete", 1, global.util.emojis.rdelete) ] } ]
@@ -111,7 +111,7 @@ module.exports = class EvalCommand extends Command {
 						...evalembed,
 						description: response,
 						fields: [ global.Constants.field(`\u200b`, `${time[0]}`) ],
-						footer: { text: `ID: ${message.author.id}` }
+						footer: { text: `ID: ${message.author.id} | mID: ${message.id}` }
 					}
 				],
 				components: [ { type: 1, components: [ global.Constants.buttons.delete(message, "Delete", 1, global.util.emojis.rdelete) ] } ]
