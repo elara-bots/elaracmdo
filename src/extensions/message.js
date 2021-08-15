@@ -113,7 +113,7 @@ register("run", async function () { // eslint-disable-line complexity
         if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
         if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
         if(this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.PERMS.manage.messages) && !owner) return this.command.onBlock(this, "channel");
-        if(this.client.dbs?.getSettings) db = await this.client.dbs.getSettings(this.guild);
+        if(global.dbs?.getSettings) db = await global.dbs.getSettings(this.guild);
     }else {
         if(this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
     }

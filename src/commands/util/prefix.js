@@ -27,7 +27,7 @@ module.exports = class NCommand extends Command {
   }
     async run(message, { prefix }) {
           if(!message.guild) return message.custom(`My prefix is: \`${this.client.commandPrefix}\``);
-          let db = await this.client.dbs.getSettings(message.guild);
+          let db = await global.dbs.getSettings(message.guild);
           if(!db) return message.custom(`My prefix is: \`${message.guild.commandPrefix}\``);
           if(prefix !== '' && !message.member.permissions.has('MANAGE_GUILD')) return message.error(`You need \`Manage Server\` permission to change the prefix for this server.`);
           return this.prefix(message, db, prefix);
