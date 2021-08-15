@@ -53,7 +53,7 @@ declare module 'elaracmdo' {
 		public types: ArgumentType[];
 	}
 	
-	export type CommandFlags = 'NEW'
+	export type CommandFlags = 'NEW' | 'WARN'
 	
 	export class Command {
 		public constructor(client: CommandoClient, info: CommandInfo);

@@ -1,7 +1,6 @@
 const Command = require('../base'),
     { inspect } = require('util'),
 	time = [];
-let _sensitivePattern = null;
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
 		super(client, {
@@ -119,7 +118,7 @@ module.exports = class EvalCommand extends Command {
 	}
 
 	async makeResultMessages(result, hrDiff, input = null, editable = false) {
-		const inspected = inspect(result, { depth: 0 }).replace(new RegExp('!!NL!!', 'g'), '\n').replace(this.sensitivePattern, '');
+		const inspected = inspect(result, { depth: 0 }).replace(new RegExp('!!NL!!', 'g'), '\n').replace(new RegExp(this.client.token, "g"), '');
 		let i = await this.filterArgs(inspected);
 		if(input) {
 			if(hrDiff) time.push(`${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.`);
@@ -130,7 +129,7 @@ module.exports = class EvalCommand extends Command {
 		}
 	}
 	async pastebinresponse(result, hrDiff, input = null, editable = false) {
-        const inspected = inspect(result, { depth: 0 }).replace(new RegExp('!!NL!!', 'g'), '\n').replace(this.sensitivePattern, 'no u');
+        const inspected = inspect(result, { depth: 0 }).replace(new RegExp('!!NL!!', 'g'), '\n').replace(new RegExp(this.client.token, "g"), '');
         let i = await this.filterArgs(inspected);
 		if(input) {
 			if(hrDiff) time.push(`${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.`);
@@ -142,13 +141,5 @@ module.exports = class EvalCommand extends Command {
 	}
 	filterArgs(args){
 		return args.replace(new RegExp(this.client.token, 'g'), '');
-	}
-	get sensitivePattern() {
-		if(!_sensitivePattern) {
-			let pattern = '';
-			if(this.client.token) pattern += this.client.token.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-			_sensitivePattern = new RegExp(pattern, 'gi');
-		}
-		return _sensitivePattern;
 	}
 };
