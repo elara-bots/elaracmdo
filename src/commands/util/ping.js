@@ -54,7 +54,7 @@ module.exports = class PingCommand extends Command {
                 seconds -= hours   * (60*60);
             var minutes  = Math.floor(seconds / (60));
                 seconds -= minutes * (60);
-            return `${((0<days)?(days+"d, "):"")}${hours}h, ${minutes}m, ${seconds}s`;
+            return `${((0<days)?(days+"d, "):"")}${hours}h, ${minutes}m, ${Math.floor(seconds)}s`;
         }
         return message.edit({
             embeds: [
