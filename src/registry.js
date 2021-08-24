@@ -114,11 +114,10 @@ class CommandoRegistry {
 	}
 
 	registerDefaultCommands(commands = {}) {
-		commands = { prefix: true, ping: true, eval: true, extra: true, ...commands };
+		commands = { prefix: true, eval: true, extra: true, ...commands };
 		if(commands.prefix) this.registerCommand(require('./commands/util/prefix'));
-		if(commands.ping) this.registerCommand(require('./commands/util/ping'));
 		if(commands.eval) this.registerCommand(require('./commands/util/eval'));
-		if(commands.extra) this.registerCommands([ require("./commands/util/invite"), require("./commands/util/info") ])
+		if(commands.extra) this.registerCommand(require("./commands/util/info"))
 		return this;
 	}
 
