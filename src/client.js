@@ -96,18 +96,22 @@ class CommandoClient extends Client {
 					for (const type of types) {
 						if(options[type] instanceof Array || options[type] instanceof Set){
 							for (const id of options[type]){
-								this.users.fetch(id)
+								if(typeof id === "string") {
+									this.users.fetch(id)
+									.catch((err) => {
+										this.emit("warn", `Unable to fetch ${type}: ${id}`);
+										this.emit("error", err);
+									})
+								}
+							}
+						}else{
+							if(typeof options[type] === "string") {
+								this.users.fetch(options[type])
 								.catch((err) => {
-									this.emit("warn", `Unable to fetch ${type}: ${id}`);
+									this.emit("warn", `Unable to fetch ${type}: ${options[type]}`);
 									this.emit("error", err);
 								})
 							}
-						}else{
-							this.users.fetch(options[type])
-							.catch((err) => {
-								this.emit("warn", `Unable to fetch ${type}: ${options[type]}`);
-								this.emit("error", err);
-							})
 						}
 					};
 				};
