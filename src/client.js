@@ -105,7 +105,7 @@ class CommandoClient extends Client {
 						}else{
 							this.users.fetch(options[type])
 							.catch((err) => {
-								this.emit("warn", `Unable to fetch ${type}: ${owner}`);
+								this.emit("warn", `Unable to fetch ${type}: ${options[type]}`);
 								this.emit("error", err);
 							})
 						}
