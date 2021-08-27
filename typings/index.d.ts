@@ -1,7 +1,20 @@
 declare module 'elaracmdo' {
 
 	// @ts-ignore
-	import { Channel, Client, ClientOptions, Collection, DMChannel, Guild, GuildChannel, GuildMember, GuildResolvable, Message, MessageEmbed, MessageOptions, MessageReaction, PermissionResolvable, PermissionString, Role, Snowflake, TextChannel, User, UserResolvable, VoiceState, Invite, GuildEmoji, Speaking, Presence, CloseEvent, ColorResolvable, DeconstructedSnowflake, ThreadChannel, ThreadMember, StageInstance, ApplicationCommand, Interaction, Sticker, MessageComponentOptions, MessageSelectMenuOptions, MessageSelectOptionData } from 'discord.js';
+	import { 
+		Channel, Client, ClientOptions, 
+		Collection, DMChannel, Guild, 
+		GuildChannel, GuildMember, GuildResolvable, 
+		Message, MessageEmbed, MessageOptions, 
+		MessageReaction, PermissionResolvable, Role, 
+		Snowflake, TextChannel, User, 
+		UserResolvable, VoiceState, Invite, 
+		GuildEmoji, Presence, CloseEvent, 
+		ColorResolvable, DeconstructedSnowflake, 
+		ThreadChannel, ThreadMember, StageInstance, 
+		ApplicationCommand, Interaction, Sticker, 
+		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption
+	} from 'discord.js';
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -355,8 +368,6 @@ declare module 'elaracmdo' {
 		on(event: 'guildMemberRemove', listener: (member: GuildMember) => void): this;
 		on(event: 'guildMembersChunk', listener: (members: Collection<Snowflake, GuildMember>, guild: CommandoGuild, chunk: {index: number, count: number, nonce: string}) => void): this;
 
-		on(event: 'guildMemberSpeaking', listener: (member: GuildMember, speaking: Readonly<Speaking>) => void): this;
-
 		on(event: 'guildMemberUpdate', listener: (oldMember: GuildMember, newMember: GuildMember) => void): this;
 
 		on(event: 'guildUnavailable', listener: (guild: CommandoGuild) => void): this;
@@ -532,7 +543,7 @@ declare module 'elaracmdo' {
 		min?: number;
 		max?: number;
 		type?: number;
-		options: MessageSelectMenuOptions[]
+		options: MessageSelectOption[]
 	};
 
 	export type ButtonOptions = {
