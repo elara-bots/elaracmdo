@@ -149,7 +149,7 @@ class Command {
 	}
 
 	onError(err, message) { // eslint-disable-line no-unused-vars
-		if(err?.startsWith?.("[bot]: ")) return message.error(err);
+		if(err?.startsWith?.("[bot]: ")) return message.error(err.replace(/[bot]: /gi, ""));
 		return message.boop({
 			embeds: [
 				{
