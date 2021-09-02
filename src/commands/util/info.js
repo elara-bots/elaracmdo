@@ -99,7 +99,7 @@ module.exports = class BotinfoCommand extends Command {
         .setColor(this.client.getColor(message.guild))
         .setThumbnail(user.displayAvatarURL({ dynamic: true }))
         .setDescription(`${global.util.emojis.s}User\n${global.util.emojis.ss}Name: ${user.tag}\n${global.util.emojis.ss}ID: ${user.id}\n${global.util.emojis.ss}Avatar: [URL](${user.displayAvatarURL({dynamic: true})})\n${global.util.emojis.ss}Created: ${global.unix(user.createdAt)}\n\n${global.util.emojis.s}Misc\n${global.util.emojis.ss}Status: ${global.util.status[user.presence.status]} ${statuses[user.presence.status]}\n${global.util.emojis.ss}Prefixes: \`${this.client.getPrefix(message.guild)}\`, \`@${user.tag}\`\n${global.util.emojis.ss}Owner${this.client.owners.length === 1 ? "" : "s"}: ${this.client.owners.map(c => `\`${c.tag}\``).join(", ")}\n${global.util.emojis.ss}Mutual Server${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size === 1 ? "" : "s"}: ${this.client.guilds.cache.filter(g => g.members.cache.has(message.author.id)).size}\n${global.util.emojis.ss}Shards: ${this.client.ws.shards.size}\n\n${links.join(" | ")}`)
-        .addField(`Bot Lists`, botlists.join("\n"))
+        // .addField(`Bot Lists`, botlists.join("\n"))
         return message.channel.send({
             reply: { messageReference: message, failIfNotExists: false },
             allowedMentions: { parse: [] },
