@@ -114,10 +114,8 @@ class CommandoRegistry {
 	}
 
 	registerDefaultCommands(commands = {}) {
-		commands = { prefix: true, eval: true, extra: true, ...commands };
-		if(commands.prefix) this.registerCommand(require('./commands/util/prefix'));
+		commands = { eval: true, ...commands };
 		if(commands.eval) this.registerCommand(require('./commands/util/eval'));
-		if(commands.extra) this.registerCommand(require("./commands/util/info"))
 		return this;
 	}
 
