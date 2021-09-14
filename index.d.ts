@@ -45,7 +45,7 @@ declare module 'elaracmdo' {
 		public constructor(client: CommandoClient, args: ArgumentInfo[], promptLimit?: number);
 
 		public args: Argument[];
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public promptLimit: number;
 
 		public obtain(msg: CommandoMessage, provided?: any[], promptLimit?: number): Promise<ArgumentCollectorResult>;
@@ -54,7 +54,7 @@ declare module 'elaracmdo' {
 	export class ArgumentType {
 		public constructor(client: CommandoClient, id: string);
 
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public id: string;
 
 		public parse(val: string, msg: CommandoMessage, arg: Argument): any | Promise<any>;
@@ -77,10 +77,10 @@ declare module 'elaracmdo' {
 		private throttle(userID: string): object;
 
 		private static validateInfo(client: CommandoClient, info: CommandInfo);
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public name: string;
 		public aliases: string[];
-		public flags: CommandFlags[]|string[];
+		public flags: (CommandFlags|string)[];
 		public argsCount: number;
 		public argsSingleQuotes: boolean;
 		public argsType: string;
@@ -135,7 +135,7 @@ declare module 'elaracmdo' {
 		private parseMessage(message: CommandoMessage): CommandoMessage;
 		private shouldHandleMessage(message: CommandoMessage, oldMessage?: CommandoMessage): boolean;
 
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public inhibitors: Set<Function>;
 		public registry: CommandoRegistry;
 
@@ -145,7 +145,7 @@ declare module 'elaracmdo' {
 	export class CommandGroup {
 		public constructor(client: CommandoClient, id: string, name?: string, guarded?: boolean, commands?: Command[]);
 
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public commands: Collection<string, Command>
 		public guarded: boolean;
 		public id: string;
@@ -159,22 +159,25 @@ declare module 'elaracmdo' {
 		public constructor(message: Message, command?: Command, argString?: string, patternMatches?: string[]);
 		private editCurrentResponse(id: string, options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
 		private finalize(responses: CommandoMessage | CommandoMessage[]): void;
-		private respond(options?: {}): CommandoMessage | CommandoMessage[];
-		public  typing(timeout?: number): boolean;
+		private respond(options?: object): CommandoMessage | CommandoMessage[];
+		public typing(timeout?: number): boolean;
 
 		public argString: string;
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public command: Command|null;
-		public readonly guild: CommandoGuild;
+		public guild: CommandoGuild;
 		public message: CommandoMessage;
 		public patternMatches: string[];
-		public responsePositions: {};
-		public responses: {};
+		public responsePositions: object;
+		public responses: object;
 		public del(options?: {timeout?: number, reason?: string}): Promise<CommandoMessage>;
 		public success(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public error(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public custom(content: string, text: string, options: MessageOptions): Promise<CommandoMessage | CommandoMessage[]>;
 		public boop(options: SayOptions, message_options: MessageOptions): Promise<CommandoMessage|CommandoMessage[]>;
+		public inlineReply(content?: string, options?: MessageOptions): Promise<CommandoMessage|CommandoMessage[]|null|undefined>;
+
+		
 		public parseArgs(): string | string[];
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
@@ -264,16 +267,6 @@ declare module 'elaracmdo' {
 		misc: { disabled: string[]; maintenance: boolean; cooldown: string[]; };
 		leaves: { id: string; name: string; logs: { date: string; mod: string; reason: string; }[] }[]
 	};
-	export class CacheSystem {
-		public users: Collection<Snowflake, UserSchema>;
-		public config: Collection<Snowflake, ConfigSchema>;
-		public settings: Collection<Snowflake, SettingsSchema>;
-		public dev: Collection<Snowflake, DevSchema>;
-		public has(type: string, key: Snowflake): boolean;
-		public set(type: string, key: Snowflake, data: UserSchema|ConfigSchema|SettingsSchema|DevSchema): boolean;
-		public update(type: string, key: Snowflake, data: UserSchema|ConfigSchema|SettingsSchema|DevSchema): boolean;
-		public remove(type: string, key: Snowflake): boolean; 
-	}
 
 	export class WebhookCore {
 		public constructor();
@@ -295,12 +288,6 @@ declare module 'elaracmdo' {
 
 		private _commandPrefix: string;
 		private setup(): Promise<void>;
-		public queue: {
-		   	add(channelID: string, webhook: string, guild: CommandoGuild, opts: { content?: string|null, embeds?: MessageEmbed[], webhook: { name?: string|null, icon: string|null } }): Promise<void>;
-		   	run_queue(): Promise<void>;
-			send(id: string, token: string, options: { guild: CommandoGuild, embeds: MessageEmbed[], username: string, avatarURL: string, channel: string }): Promise<void>;
-		};
-		public cache: CacheSystem;
 		public commandPrefix: string;
 		public dispatcher: CommandDispatcher;
 		public options: CommandoClientOptions;
@@ -311,7 +298,6 @@ declare module 'elaracmdo' {
 		public getColor(guild: CommandoGuild): string;
 		public getPrefix(guild: CommandoGuild): string;
 		public messages: MessageService;
-		public stats: StatsTypes;
 		public main: boolean;
 		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
@@ -327,11 +313,9 @@ declare module 'elaracmdo' {
 			commands: Collection<string, object>;
 			load(dirs: string[]): void;
 			run(data: object): Promise<void>;
-			console(title: string, args: any): void;
 		};
 
 		on(event: string, listener: Function): this;
-		on(event: "database", listener: (client: CommandoClient, name: string, data: string[], color: string, create: boolean) => void): this;
 		on(event: 'commandError', listener: (command: Command, err: Error, message: CommandoMessage, args: object | string | string[], fromPattern: false) => void): this;
 		on(event: 'commandError', listener: (command: Command, err: Error, message: CommandoMessage, args: string[], fromPattern: true) => void): this;
 		on(event: 'commandRun', listener: (command: Command, promise: Promise<any>, message: CommandoMessage, args: object | string | string[], fromPattern: boolean) => void): this;
@@ -626,7 +610,7 @@ declare module 'elaracmdo' {
 		private _commandPrefix: string;
 		private _commandsEnabled: object;
 		private _groupsEnabled: object;
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		
 		public Invites: string[];
 		public commandPrefix: string;
@@ -645,10 +629,9 @@ declare module 'elaracmdo' {
 	export class CommandoRegistry {
 		public constructor(client?: CommandoClient);
 
-		public readonly client: CommandoClient;
+		public client: CommandoClient;
 		public commands: Collection<string, Command>;
 		public commandsPath: string;
-		public evalObjects: object;
 		public groups: Collection<string, CommandGroup>;
 		public types: Collection<string, ArgumentType>;
 
@@ -657,11 +640,7 @@ declare module 'elaracmdo' {
 		public registerCommand(command: Command | Function): CommandoRegistry;
 		public registerCommands(commands: Command[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
 		public registerCommandsIn(options: string | {}): CommandoRegistry;
-		public registerDefaultCommands(commands?: { eval?: boolean }): CommandoRegistry;
-		public registerDefaultGroups(): CommandoRegistry;
 		public registerDefaultTypes(types?: { string?: boolean, integer?: boolean, float?: boolean, boolean?: boolean, user?: boolean, member?: boolean, role?: boolean, channel?: boolean, message?: boolean, command?: boolean, group?: boolean, duration?: boolean }): CommandoRegistry;
-		public registerEvalObject(key: string, obj: {}): CommandoRegistry;
-		public registerEvalObjects(obj: {}): CommandoRegistry;
 		public registerGroup(group: CommandGroup | Function | { id: string, name?: string, guarded?: boolean } | string, name?: string, guarded?: boolean): CommandoRegistry;
 		public registerGroups(groups: CommandGroup[] | Function[] | { id: string, name?: string, guarded?: boolean }[] | string[][]): CommandoRegistry;
 		public registerType(type: ArgumentType | Function): CommandoRegistry;
@@ -774,75 +753,6 @@ declare module 'elaracmdo' {
 	};
 
 	type CommandResolvable = Command | string;
-	type StatsTypes = {
-		self: CommandoClient;
-		url: string;
-		token: string;
-		
-		commands(message: CommandoMessage): number | string;
-		starts(): number | string;
-		vote(): number | string;
-		shutdowns(): number | string;
-		events(): number | string;
-		webhooks(): number | string;
-		messages(): number | string;
-		guilds(joins: boolean): number | string;
-		
-		client(type: string): Promise<number | string>;
-		guild(options: { guildID: string, name: string }): Promise<number | string>;
-		
-		getClient(id: string): Promise<object>;
-		getClients(): Promise<{ status: boolean; data: ClientResponseData[] }[]>;
-
-		getGuild(guildID: string, clientID: string): Promise<object>;
-		getGuilds(id: string): Promise<{ status: boolean; data: GuildResponseData[] }[]>;
-		
-		post(url): Promise<number | string>;
-		get(url): Promise<object>;
-	}
-
-	type ClientResponseData = {
-		clientID: string;
-		_id: string;
-		__v: number;
-		counts: {
-			guilds: {
-				joins: number;
-				leaves: number;
-			},
-			lists: {
-				dbl: number;
-				del: number;
-				dboats: number;
-				dbots: number;
-				bfd: number;
-				topgg: number;
-			},
-			votes: number;
-			messages: number;
-			events: number;
-			webhooks: number;
-			commands: number;
-			starts: number;
-			shutdowns: number;
-			restarts: number;
-		}
-	}
-
-	type GuildResponseData = {
-		clientID: string;
-		guildID: string;
-		uses: number;
-		date: string;
-		_id: string;
-		commands: CommandData[];
-	}
-	type CommandData = {
-		_id: string;
-		name: string;
-		date: string;
-		use: number;
-	}
 
 	type Inhibitor = (message: CommandoMessage) => false | string | Inhibition;
 	type Inhibition = {

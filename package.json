@@ -8,7 +8,7 @@
 		"publish": "git add . && git commit -m '...' && git push"
 	},
 	"main": "src/index",
-	"types": "./typings/index.d.ts",
+	"types": "./index.d.ts",
 	"dependencies": {
 		"require-all": "^3.0.0"
 	},

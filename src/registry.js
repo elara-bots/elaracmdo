@@ -109,21 +109,11 @@ class CommandoRegistry {
 		return this.registerTypes(types, true);
 	}
 
-	registerDefaultGroups() {
-		return this.registerGroup("util", "Utility");
-	}
-
-	registerDefaultCommands(commands = {}) {
-		commands = { eval: true, ...commands };
-		if(commands.eval) this.registerCommand(require('./commands/util/eval'));
-		return this;
-	}
-
 	registerDefaultTypes(types = {}) {
 		types = {
-			string: true, integer: true, float: true, boolean: true,
+			string: true, integer: true, float: false, boolean: false,
 			user: true, member: true, role: true, channel: true, textChannel: true,
-			voiceChannel: true, categoryChannel: true, message: true, customEmoji: true,
+			voiceChannel: true, categoryChannel: true, message: false, customEmoji: true,
 			duration: true, command: true, group: true, ...types
 		};
 		if(types.string) this.registerType(require('./types/string'));
