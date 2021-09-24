@@ -228,7 +228,6 @@ declare module 'elaracmdo' {
 			appeals: string;
 			commands: string;
 			ignore: string[];
-			nickrequests: string;
 		};
 		toggles: {
 			user: boolean;
@@ -239,7 +238,6 @@ declare module 'elaracmdo' {
 			invites: boolean;
 			logbots: boolean;
 			prompts: boolean;
-			dmNicknames: boolean;
 		};
 		suggestions: {
 			channels: { channel: string, emojis: string[] }[];
@@ -301,7 +299,6 @@ declare module 'elaracmdo' {
 		public main: boolean;
 		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
-		public say(message: CommandoMessage|Channel|User, options: SayOptions, message_options: MessageOptions): void;
 		public f: FunctionsList;
 		public isOwner(user: UserResolvable): boolean;
 		public isSupport(user: UserResolvable): boolean;

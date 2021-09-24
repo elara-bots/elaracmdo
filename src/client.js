@@ -51,37 +51,6 @@ class CommandoClient extends Client {
 		 * @private
 		 */
 		this._commandPrefix = null;
-		this.say = (message, options = { content: null, embeds: [ ], embed: { }, components: [  ] }, messageOptions) => {
-			let sendObj = { ...messageOptions };
-
-			if(options.embeds && Array.isArray(options.embeds)) sendObj.embeds = options.embeds;
-			if(options.content) sendObj.content = options.content;
-			if(options.components) sendObj.components = options.components;
-			if(options.embed && !options.embeds) sendObj.embeds = [
-				{
-					title: options?.embed?.title ?? "INFO",
-					description: options?.embed?.description ?? undefined,
-					color: options?.embed?.color ?? global.util.colors.purple,
-					url: options?.embed?.url ?? undefined,
-					image: { url: options?.embed?.image ?? undefined },
-					thumbnail: { url: options?.embed?.thumbnail ?? undefined },
-					fields: options?.embed?.fields ?? [],
-					author: options?.embed?.author ?? undefined,
-					footer: options?.embed?.footer ?? undefined,
-					timestamp: options?.embed?.timestamp ?? undefined
-				}
-			];
-			if(!sendObj.content && !sendObj.embeds?.length) return null;
-			const permcheck = (c = null) => {
-				if(!c) return message.send(sendObj).catch(global.log)
-				if(c.permissionsFor(c.guild.me).has(global.PERMS.basic)) return c.send(sendObj).catch(global.log);
-				return null;
-			}
-			if(message instanceof User || message instanceof GuildMember) return permcheck();
-			if(message instanceof Message) return permcheck(message.channel);
-			if(message instanceof Channel) return permcheck(message);
-			return null;
-		}
 		
 		this.on('messageCreate', message => this.dispatcher.handleMessage(message).catch((err) => this.emit('error', err)));
 		this.on('messageUpdate', (oldMessage, newMessage) => this.dispatcher.handleMessage(newMessage, oldMessage).catch((err) => this.emit('error', err)));

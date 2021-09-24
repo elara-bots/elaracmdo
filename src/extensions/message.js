@@ -54,7 +54,7 @@ register("inlineReply", async function(content, options) {
     .catch((e) => global.log(`[MESSAGE:INLINE_REPLY:ERROR]: ${global.__filename}`, e));
 });
 
-register("boop", async function (options = {}, ...messageOptions){
+register("boop", async function (options, ...messageOptions){
     let send = { ...messageOptions };
     if(options.content && typeof options.content === "string") send.content = options.content;
     if(options.components && Array.isArray(options.components)) send.components = options.components;
@@ -64,7 +64,7 @@ register("boop", async function (options = {}, ...messageOptions){
 		if(options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
 		send.embed = new MessageEmbed(options.embed).toJSON();
     }
-    if(this.channel.type !== "dm" && !this.channel.permissionsFor(this.client.user).has(global.PERMS.basic)) return null;
+    if(this.channel.type !== "DM" && !this.channel.permissionsFor(this.client.user).has(global.PERMS.basic)) return null;
     return this.inlineReply(send.content ?? "", { ...send, reply: true });
 });
 
@@ -99,8 +99,7 @@ register("typing", function (timeout = 5000) {
 });
 
 register("run", async function () { // eslint-disable-line complexity
-    if(!this.author || this.author.bot || this.webhookID) return;
-    if(!this.client || !this.client.user) return;
+    if(!this.author || this.author.bot || this.webhookID || !this.client || !this.client.user) return;
     let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
     if(blacklist(this) && !support) return;
     if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
@@ -118,13 +117,15 @@ register("run", async function () { // eslint-disable-line complexity
         if(this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
     }
     const checkPerms = () => {
-        if(this.member.roles.cache.filter(c => c.id !== this.guild.id).size === 0) return false;
-        if(!db) return false;
-        if(this.client.isOwner(this.author.id)) return false;
-        if(!Array.isArray(db.commands)) return false;
+        if(
+            !this.member.roles.cache.filter(c => c.id !== this.guild.id).size || 
+            !db || 
+            this.client.isOwner(this.author.id) || 
+            !Array.isArray(db.commands)
+            ) return false;
         let find = db.commands.find(c => c.name === this.command.name);
         if(!find) return false;
-        if(this.member.roles.cache.filter(c => find.roles?.includes(c)).size !== 0) return true;
+        if(this.member.roles.cache.filter(c => find.roles.includes(c)).size) return true;
         return false; 
     };
     // Ensure the user has permission to use the command
@@ -132,22 +133,21 @@ register("run", async function () { // eslint-disable-line complexity
     if(!hasPermission || typeof hasPermission === 'string') {
         let perm = false;
         if(this.guild) perm = checkPerms();
-        if(!perm) {
-            const data = { response: typeof hasPermission === 'string' ? hasPermission : undefined };
-            return this.command.onBlock(this, 'permission', data);
-        }
+        if(!perm) return this.command.onBlock(this, 'permission', { 
+            response: typeof hasPermission === 'string' ? hasPermission : undefined
+        });
     }
 
     // Ensure the client user has the required permissions
     if(this.guild) {
         if(this.command.clientPermissions) {
             const missing = this.channel.permissionsFor(this.client.user).missing(this.command.clientPermissions);
-            if(missing.length > 0) return this.command.onBlock(this, 'clientPermissions', { missing });
+            if(missing.length) return this.command.onBlock(this, 'clientPermissions', { missing });
         }
 
         if(this.command.clientGuildPermissions) {
             const missing = this.guild.me.permissions.missing(this.command.clientGuildPermissions);
-            if(missing.length !== 0) return this.command.onBlock(this, 'clientPermissions', { missing });
+            if(missing.length) return this.command.onBlock(this, 'clientPermissions', { missing });
         }
     }
 
@@ -155,8 +155,7 @@ register("run", async function () { // eslint-disable-line complexity
     const throttle = this.command.throttle(this.author.id);
     if(throttle && ((throttle.usages + 1) > this.command.throttling.usages)) {
         const remaining = (throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000;
-        const data = { throttle, remaining };
-        return this.command.onBlock(this, 'throttling', data);
+        return this.command.onBlock(this, 'throttling', { throttle, remaining });
     }
 
     // Figure out the command arguments
@@ -169,9 +168,9 @@ register("run", async function () { // eslint-disable-line complexity
 
         collResult = await this.command.argsCollector.obtain(this, provided);
         if(collResult.cancelled) {
-            if(collResult.prompts.length === 0) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
+            if(!collResult.prompts.length ) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
             if(this.guild && db){
-                if(db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
+                if(db.toggles.prompts && collResult.prompts.length && collResult.answers.length) {
                     let candelete = this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages) || false;
                     let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
                     if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
@@ -181,7 +180,7 @@ register("run", async function () { // eslint-disable-line complexity
             return this.error(`Command Cancelled`);
         }
         if(this.guild && db){
-            if(db.toggles.prompts && collResult.prompts.length !== 0 && collResult.answers.length !== 0) {
+            if(db.toggles.prompts && collResult.prompts.length && collResult.answers.length) {
                 let candelete = this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages) || false;
                 let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
                 if(candelete) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
@@ -196,9 +195,7 @@ register("run", async function () { // eslint-disable-line complexity
     try {
         const promise = this.command.run(this, args, fromPattern, collResult);
         this.client.emit('commandRun', this.command, promise, this, args, fromPattern, collResult);
-        const retVal = await promise;
-        if(!(retVal instanceof Message || retVal instanceof Array || retVal === null || retVal === undefined)) throw new TypeError(`Command ${this.command.name}'s run() resolved with an unknown type\n(${retVal !== null ? retVal && retVal.constructor ? retVal.constructor.name : (typeof retVal) : null}).\nCommand run methods must return a Promise that resolve with a Message, Array of Messages, or null/undefined.`);
-        return retVal;
+        return await promise;
     } catch(err) {
         this.client.emit('commandError', this.command, err, this, args, fromPattern, collResult);
         return this.command.onError(err?.message ?? err, this, args, fromPattern, collResult);
@@ -225,7 +222,7 @@ register("finalize", function (responses) {
     if(responses instanceof Array) {
         for(const response of responses) {
             const channel = (response instanceof Array ? response[0] : response).channel;
-            const id = channel.type === "dm" ? "dm" : channel.id;
+            const id = channel.type === "DM" ? "DM" : channel.id;
             if(!this.responses[id]) {
                 this.responses[id] = [];
                 this.responsePositions[id] = -1;
@@ -233,7 +230,7 @@ register("finalize", function (responses) {
             this.responses[id].push(response);
         }
     } else if(responses) {
-        const id = responses.channel ? responses.channel.type === "dm" ? "dm" : responses.channel.id : "dm"
+        const id = responses.channel ? responses.channel.type === "DM" ? "DM" : responses.channel.id : "DM"
         this.responses[id] = [responses];
         this.responsePositions[id] = -1;
     }
@@ -282,7 +279,7 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
         if(options && options.split && typeof options.split !== 'object') options.split = {};
     }
 
-    if(type === 'reply' && this.channel.type === 'dm') type = 'plain';
+    if(type === 'reply' && this.channel.type === 'DM') type = 'plain';
     if(type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has(global.PERMS.messages.send)) type = "direct";
 
     content = typeof content === "string" ? content : null;
@@ -290,14 +287,14 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
     switch(type) {
         case 'plain':
             if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${global.__filename}`, e))
-            return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
+            return this.editCurrentResponse(this.channel.type === "DM" ? "DM" : this.channel.id, { type, content, options });
         case 'reply':
             if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${global.__filename}`, e))
             if(options && options.split && !options.split.prepend) options.split.prepend = `${this.author}, `;
-            return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
+            return this.editCurrentResponse(this.channel.type === "DM" ? "DM" : this.channel.id, { type, content, options });
         case 'direct':
             if(!shouldEdit) return this.author.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${global.__filename}`, e))
-            return this.editCurrentResponse('dm', { type, content, options });
+            return this.editCurrentResponse('DM', { type, content, options });
         case 'code':
             if(!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${global.__filename}`, e))
             if(options && options.split) {
@@ -305,7 +302,7 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
                 if(!options.split.append) options.split.append = '\n```';
             }
             content = `\`\`\`${lang || ''}\n${escapeMarkdown(content, true)}\n\`\`\``;
-            return this.editCurrentResponse(this.channel.type === "dm" ? "dm" : this.channel.id, { type, content, options });
+            return this.editCurrentResponse(this.channel.type === "DM" ? "DM" : this.channel.id, { type, content, options });
         default:
             throw new RangeError(`Unknown response type "${type}".`);
     }
