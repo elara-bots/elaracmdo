@@ -2,36 +2,21 @@ const { Util: { escapeMarkdown } } = require('discord.js'),
 		ArgumentUnionType = require('../types/union');
 
 class Argument {
-
 	constructor(client, info) {
 		this.constructor.validateInfo(client, info);
-
 		this.key = info.key;
-
 		this.label = info.label || info.key;
-
 		this.prompt = info.prompt;
-
 		this.error = info.error || null;
-
 		this.type = this.constructor.determineType(client, info.type);
-
 		this.max = typeof info.max !== 'undefined' ? info.max : null;
-
 		this.min = typeof info.min !== 'undefined' ? info.min : null;
-
 		this.default = typeof info.default !== 'undefined' ? info.default : null;
-
 		this.oneOf = typeof info.oneOf !== 'undefined' ? info.oneOf : null;
-
 		this.infinite = Boolean(info.infinite);
-
 		this.validator = info.validate || null;
-
 		this.parser = info.parse || null;
-
 		this.emptyChecker = info.isEmpty || null;
-
 		this.wait = typeof info.wait !== 'undefined' ? info.wait : 30;
 	}
 
@@ -49,7 +34,7 @@ class Argument {
 		while(!valid || typeof valid === 'string') {
 			if(prompts.length >= promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
 
-			prompts.push(await msg.channel.send({ embeds: [ {
+			prompts.push(await msg.boop({ embeds: [ {
 				author: {
 					name: msg.client.user.tag,
 					icon_url: msg.client.user.displayAvatarURL({ dynamic: true }),
@@ -119,10 +104,10 @@ class Argument {
 				if(val) {
 					const escaped = escapeMarkdown(val).replace(/@/g, '@\u200b');
 					embed.description = `	${valid ? valid : `You provided an invalid ${this.label}, "${escaped.length < 1850 ? escaped : '[too long to show]'}".\nPlease try again.`}`;
-					prompts.push(await msg.channel.send({ embeds: [ embed ] }));
+					prompts.push(await msg.boop({ embeds: [ embed ] }));
 				} else if(results.length === 0) {
 					embed.description = this.prompt;
-					prompts.push(await msg.channel.send({ embeds: [ embed ] }));
+					prompts.push(await msg.boop({ embeds: [ embed ] }));
 				}
 
 				const responses = await msg.channel.awaitMessages({ filter: msg2 => msg2.author.id === msg.author.id, max: 1, time: wait });

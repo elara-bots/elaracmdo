@@ -1,18 +1,13 @@
 const Argument = require('./argument');
 
 class ArgumentCollector {
-
 	constructor(client, args, promptLimit = Infinity) {
 		if(!client) throw new TypeError('Collector client must be specified.');
 		if(!args || !Array.isArray(args)) throw new TypeError('Collector args must be an Array.');
 		if(promptLimit === null) promptLimit = Infinity;
-
 		this.client = client;
-		
 		this.args = new Array(args.length);
-
 		let [ hasInfinite, hasOptional ] = [ false, false ];
-
 		for (let i = 0; i < args.length; i++) {
 			if(hasInfinite) throw new Error('No other argument may come after an infinite argument.');
 			if(args[i].default !== null) hasOptional = true;

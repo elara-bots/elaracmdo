@@ -6,11 +6,8 @@ class RichDisplay {
 	constructor(embed = new MessageEmbed()) {
 
 		this.embedTemplate = embed;
-
 		this.pages = [];
-
 		this.infoPage = null;
-
 		this.emojis = {
 			first: '⏪',
 			back: '◀',
@@ -19,9 +16,7 @@ class RichDisplay {
 			info: 'ℹ',
 			stop: '🛑' // '⏹'
 		};
-
 		this.footered = false;
-
 		this.footerPrefix = '';
 	}
 

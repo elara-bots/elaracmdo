@@ -4,35 +4,24 @@ class ReactionHandler extends ReactionCollector {
 
 	constructor(message, filter, options, display, emojis) {
 		super(message, { filter, ...options });
-
 		this.display = display;
-		
 		this.methodMap = new Map(Object.entries(this.display.emojis).map(([key, value]) => [value, key]));
-		
 		this.currentPage = this.options.startPage || 0;
-		
 		this.time = typeof this.options.time === 'number' ? this.options.time : 120000;
-		
 		this.awaiting = false;
-
 		this.selection = this.display.emojis.zero ? new Promise((resolve, reject) => {
 			this.reject = reject;
 			this.resolve = resolve;
 		}) : Promise.resolve(null);
-
 		this.reactionsDone = false;
-		
 		if(emojis.length) this._queueEmojiReactions(emojis);
 		else return this.stop();
-
 		this.on('collect', (reaction, user) => {
 			if(user.bot) return null;
 			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has(global.PERMS.manage.messages) && !this.message.deleted) reaction.users.remove(user.id).catch(() => null);
 			this[this.methodMap.get(reaction.emoji.name)](user);
 		});
-		
 		setTimeout(() => this.emit("end"), this.time || 120000)
-		
 		this.on('end', () => {
 			if (this.reactionsDone && !this.message.deleted && this.message.guild) this.message.reactions.removeAll().catch(() => null);
 				setTimeout(async () => {

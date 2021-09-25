@@ -3,15 +3,10 @@ class CommandDispatcher {
 	constructor(client, registry) {
 		
 		this.client = client;
-
 		this.registry = registry;
-
 		this.inhibitors = new Set();
-
 		this._commandPatterns = {};
-
 		this._results = new Map();
-
 		this._awaiting = new Set();
 	}
 

@@ -7,15 +7,10 @@ const { Collection } = require("discord.js"),
 
 class CommandoRegistry {
 	constructor(client) {
-
 		this.client = client;
-
 		this.commands = new Collection();
-
 		this.groups = new Collection();
-
 		this.types = new Collection();
-
 		this.commandsPath = null;
 	}
 

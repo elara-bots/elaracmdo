@@ -3,14 +3,10 @@ const { MessageEmbed } = require('discord.js'),
 		CommandCooldown = new Set();
 
 class Command {
-
 	constructor(client, info) {
 		this.constructor.validateInfo(client, info);
-
 		this.client = client;
-
 		this.name = info.name;
-
 		this.aliases = info.aliases || [];
 		if(typeof info.autoAliases === 'undefined' || info.autoAliases) {
 			if(this.name.includes('-') && !this.name.endsWith('-')) this.aliases.push(this.name.replace(/-/g, ''));
@@ -18,60 +14,34 @@ class Command {
 				if(alias.includes('-') && !alias.endsWith('-')) this.aliases.push(alias.replace(/-/g, ''));
 			}
 		}
-
 		this.groupID = info.group;
-
 		this.group = null;
-
 		this.description = info.description || "No Description Set";
-
 		this.format = info.format || null;
-
 		this.details = info.details || null;
-
 		this.examples = info.examples || null;
-
 		this.guildOnly = Boolean(info.guildOnly);
-
 		this.ownerOnly = Boolean(info.ownerOnly);
-
 		this.dmOnly = Boolean(info.dmOnly);
-
 		this.clientPermissions = info.clientPermissions || [];
-
 		this.clientGuildPermissions = info.clientGuildPermissions || [];
-
 		this.userGuildPermissions = info.userGuildPermissions || [];
-
 		this.userPermissions = info.userPermissions || [];
-
 		this.nsfw = Boolean(info.nsfw);
-
 		this.defaultHandling = 'defaultHandling' in info ? info.defaultHandling : true;
-
 		this.throttling = info.throttling || null;
-
 		this.flags = info.flags || [];
-
 		this.argsCollector = info.args && info.args.length ? new ArgumentCollector(client, info.args, info.argsPromptLimit) : null;
 		if(this.argsCollector && typeof info.format === 'undefined') {
 			this.format = this.argsCollector.args.reduce((prev, arg) => `${prev}${prev ? ' ' : ''}${arg.default !== null ? '[' : '<'}${arg.label}${arg.infinite ? '...' : ''}${arg.default !== null ? ']' : '>'}`, '');
 		}
-
 		this.argsType = info.argsType || 'single';
-
 		this.argsCount = info.argsCount || 0;
-
 		this.argsSingleQuotes = 'argsSingleQuotes' in info ? info.argsSingleQuotes : true;
-
 		this.patterns = info.patterns || null;
-
 		this.guarded = Boolean(info.guarded);
-
 		this.hidden = Boolean(info.hidden);
-
 		this._globalEnabled = true;
-
 		this._throttles = new Map();
 	}
 
@@ -88,7 +58,7 @@ class Command {
 		return true;
 	}
 
-	async run(message, args, fromPattern, result) { // eslint-disable-line no-unused-vars, require-await
+	async run() { // eslint-disable-line no-unused-vars, require-await
 		throw new Error(`${this.constructor.name} doesn't have a run() method.`);
 	}
 

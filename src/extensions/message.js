@@ -91,10 +91,9 @@ register("success", function (content, text, options) { return this.custom(`${gl
 
 register("error", function (content, text, options) { return this.custom(`${global.util.emojis.nemoji} ${content}`, text, options); });
 
-register("typing", function (timeout = 5000) {
-    if(this.channel.sendTyping) return this.channel.sendTyping()?.catch?.(() => null);
-    this.channel.startTyping(true);
-    setTimeout(() => this.channel.stopTyping(true), timeout);
+register("typing", function () {
+    if(!this.channel.sendTyping) return false;
+    this.channel.sendTyping()?.catch?.(() => null);
     return true;
 });
 
@@ -309,8 +308,8 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
 });
 
 function parseArgs(argString, argCount, allowSingleQuote = true) {
-	const re = allowSingleQuote ? /\s*(?:("|')([^]*?)\1|(\S+))\s*/g : /\s*(?:(")([^]*?)"|(\S+))\s*/g;
-	const result = [];
+	const re = allowSingleQuote ? /\s*(?:("|')([^]*?)\1|(\S+))\s*/g : /\s*(?:(")([^]*?)"|(\S+))\s*/g,
+          result = [];
 	let match = [];
 	// Large enough to get all items
 	argCount = argCount || argString.length;

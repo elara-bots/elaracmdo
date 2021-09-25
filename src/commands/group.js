@@ -6,17 +6,11 @@ class CommandGroup {
 		if(!client) throw new Error('A client must be specified.');
 		if(typeof id !== 'string') throw new TypeError('Group ID must be a string.');
 		if(id !== id.toLowerCase()) id = id.toLowerCase();
-
 		this.client = client;
-
 		this.id = id;
-
 		this.name = name || id;
-
 		this.commands = new Collection();
-
 		this.guarded = guarded;
-
 		this._globalEnabled = true;
 	}
 

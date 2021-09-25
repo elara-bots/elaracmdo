@@ -1,4 +1,7 @@
-const { DISCORD_INVITE, LINK } = { DISCORD_INVITE: /(discord\.(gg|io|me|li|com)\/.+|discordapp\.com\/invite\/.+|discord\.com\/invite\/.+)/gi, LINK: /http(s)?:\/\//gi  };
+const { DISCORD_INVITE, LINK } = { 
+    DISCORD_INVITE: /(discord\.(gg|io|me|li|com)\/.+|discordapp\.com\/invite\/.+|discord\.com\/invite\/.+)/gi, 
+    LINK: /http(s)?:\/\//gi  
+};
 
 module.exports = class Purger {
 
@@ -64,7 +67,7 @@ module.exports = class Purger {
         let messages = await this.fetch();
         if(!messages) return Promise.resolve(this.cmd ? null : 0);
         if(!amount || amount <= 0) amount = this.amount; 
-        return await this.channel.client.deleteMessages(this.channel, messages.filter(filter).map(c => c.id).slice(0, amount))
+        return this.channel.client.deleteMessages(this.channel, messages.filter(filter).map(c => c.id).slice(0, amount))
         .then((m) => this.cmd ? null : m.length)
         .catch(() => this.cmd ? null : 0)
     }
@@ -77,7 +80,7 @@ module.exports = class Purger {
         if(this.amount <= 100 && this.amount >= 50) amount = 200;
         else amount = 100;
         let messages = await this.channel.client.fetchMessages(this.channel, amount).catch(() => []);
-        if(messages.length === 0) return Promise.resolve(null);
+        if(!messages.length) return Promise.resolve(null);
         return Promise.resolve(messages)
     }
 };

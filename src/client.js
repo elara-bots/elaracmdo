@@ -1,4 +1,4 @@
-const { Client, User, Message, Collection, SnowflakeUtil, GuildMember, Channel, Util: { resolveColor } } = require('discord.js'),
+const { Client, Collection, SnowflakeUtil, Util: { resolveColor } } = require('discord.js'),
 		CommandoRegistry = require('./registry'),
 		CommandDispatcher = require('./dispatcher'),
 		sleep = (ms) => new Promise((res) => setTimeout(res, ms))
@@ -6,7 +6,7 @@ const { Client, User, Message, Collection, SnowflakeUtil, GuildMember, Channel, 
  * Discord.js Client with a command framework
  * @extends {Client}
  */
-class CommandoClient extends Client {
+module.exports = class CommandoClient extends Client {
 	/**
 	 * Options for a CommandoClient
 	 * @typedef {ClientOptions} CommandoClientOptions
@@ -27,29 +27,12 @@ class CommandoClient extends Client {
 		if(typeof options.commandEditableDuration === 'undefined') options.commandEditableDuration = 30;
 		if(typeof options.nonCommandEditable === 'undefined') options.nonCommandEditable = true;
 		super(options);
-
-		/**
-		 * The client's command registry
-		 * @type {CommandoRegistry}
-		 */
 		this.registry = new CommandoRegistry(this);
-
-		/**
-		 * The client's command dispatcher
-		 * @type {CommandDispatcher}
-		 */
 		this.dispatcher = new CommandDispatcher(this, this.registry);
         this.GlobalCmds = []; 
 		this.main = false; 
 		this.GlobalUsers = [];
 		this.getColor = (guild) => resolveColor(guild?.color ?? global.util.colors.purple)
-	
-	
-		/**
-		 * Internal global command prefix, controlled by the {@link CommandoClient#commandPrefix} getter/setter
-		 * @type {?string}
-		 * @private
-		 */
 		this._commandPrefix = null;
 		
 		this.on('messageCreate', message => this.dispatcher.handleMessage(message).catch((err) => this.emit('error', err)));
@@ -269,5 +252,3 @@ class CommandoClient extends Client {
         return checkToDelete();
     }
 }
-
-module.exports = CommandoClient;
