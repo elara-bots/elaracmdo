@@ -30,7 +30,11 @@ module.exports = class Purger {
 
     normal(amount) { return this.purge(m => !m.pinned, amount) }
 
-    async init(filter, user = null) {
+    contains(content, amount) { return this.purge(m => !m.pinned && m.content?.match(new RegExp(content, "gi")), amount); }
+
+    startsWith(content, amount) { return this.purge(m => !m.pinned && m.content.startsWith(content), amount); }
+
+    async init(filter, user = null, content = "") {
         let amount = this.amount;
         if(amount > 500) amount = 500;
         const f = (reg, name) => {
@@ -50,7 +54,7 @@ module.exports = class Purger {
         f("image(s)?|upload(s)?|photo(s)?|attachment(s)?", "image");
         f("invite(s)?", "invite")
 
-        switch(filter){
+        switch(filter.toLowerCase()){
             case "text": return this.text();
             case "link": return this.links();
             case "embed": return this.embeds();
@@ -59,6 +63,8 @@ module.exports = class Purger {
             case "you": return this.client();
             case "invite": return this.invites();
             case "user": return this.user(user);
+            case "contains": return this.contains(content);
+            case "startswith": return this.startsWith(content);
             default: return this.normal(amount)
         }
     }
