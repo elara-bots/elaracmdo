@@ -42,7 +42,7 @@ module.exports = class Purger {
         }
         if(this.cmd && this.channel.client.user.equals(user) && ["user", "users", "member", "members"].includes(filter)) filter = "none";
 
-        if(!filter.match(/text|(link|url)(s)?|embed(s)?|(ro)?bot(s)?|image(s)?|photo(s)?|attachment(s)?|you|invite(s)?|user(s)?|member(s)?/i)){
+        if(!filter.match(/text|(link|url)(s)?|embed(s)?|(ro)?bot(s)?|image(s)?|photo(s)?|attachment(s)?|you|invite(s)?|user(s)?|member(s)?|contains|startswith/i)){
             user = this.channel.client.users.cache.get(filter.replace(/<@!?|>/gi, "")) || await this.channel.client.users.fetch(filter.replace(/<@!?|>/gi, ""), true).catch(() => null);
             if(user) filter = "user"; else filter = "no_filter";
         }
@@ -53,7 +53,6 @@ module.exports = class Purger {
         f("(ro)?bot(s)?", "bot");
         f("image(s)?|upload(s)?|photo(s)?|attachment(s)?", "image");
         f("invite(s)?", "invite")
-
         switch(filter.toLowerCase()){
             case "text": return this.text();
             case "link": return this.links();
