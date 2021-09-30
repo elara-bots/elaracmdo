@@ -494,7 +494,7 @@ declare module 'elaracmdo' {
 		public contains(content: string, amount?: number): Promise<number>;
 		public startsWith(content: string, amount?: number): Promise<number>;
 		public normal(amount?: number): Promise<number>;
-		public init(filter?: string, user?: User|null): Promise<number>;
+		public init(filter?: string, user?: User|null, content?: string): Promise<number>;
 		public purge(filter: Function, amount: number): Promise<number|null>;
 		public fetch(): Promise<CommandoMessage[]>;
 	}
