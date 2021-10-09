@@ -98,7 +98,7 @@ class Command {
 						}
 					}
 				],
-				components: message.client?.f?.button ? [ { type: 1, components: [ global.support(message.client) ] } ] : []
+				components: message.client?.f?.button ? [ { type: 1, components: [ global.util.support() ] } ] : []
 			}).then(m => m.del({ timeout: 10000 }).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
 				reply: { messageReference: message, failIfNotExists: false },
@@ -131,7 +131,7 @@ class Command {
 					footer: { text: message.client.isSupport(message.author) ? "" : `Note: This has been reported to the bot development team.`, icon_url: message.client.isSupport(message.author) ? "" : `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` }
 				}
 			],
-			components: [ { type: 1, components: [ global.support(message.client) ] } ]
+			components: [ { type: 1, components: [ global.util.support() ] } ]
 		})
 	}
 
