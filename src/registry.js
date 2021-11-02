@@ -3,11 +3,16 @@ const { Collection } = require("discord.js"),
 		CommandGroup = require('./commands/group'),
 		CommandoMessage = require('./extensions/message'),
 		ArgumentType = require('./types/base'),
-		all = require("require-all");
+		all = require("./extensions/packages/require-all/index");
 
 class CommandoRegistry {
 	constructor(client) {
 		this.client = client;
+		this.maintenance = false;
+		this.block = {
+			users: [],
+			commands: []
+		}
 		this.commands = new Collection();
 		this.groups = new Collection();
 		this.types = new Collection();

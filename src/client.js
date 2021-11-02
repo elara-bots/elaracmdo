@@ -22,17 +22,12 @@ module.exports = class CommandoClient extends Client {
 	 * @param {CommandoClientOptions} [options] - Options for the client
 	 */
 	constructor(options = {}) {
-		if(typeof options.commandPrefix === 'undefined') options.commandPrefix = '!';
-		if(options.commandPrefix === null) options.commandPrefix = '';
+		if(!options.commandPrefix) options.commandPrefix = '!';
 		if(typeof options.commandEditableDuration === 'undefined') options.commandEditableDuration = 30;
 		if(typeof options.nonCommandEditable === 'undefined') options.nonCommandEditable = true;
 		super(options);
 		this.registry = new CommandoRegistry(this);
-		this.dispatcher = new CommandDispatcher(this, this.registry);
-        this.GlobalCmds = []; 
-		this.main = false; 
-		this.GlobalUsers = [];
-		this.getColor = (guild) => resolveColor(guild?.color ?? global.util.colors.purple)
+		this.dispatcher = new CommandDispatcher(this);
 		this._commandPrefix = null;
 		
 		this.on('messageCreate', message => this.dispatcher.handleMessage(message).catch((err) => this.emit('error', err)));
@@ -152,6 +147,8 @@ module.exports = class CommandoClient extends Client {
 	}
 
 	getPrefix(guild){ return guild?.commandPrefix ?? this.commandPrefix; }
+
+	getColor(guild) { return resolveColor(guild?.color ?? global.util.colors.purple); }
 
 	async destroy() { await super.destroy(); }
 

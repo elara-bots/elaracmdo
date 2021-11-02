@@ -1,9 +1,8 @@
 class CommandDispatcher {
 
-	constructor(client, registry) {
+	constructor(client) {
 		
 		this.client = client;
-		this.registry = registry;
 		this.inhibitors = new Set();
 		this._commandPatterns = {};
 		this._results = new Map();
@@ -97,7 +96,7 @@ class CommandDispatcher {
 
 	parseMessage(message) {
 		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
-		for(const command of this.registry.commands.values()) {
+		for(const command of this.client.registry.commands.values()) {
 			if(!command.patterns) continue;
 			for(const pattern of command.patterns) {
 				const matches = pattern.exec(content);
@@ -126,7 +125,7 @@ class CommandDispatcher {
 		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
 		const matches = pattern.exec(content);
 		if(!matches) return null;
-		const commands = this.registry.findCommands(matches[commandNameIndex], true);
+		const commands = this.client.registry.findCommands(matches[commandNameIndex], true);
 		if(commands.length !== 1 || !commands[0].defaultHandling) return null;
 		const argString = content.substring(matches[1].length + (matches[2] ? matches[2].length : 0));
 		return message.initCommand(commands[0], argString);

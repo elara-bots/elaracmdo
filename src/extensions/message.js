@@ -1,6 +1,6 @@
 const { Message, MessageEmbed, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
         blacklist = (message) => {
-            if(message.client.GlobalUsers.includes(message.author.id)) return true;
+            if(message.client.registry.block.users.includes(message.author.id)) return true;
             if(!message.guild) return false;
             if(global.config?.ignore?.guilds?.includes(message.guild.id)) return true;
             return false;
@@ -91,25 +91,17 @@ register("success", function (content, text, options) { return this.custom(`${gl
 
 register("error", function (content, text, options) { return this.custom(`${global.util.emojis.nemoji} ${content}`, text, options); });
 
-register("typing", function () {
-    if(!this.channel.sendTyping) return false;
-    this.channel.sendTyping()?.catch?.(() => null);
-    return true;
-});
-
 register("run", async function () { // eslint-disable-line complexity
     if(!this.author || this.author.bot || this.webhookID || !this.client || !this.client.user) return;
     let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
     if(blacklist(this) && !support) return;
-    if(this.client.main && !support) return this.command.onBlock(this, "maintenance");
-    if(this.client.GlobalCmds.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
+    if(this.client.registry.maintenance && !support) return this.command.onBlock(this, "maintenance");
+    if(this.client.registry.block.commands.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
     let db = null;
     if(this.guild) {
         if(!this.member) return;
         if(global.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
         if(!this.guild.members.cache.has(this.author.id)) return;
-        if(this.command.nsfw && !this.channel.nsfw) return this.command.onBlock(this, "nsfw");
-        if(this.command.dmOnly) return this.command.onBlock(this, "dmOnly");
         if(this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.PERMS.manage.messages) && !owner) return this.command.onBlock(this, "channel");
         if(global.dbs?.getSettings) db = await global.dbs.getSettings(this.guild);
     }else {

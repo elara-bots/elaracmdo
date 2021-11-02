@@ -98,8 +98,6 @@ declare module 'elaracmdo' {
 		public hidden: boolean;
 		public ownerOnly: boolean;
 		public guildOnly: boolean;
-		public dmOnly: boolean;
-		public nsfw: boolean;
 		public patterns: RegExp[];
 		public throttling: ThrottlingOptions;
 		public userPermissions: PermissionResolvable[];
@@ -108,7 +106,7 @@ declare module 'elaracmdo' {
 		public isEnabledIn(guild: GuildResolvable, bypassGroup?: boolean): boolean;
 		public isUsable(message: CommandoMessage): boolean;
 		public onBlock(message: CommandoMessage, reason: string, data?: Object): Promise<Message | Message[]>;
-		public onBlock(message: CommandoMessage, reason: 'guildOnly' | 'nsfw'): Promise<Message | Message[]>;
+		public onBlock(message: CommandoMessage, reason: 'guildOnly'): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'permission', data: { response?: string }): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'clientPermissions', data: { missing: string }): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'throttling', data: { throttle: Object, remaining: number }): Promise<Message | Message[]>;
@@ -121,7 +119,7 @@ declare module 'elaracmdo' {
 		public static usage(command: string, prefix?: string, user?: User): string;
 	}
 	export class CommandDispatcher {
-		public constructor(client: CommandoClient, registry: CommandoRegistry);
+		public constructor(client: CommandoClient);
 
 		private _awaiting: Set<string>;
 		private _commandPatterns: object;
@@ -137,7 +135,6 @@ declare module 'elaracmdo' {
 
 		public client: CommandoClient;
 		public inhibitors: Set<Function>;
-		public registry: CommandoRegistry;
 
 		public addInhibitor(inhibitor: Inhibitor): boolean;
 		public removeInhibitor(inhibitor: Inhibitor): boolean;
@@ -160,7 +157,6 @@ declare module 'elaracmdo' {
 		private editCurrentResponse(id: string, options?: {}): Promise<CommandoMessage | CommandoMessage[]>;
 		private finalize(responses: CommandoMessage | CommandoMessage[]): void;
 		private respond(options?: object): CommandoMessage | CommandoMessage[];
-		public typing(): boolean;
 
 		public argString: string;
 		public client: CommandoClient;
@@ -182,104 +178,6 @@ declare module 'elaracmdo' {
 		public static parseArgs(argString: string, argCount?: number, allowSingleQuote?: boolean): string[];
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
 	}
-	export type UserSchema = {
-		userTag: string;
-		userID: string;
-		todos: string[];
-		reminders: string[];
-		time: string;
-		counts: { boops: number; tokens: number; battles: { wins: number, loses: number }; };
-		custom: { image: string; description: string; };
-		afk: { enabled: boolean; time: string; message: string; };
-		optout: { boops: boolean };
-		links: { instagram: string; twitter: string; github: string; gitlab: string; twitch: string; youtube: string; discord: string; reddit: string; };
-	};
-	export type ConfigSchema = {
-		guildName: string;
-		guildID: string;
-		warnings: { case: number; id: string; user: string; mid: string; mod: string; reason: string; date: Date|string; appealed: boolean; }[],
-		commands: string[];
-		mutes: { guild: string, userID: string, time: string, ms: number, roles: string[], mutedrole: string, created: string, nodm: boolean }[];
-		tags: { id: string, content: string }[];
-		assignroles: { id: string; requires: string; }[];
-		codes: { id: string; max: number; amount: number; users: string[] }[];
-		starboard: { id: string, msg: string, channel: string }[];
-	};
-	export type SettingsSchema = {
-		guildName: string;
-		guildID: string;
-		prefix: string;
-		misc: {
-			throws: string[];
-			jobs: string[];
-			crime: { success: string[]; failed: string[]; };
-			currency: string;
-			color: string;
-			commands: string[];
-			coins: boolean;
-			days: number
-		},
-		roles: { muted: string; },
-		channels: {
-			log: { all: string; user: string; server: string; invites: string; mod: string; joins: string; messages: string; commands: string; };
-			reports: string;
-			vclogs: string;
-			action: string;
-			appeals: string;
-			commands: string;
-			ignore: string[];
-		};
-		toggles: {
-			user: boolean;
-			mod: boolean;
-			messages: boolean;
-			server: boolean;
-			joins: boolean;
-			invites: boolean;
-			logbots: boolean;
-			prompts: boolean;
-		};
-		suggestions: {
-			channels: { channel: string, emojis: string[] }[];
-			anonymous: boolean;
-			ignore: { command: string; auto: string[]; };
-		};
-		welcome: { channel: string; role: string[]; bots: string[]; msg: string; };
-		leaves: { channel: string; msg: string;
-		};
-		starboard: {
-			enabled: boolean;
-			channel: string;
-			count: number;
-			ignore: { channels: string[]; users: string[]; roles: string[]; };
-		};
-		ignore: { commands: string[]; logs: { all: string[]; messages: string[]; user: string[]; }; };
-		messages: { mute: string; unmute: string; kick: string; ban: string; unban: string; softban: string; };
-		events: { name: string, id: string, color: number, disabled: boolean }[];
-		commands: { name: string, roles: string[] }[];
-	};
-	export type DevSchema = {
-		clientID: string;
-		clientTag: string;
-		logging: { status: string; server: string; };
-		misc: { disabled: string[]; maintenance: boolean; cooldown: string[]; };
-		leaves: { id: string; name: string; logs: { date: string; mod: string; reason: string; }[] }[]
-	};
-
-	export class WebhookCore {
-		public constructor();
-		private config: ConfigFile;
-		private roles: object;
-		private hooks: object;
-		
-		public status(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-		public error(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-		public events(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-		public commands(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-		public slash(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-		public webhook(embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-		private send(url: string, pingRole: string, embeds: MessageEmbed[], content?: string): Promise<CommandoMessage>;
-	}
 
 	export class CommandoClient extends Client {
 		public constructor(options?: CommandoClientOptions);
@@ -291,12 +189,9 @@ declare module 'elaracmdo' {
 		public options: CommandoClientOptions;
 		public readonly owners: User[];
 		public readonly support: User[];
-		public GlobalUsers: string[];
-		public GlobalCmds: string[];
 		public getColor(guild: CommandoGuild): string;
 		public getPrefix(guild: CommandoGuild): string;
 		public messages: MessageService;
-		public main: boolean;
 		public chunk(array: string|string[], sliceAt: number): string[];
 		public registry: CommandoRegistry;
 		public f: FunctionsList;
@@ -320,7 +215,7 @@ declare module 'elaracmdo' {
 
 		// Discord.js Events 
 
-		on(event: 'interaction', listener: (interaction: Interaction) => void): this;
+		on(event: 'interactionCreate', listener: (interaction: Interaction) => void): this;
 		on(event: 'applicationCommandCreate', listener: (command: ApplicationCommand) => void): this;
 		on(event: 'applicationCommandDelete', listener: (command: ApplicationCommand) => void): this;
 		on(event: 'applicationCommandUpdate', listener: (oldCommand: ApplicationCommand, newCommand: ApplicationCommand) => void): this;
@@ -633,6 +528,11 @@ declare module 'elaracmdo' {
 		public commandsPath: string;
 		public groups: Collection<string, CommandGroup>;
 		public types: Collection<string, ArgumentType>;
+		public maintenance: boolean;
+		public block: {
+			users: string[];
+			commands: string[]
+		}
 
 		public findCommands(searchString?: string, exact?: boolean, message?: CommandoMessage): Command[];
 		public findGroups(searchString?: string, exact?: boolean): CommandGroup[];
@@ -723,9 +623,7 @@ declare module 'elaracmdo' {
 		format?: string;
 		details?: string;
 		examples?: string[];
-		nsfw?: boolean;
 		guildOnly?: boolean;
-		dmOnly: boolean;
 		ownerOnly?: boolean;
 		clientPermissions?: PermissionResolvable[];
 		userPermissions?: PermissionResolvable[];

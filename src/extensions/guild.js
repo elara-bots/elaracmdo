@@ -1,18 +1,19 @@
-const { Guild } = require("discord.js");
+const { Guild } = require("discord.js"),
+        register = (name, value) => Guild.prototype[name] = value;
 
-const register = (name, value) => Guild.prototype[name] = value;
-
-for (const name of [ "_commandPrefix", "color" ]) register(name, null);
-
-register("currency", "$");
-register("Invites", []);
-register("Commands", "");
-
-register("setPrefix", function(thing) {
-    this.commandPrefix = thing;
-    this._commandPrefix = thing;
-    return;
-});
+let list = [
+    [ "currency", "$" ],
+    [ "Invites", [] ],
+    [ "Commands", "" ],
+    [ "_commandPrefix", null ],
+    [ "color", null ],
+    [ "setPrefix", function (args) {
+        this.commandPrefix = args;
+        this._commandPrefix = args;
+        return;
+    } ]
+];
+for (const name of list) register(name[0], name[1]);
 
 Reflect.defineProperty(Guild.prototype, "commandPrefix", {
     get: function () {

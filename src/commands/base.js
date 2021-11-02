@@ -22,12 +22,10 @@ class Command {
 		this.examples = info.examples || null;
 		this.guildOnly = Boolean(info.guildOnly);
 		this.ownerOnly = Boolean(info.ownerOnly);
-		this.dmOnly = Boolean(info.dmOnly);
 		this.clientPermissions = info.clientPermissions || [];
 		this.clientGuildPermissions = info.clientGuildPermissions || [];
 		this.userGuildPermissions = info.userGuildPermissions || [];
 		this.userPermissions = info.userPermissions || [];
-		this.nsfw = Boolean(info.nsfw);
 		this.defaultHandling = 'defaultHandling' in info ? info.defaultHandling : true;
 		this.throttling = info.throttling || null;
 		this.flags = info.flags || [];
@@ -74,7 +72,6 @@ class Command {
         }
 		switch(reason) {
 			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
-			case 'nsfw': return send(`Command (\`${this.name}\`) can only be used in channels marked as NSFW`);
 			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
 			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed) ? 
 			message.error(data.missing.length === 1 ? `I need ${global.util.perms[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${global.util.perms[p]}\``).join("\n")}`) : 
