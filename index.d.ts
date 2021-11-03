@@ -539,7 +539,7 @@ declare module 'elaracmdo' {
 		public registerCommand(command: Command | Function): CommandoRegistry;
 		public registerCommands(commands: Command[] | Function[], ignoreInvalid?: boolean): CommandoRegistry;
 		public registerCommandsIn(options: string | {}): CommandoRegistry;
-		public registerDefaultTypes(types?: { string?: boolean, integer?: boolean, float?: boolean, boolean?: boolean, user?: boolean, member?: boolean, role?: boolean, channel?: boolean, message?: boolean, command?: boolean, group?: boolean, duration?: boolean }): CommandoRegistry;
+		public registerDefaultTypes(types?: { string?: boolean, integer?: boolean, user?: boolean, member?: boolean, role?: boolean, channel?: boolean, command?: boolean, group?: boolean, duration?: boolean }): CommandoRegistry;
 		public registerGroup(group: CommandGroup | Function | { id: string, name?: string, guarded?: boolean } | string, name?: string, guarded?: boolean): CommandoRegistry;
 		public registerGroups(groups: CommandGroup[] | Function[] | { id: string, name?: string, guarded?: boolean }[] | string[][]): CommandoRegistry;
 		public registerType(type: ArgumentType | Function): CommandoRegistry;

@@ -111,24 +111,17 @@ class CommandoRegistry {
 
 	registerDefaultTypes(types = {}) {
 		types = {
-			string: true, integer: true, float: false, boolean: false,
-			user: true, member: true, role: true, channel: true, textChannel: true,
-			voiceChannel: true, categoryChannel: true, message: false, customEmoji: true,
+			string: true, integer: true, user: true, 
+			member: true, role: true, channel: true, textChannel: true,
 			duration: true, command: true, group: true, ...types
 		};
 		if (types.string) this.registerType(require('./types/string'));
 		if (types.integer) this.registerType(require('./types/integer'));
-		if (types.float) this.registerType(require('./types/float'));
-		if (types.boolean) this.registerType(require('./types/boolean'));
 		if (types.user) this.registerType(require('./types/user'));
 		if (types.member) this.registerType(require('./types/member'));
 		if (types.role) this.registerType(require('./types/role'));
 		if (types.channel) this.registerType(require('./types/channel'));
 		if (types.textChannel) this.registerType(require('./types/text-channel'));
-		if (types.voiceChannel) this.registerType(require('./types/voice-channel'));
-		if (types.categoryChannel) this.registerType(require('./types/category-channel'));
-		if (types.message) this.registerType(require('./types/message'));
-		if (types.customEmoji) this.registerType(require('./types/custom-emoji'));
 		if (types.command) this.registerType(require('./types/command'));
 		if (types.group) this.registerType(require('./types/group'));
 		if (types.duration) this.registerType(require('./types/duration'));
