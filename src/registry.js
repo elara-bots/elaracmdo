@@ -3,7 +3,7 @@ const { Collection } = require("discord.js"),
 		CommandGroup = require('./commands/group'),
 		CommandoMessage = require('./extensions/message'),
 		ArgumentType = require('./types/base'),
-		all = require("./extensions/packages/require-all/index");
+		all = require("../packages/all");
 
 class CommandoRegistry {
 	constructor(client) {

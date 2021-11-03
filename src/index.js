@@ -8,5 +8,5 @@ module.exports = {
 	ArgumentCollector: require('./commands/collector'),
 	Argument: require('./commands/argument'),
 	ArgumentType: require('./types/base'),
-	Purger: require('./extensions/packages/purger/index')
+	Purger: require('../packages/Purger')
 };
