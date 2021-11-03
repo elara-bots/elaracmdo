@@ -8,8 +8,5 @@ module.exports = {
 	ArgumentCollector: require('./commands/collector'),
 	Argument: require('./commands/argument'),
 	ArgumentType: require('./types/base'),
-	RichDisplay: require('./extensions/packages/react/display'),
-	RichMenu: require('./extensions/packages/react/menu'),
-	ReactionHandler: require('./extensions/packages/react/handler'),
 	Purger: require('./extensions/packages/purger/index')
 };
