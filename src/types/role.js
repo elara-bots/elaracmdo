@@ -11,7 +11,7 @@ class RoleArgumentType extends ArgumentType {
 		if (matches) return msg.guild.roles.cache.has(matches[1]);
 		const search = val.toLowerCase();
 		let roles = msg.guild.roles.cache.filter(nameFilterInexact(search));
-		if (roles.size === 0) return false;
+		if (!roles.size) return false;
 		if (roles.size === 1) {
 			if (arg.oneOf && !arg.oneOf.includes(roles.first().id)) return false;
 			return true;
@@ -32,7 +32,7 @@ class RoleArgumentType extends ArgumentType {
 		if (matches) return msg.guild.roles.cache.get(matches[1]) || null;
 		const search = val.toLowerCase();
 		const roles = msg.guild.roles.cache.filter(nameFilterInexact(search));
-		if (roles.size === 0) return null;
+		if (!roles.size) return null;
 		if (roles.size === 1) return roles.first();
 		const exactRoles = roles.filter(nameFilterExact(search));
 		if (exactRoles.size === 1) return exactRoles.first();

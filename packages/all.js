@@ -30,7 +30,7 @@ module.exports = function requireAll(options) {
         if (fs.statSync(filepath).isDirectory()) {
             if (excludeDirectory(file)) return;
             let subModules = requireAll({ dirname: filepath, filter, excludeDirs, map, resolve });
-            if (Object.keys(subModules).length === 0) return;
+            if (!Object.keys(subModules).length) return;
             modules[map(file, filepath)] = subModules;
         } else {
             let name = filterFile(file);

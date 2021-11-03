@@ -105,7 +105,7 @@ class Argument {
 					const escaped = escapeMarkdown(val).replace(/@/g, '@\u200b');
 					embed.description = `	${valid ? valid : `You provided an invalid ${this.label}, "${escaped.length < 1850 ? escaped : '[too long to show]'}".\nPlease try again.`}`;
 					prompts.push(await msg.boop({ embeds: [ embed ] }));
-				} else if (results.length === 0) {
+				} else if (!results.length) {
 					embed.description = this.prompt;
 					prompts.push(await msg.boop({ embeds: [ embed ] }));
 				}
