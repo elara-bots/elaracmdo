@@ -5,6 +5,7 @@
 	"license": "",
 	"author": "SUPERCHIEFYT (Elara-Discord-Bots, Elara-Services)",
 	"scripts": {
+		"lint": "eslint .",
 		"publish": "git add . && git commit -m '...' && git push"
 	},
 	"main": "src/index",
