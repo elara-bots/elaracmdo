@@ -77,26 +77,10 @@ class Command {
 			message.error(data.missing.length === 1 ? `I need ${global.util.perms[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${global.util.perms[p]}\``).join("\n")}`) : 
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
 			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
-			case "maintenance": return message.channel.send({
-				embeds: [
-					{
-						author: {
-							name: `${message.client.user.tag} Maintenance`,
-							icon_url: message.client.user.displayAvatarURL({dynamic: true}),
-							url: message.client.options.invite
-						},
-						color: global.util.colors.purple,
-						timestamp: new Date(),
-						thumbnail: {url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
-						description: `The bot is currently under maintenance, while maintenance is enabled no commands can be used.`,
-						footer: {
-							text: `Requested by: @${message.author.tag}`,
-							icon_url: message.author.displayAvatarURL({dynamic: true})
-						}
-					}
-				],
-				components: message.client?.f?.button ? [ { type: 1, components: [ global.util.support() ] } ] : []
-			}).then(m => m.del({ timeout: 10000 }).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
+			
+			case 'maintenance': return message.custom(`${global.util.emojis.warn} The bot is currently under maintenance, no commands can be used at this time.`, null, [ { type: 1, components: [ global.util.support() ] } ])
+			?.then?.(m => m?.del?.({ timeout: 10000 })
+			?.catch?.((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
 				reply: { messageReference: message, failIfNotExists: false },
 				embeds: [
