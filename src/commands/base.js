@@ -74,7 +74,7 @@ class Command {
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
 			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
 			
-			case 'maintenance': return message.custom(`${global.util.emojis.warn} The bot is currently under maintenance, no commands can be used at this time.`, null, [ { type: 1, components: [ global.util.support() ] } ])
+			case 'maintenance': return message.custom(`${global.util.emojis.warn} The bot is currently under maintenance, no commands can be used at this time.`, null, { components: [ { type: 1, components: [ global.util.support() ] } ] })
 			?.then?.(m => m?.del?.({ timeout: 10000 })
 			?.catch?.((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
 			case "channel": return message.channel.send({
