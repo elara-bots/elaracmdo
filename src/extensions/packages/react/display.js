@@ -57,7 +57,7 @@ class RichDisplay {
 			}
 		]
 		const waitmsg = message.editable ? await message.edit({ embeds, components: slash ? [] : undefined }).catch(() => null) : await message.boop({ embeds, components: slash ? [] : undefined });
-		if(!waitmsg) return message.error(`I was unable to post or edit the loading menu message.`);
+		if (!waitmsg) return message.error(`I was unable to post or edit the loading menu message.`);
 		for await (const emoji of emojis.filter(m => !m.deleted)) await waitmsg.react(emoji).catch(() => {});
 		setTimeout(async () => {
 			const msg = waitmsg.editable ? await waitmsg.edit({ embeds: [ this.pages[options.startPage || 0] ], components: slash ? [] : undefined }) : await message.channel.send({ embeds: [ this.pages[options.startPage || 0] ], components: slash ? [] : undefined }).catch(() => null);
@@ -80,8 +80,8 @@ class RichDisplay {
 	}
 
 	_handlePageGeneration(cb) {
-		if(cb instanceof MessageEmbed) return cb;
-		if(typeof cb === "function" && cb(this.template) instanceof MessageEmbed) return cb(this.template);
+		if (cb instanceof MessageEmbed) return cb;
+		if (typeof cb === "function" && cb(this.template) instanceof MessageEmbed) return cb(this.template);
 		throw new Error('Expected a MessageEmbed or Function returning a MessageEmbed');
 	}
 

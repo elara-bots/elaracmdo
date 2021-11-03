@@ -1,6 +1,5 @@
 const { MessageEmbed } = require('discord.js'),
-		ArgumentCollector = require('./collector'),
-		CommandCooldown = new Set();
+		ArgumentCollector = require('./collector');
 
 class Command {
 	constructor(client, info) {
@@ -8,10 +7,10 @@ class Command {
 		this.client = client;
 		this.name = info.name;
 		this.aliases = info.aliases || [];
-		if(typeof info.autoAliases === 'undefined' || info.autoAliases) {
-			if(this.name.includes('-') && !this.name.endsWith('-')) this.aliases.push(this.name.replace(/-/g, ''));
-			for(const alias of this.aliases) {
-				if(alias.includes('-') && !alias.endsWith('-')) this.aliases.push(alias.replace(/-/g, ''));
+		if (typeof info.autoAliases === 'undefined' || info.autoAliases) {
+			if (this.name.includes('-') && !this.name.endsWith('-')) this.aliases.push(this.name.replace(/-/g, ''));
+			for (const alias of this.aliases) {
+				if (alias.includes('-') && !alias.endsWith('-')) this.aliases.push(alias.replace(/-/g, ''));
 			}
 		}
 		this.groupID = info.group;
@@ -30,7 +29,7 @@ class Command {
 		this.throttling = info.throttling || null;
 		this.flags = info.flags || [];
 		this.argsCollector = info.args && info.args.length ? new ArgumentCollector(client, info.args, info.argsPromptLimit) : null;
-		if(this.argsCollector && typeof info.format === 'undefined') {
+		if (this.argsCollector && typeof info.format === 'undefined') {
 			this.format = this.argsCollector.args.reduce((prev, arg) => `${prev}${prev ? ' ' : ''}${arg.default !== null ? '[' : '<'}${arg.label}${arg.infinite ? '...' : ''}${arg.default !== null ? ']' : '>'}`, '');
 		}
 		this.argsType = info.argsType || 'single';
@@ -44,14 +43,14 @@ class Command {
 	}
 
 	hasPermission(message, ownerOverride = true) {
-		if(!this.ownerOnly && !this.userPermissions) return true;
-		if(ownerOverride && this.client.isOwner(message.author)) return true;
-		if(this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
-		if(message.channel.type === 'GUILD_TEXT' && this.userPermissions) {
+		if (!this.ownerOnly && !this.userPermissions) return true;
+		if (ownerOverride && this.client.isOwner(message.author)) return true;
+		if (this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
+		if (message.channel.type === 'GUILD_TEXT' && this.userPermissions) {
             let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
-            if(guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${global.util.perms[c]}\``).join("\n")}`
+            if (guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${global.util.perms[c]}\``).join("\n")}`
             const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
-            if(missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${global.util.perms[pm]}\``).join("\n")}`
+            if (missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${global.util.perms[pm]}\``).join("\n")}`
 		}
 		return true;
 	}
@@ -61,12 +60,9 @@ class Command {
 	}
 
 	onBlock(message, reason, data) {
-		if(CommandCooldown.has(message.author.id)) return null;
-		CommandCooldown.add(message.author.id)
-		setTimeout(() => CommandCooldown.delete(message.author.id), 2000);
 		const send = (content, data = []) => {
-            if(!message.guild) return message.error(content);
-            if(message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed)) return message.error(content);
+            if (!message.guild) return message.error(content);
+            if (message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed)) return message.error(content);
             return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${global.util.perms[c]}\``).join("\n") : [ global.PERMS.messages.embed ].map(c => `▫ \`${c}\``).join("\n")}` })
 			.catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
         }
@@ -99,8 +95,8 @@ class Command {
 		}
 	}
 
-	onError(err, message) { // eslint-disable-line no-unused-vars
-		if(err?.startsWith?.("[bot]: ")) return message.error(err.replace(/\[bot\]: /gi, ""));
+	onError(err, message) {
+		if (err?.startsWith?.("[bot]: ")) return message.error(err.replace(/\[bot\]: /gi, ""));
 		return message.boop({
 			embeds: [
 				{
@@ -117,9 +113,9 @@ class Command {
 	}
 
 	throttle(userID) {
-		if(!this.throttling || this.client.isOwner(userID) || global.config?.ignore?.cooldown?.includes(userID)) return null;
+		if (!this.throttling || this.client.isOwner(userID) || global.config?.ignore?.cooldown?.includes(userID)) return null;
 		let throttle = this._throttles.get(userID);
-		if(!throttle) {
+		if (!throttle) {
 			throttle = { start: Date.now(), usages: 0, timeout: setTimeout(() => this._throttles.delete(userID), this.throttling.duration * 1000) };
 			this._throttles.set(userID, throttle);
 		}
@@ -128,10 +124,10 @@ class Command {
 	}
 
 	setEnabledIn(guild, enabled) {
-		if(typeof guild === 'undefined') throw new TypeError('Guild must not be undefined.');
-		if(typeof enabled === 'undefined') throw new TypeError('Enabled must not be undefined.');
-		if(this.guarded) throw new Error('The command is guarded.');
-		if(!guild) {
+		if (typeof guild === 'undefined') throw new TypeError('Guild must not be undefined.');
+		if (typeof enabled === 'undefined') throw new TypeError('Enabled must not be undefined.');
+		if (this.guarded) throw new Error('The command is guarded.');
+		if (!guild) {
 			this._globalEnabled = enabled;
 			return;
 		}
@@ -140,15 +136,15 @@ class Command {
 	}
 
 	isEnabledIn(guild, bypassGroup) {
-		if(this.guarded) return true;
-		if(!guild) return this.group._globalEnabled && this._globalEnabled;
+		if (this.guarded) return true;
+		if (!guild) return this.group._globalEnabled && this._globalEnabled;
 		guild = this.client.guilds.resolve(guild);
 		return (bypassGroup || guild.isGroupEnabled(this.group)) && guild.isCommandEnabled(this);
 	}
 
 	isUsable(message = null) {
-		if(!message) return this._globalEnabled;
-		if(this.guildOnly && !message?.guild) return false;
+		if (!message) return this._globalEnabled;
+		if (this.guildOnly && !message?.guild) return false;
 		const hasPermission = this.hasPermission(message);
 		return this.isEnabledIn(message.guild) && hasPermission && typeof hasPermission !== 'string';
 	}
@@ -159,11 +155,11 @@ class Command {
 
 	static usage(command, prefix = null, user = null) {
 		const nbcmd = command.replace(/ /g, '\xa0');
-		if(!prefix && !user) return `\`\`${nbcmd}\`\``;
+		if (!prefix && !user) return `\`\`${nbcmd}\`\``;
 
 		let prefixPart;
-		if(prefix) {
-			if(prefix.length > 1 && !prefix.endsWith(' ')) prefix += ' ';
+		if (prefix) {
+			if (prefix.length > 1 && !prefix.endsWith(' ')) prefix += ' ';
 			prefix = prefix.replace(/ /g, '\xa0');
 			prefixPart = `\`\`${prefix}${nbcmd}\`\``;
 		}
@@ -174,54 +170,54 @@ class Command {
 	}
 
 	static validateInfo(client, info) {
-		if(!client) throw new Error('A client must be specified.');
-		if(typeof info !== 'object') throw new TypeError('Command info must be an Object.');
-		if(typeof info.name !== 'string') throw new TypeError('Command name must be a string.');
-		if(info.name !== info.name.toLowerCase()) throw new Error('Command name must be lowercase.');
-		if(info.aliases && (!Array.isArray(info.aliases) || info.aliases.some(ali => typeof ali !== 'string'))) throw new TypeError('Command aliases must be an Array of strings.');
-		if(info.aliases && info.aliases.some(ali => ali !== ali.toLowerCase())) throw new RangeError('Command aliases must be lowercase.');
-		if(typeof info.group !== 'string') throw new TypeError('Command group must be a string.');
-		if(info.group !== info.group.toLowerCase()) throw new RangeError('Command group must be lowercase.');
-		if(typeof info.description !== 'string') throw new TypeError('Command description must be a string.');
-		if('format' in info && typeof info.format !== 'string') throw new TypeError('Command format must be a string.');
-		if('details' in info && typeof info.details !== 'string') throw new TypeError('Command details must be a string.');
-		if(info.flags && !Array.isArray(info.flags)) throw new TypeError("Command flags must be an array.");
-		if(info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) throw new TypeError('Command examples must be an Array of strings.');
-		if(info.clientPermissions) {
-			if(!Array.isArray(info.clientPermissions)) throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
+		if (!client) throw new Error('A client must be specified.');
+		if (typeof info !== 'object') throw new TypeError('Command info must be an Object.');
+		if (typeof info.name !== 'string') throw new TypeError('Command name must be a string.');
+		if (info.name !== info.name.toLowerCase()) throw new Error('Command name must be lowercase.');
+		if (info.aliases && (!Array.isArray(info.aliases) || info.aliases.some(ali => typeof ali !== 'string'))) throw new TypeError('Command aliases must be an Array of strings.');
+		if (info.aliases && info.aliases.some(ali => ali !== ali.toLowerCase())) throw new RangeError('Command aliases must be lowercase.');
+		if (typeof info.group !== 'string') throw new TypeError('Command group must be a string.');
+		if (info.group !== info.group.toLowerCase()) throw new RangeError('Command group must be lowercase.');
+		if (typeof info.description !== 'string') throw new TypeError('Command description must be a string.');
+		if ('format' in info && typeof info.format !== 'string') throw new TypeError('Command format must be a string.');
+		if ('details' in info && typeof info.details !== 'string') throw new TypeError('Command details must be a string.');
+		if (info.flags && !Array.isArray(info.flags)) throw new TypeError("Command flags must be an array.");
+		if (info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) throw new TypeError('Command examples must be an Array of strings.');
+		if (info.clientPermissions) {
+			if (!Array.isArray(info.clientPermissions)) throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
 			for(const perm of info.clientPermissions) {
-				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
+				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
 			}
 		}
-		if(info.clientGuildPermissions) {
-			if(!Array.isArray(info.clientGuildPermissions)) throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
+		if (info.clientGuildPermissions) {
+			if (!Array.isArray(info.clientGuildPermissions)) throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
 			for(const perm of info.clientGuildPermissions) {
-				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
+				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
 			}
 		}
-		if(info.userGuildPermissions) {
-			if(!Array.isArray(info.userGuildPermissions)) throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
+		if (info.userGuildPermissions) {
+			if (!Array.isArray(info.userGuildPermissions)) throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
 			for(const perm of info.userGuildPermissions) {
-				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
+				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
 			}
 		}
-		if(info.userPermissions) {
-			if(!Array.isArray(info.userPermissions)) throw new TypeError('Command userPermissions must be an Array of permission key strings.');
+		if (info.userPermissions) {
+			if (!Array.isArray(info.userPermissions)) throw new TypeError('Command userPermissions must be an Array of permission key strings.');
 			for(const perm of info.userPermissions) {
-				if(!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
+				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
 			}
 		}
-		if(info.throttling) {
-			if(typeof info.throttling !== 'object') throw new TypeError('Command throttling must be an Object.');
-			if(info.throttling.usages < 1) throw new RangeError('Command throttling usages must be at least 1.');
-			if(info.throttling.duration < 1) throw new RangeError('Command throttling duration must be at least 1.');
+		if (info.throttling) {
+			if (typeof info.throttling !== 'object') throw new TypeError('Command throttling must be an Object.');
+			if (info.throttling.usages < 1) throw new RangeError('Command throttling usages must be at least 1.');
+			if (info.throttling.duration < 1) throw new RangeError('Command throttling duration must be at least 1.');
 		}
-		if(info.args && !Array.isArray(info.args)) throw new TypeError('Command args must be an Array.');
-		if('argsPromptLimit' in info && typeof info.argsPromptLimit !== 'number') throw new TypeError('Command argsPromptLimit must be a number.');
-		if('argsPromptLimit' in info && info.argsPromptLimit < 0) throw new RangeError('Command argsPromptLimit must be at least 0.');
-		if(info.argsType && !['single', 'multiple'].includes(info.argsType)) throw new RangeError('Command argsType must be one of "single" or "multiple".');
-		if(info.argsType === 'multiple' && info.argsCount && info.argsCount < 2) throw new RangeError('Command argsCount must be at least 2.');
-		if(info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) throw new TypeError('Command patterns must be an Array of regular expressions.');
+		if (info.args && !Array.isArray(info.args)) throw new TypeError('Command args must be an Array.');
+		if ('argsPromptLimit' in info && typeof info.argsPromptLimit !== 'number') throw new TypeError('Command argsPromptLimit must be a number.');
+		if ('argsPromptLimit' in info && info.argsPromptLimit < 0) throw new RangeError('Command argsPromptLimit must be at least 0.');
+		if (info.argsType && !['single', 'multiple'].includes(info.argsType)) throw new RangeError('Command argsType must be one of "single" or "multiple".');
+		if (info.argsType === 'multiple' && info.argsCount && info.argsCount < 2) throw new RangeError('Command argsCount must be at least 2.');
+		if (info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) throw new TypeError('Command patterns must be an Array of regular expressions.');
 	}
 }
 

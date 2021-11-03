@@ -2,9 +2,9 @@
 class ArgumentType {
 
 	constructor(client, id) {
-		if(!client) throw new Error('A client must be specified.');
-		if(typeof id !== 'string') throw new Error('Argument type ID must be a string.');
-		if(id !== id.toLowerCase()) throw new Error('Argument type ID must be lowercase.');
+		if (!client) throw new Error('A client must be specified.');
+		if (typeof id !== 'string') throw new Error('Argument type ID must be a string.');
+		if (id !== id.toLowerCase()) throw new Error('Argument type ID must be lowercase.');
 	
 		this.client = client;
 		this.id = id;
@@ -19,7 +19,7 @@ class ArgumentType {
 	}
 
 	isEmpty(val, msg, arg) { 
-		if(Array.isArray(val)) return val.length === 0;
+		if (Array.isArray(val)) return val.length === 0;
 		return !val;
 	}
 	disambiguation(items, label, property = "name") {

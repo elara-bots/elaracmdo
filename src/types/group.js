@@ -8,8 +8,8 @@ class GroupArgumentType extends ArgumentType {
 
 	validate(val) {
 		const groups = this.client.registry.findGroups(val);
-		if(groups.length === 1) return true;
-		if(groups.length === 0) return false;
+		if (groups.length === 1) return true;
+		if (groups.length === 0) return false;
 		return groups.length <= 15 ?
 			`${this.disambiguation(groups.map(grp => escapeMarkdown(grp.name)), 'groups', null)}\n` :
 			'Multiple groups found. Please be more specific.';

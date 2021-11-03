@@ -22,9 +22,9 @@ module.exports = class CommandoClient extends Client {
 	 * @param {CommandoClientOptions} [options] - Options for the client
 	 */
 	constructor(options = {}) {
-		if(!options.commandPrefix) options.commandPrefix = '!';
-		if(typeof options.commandEditableDuration === 'undefined') options.commandEditableDuration = 30;
-		if(typeof options.nonCommandEditable === 'undefined') options.nonCommandEditable = true;
+		if (!options.commandPrefix) options.commandPrefix = '!';
+		if (typeof options.commandEditableDuration === 'undefined') options.commandEditableDuration = 30;
+		if (typeof options.nonCommandEditable === 'undefined') options.nonCommandEditable = true;
 		super(options);
 		this.registry = new CommandoRegistry(this);
 		this.dispatcher = new CommandDispatcher(this);
@@ -33,11 +33,11 @@ module.exports = class CommandoClient extends Client {
 		this.on('messageCreate', message => this.dispatcher.handleMessage(message).catch((err) => this.emit('error', err)));
 		this.on('messageUpdate', (oldMessage, newMessage) => this.dispatcher.handleMessage(newMessage, oldMessage).catch((err) => this.emit('error', err)));
 
-		if(options.owner || options.support){
+		if (options.owner || options.support){
 			this.once("ready", () => {
 				let fetch = (types) => {
 					for (const type of types) {
-						if(options[type] instanceof Array || options[type] instanceof Set){
+						if (options[type] instanceof Array || options[type] instanceof Set){
 							for (const id of options[type]){
 								this.users.fetch(id)
 								.catch((err) => {
@@ -65,7 +65,7 @@ module.exports = class CommandoClient extends Client {
 	 * @type {string}
 	 */
 	get commandPrefix() {
-		if(typeof this._commandPrefix === 'undefined' || this._commandPrefix === null) return this.options.commandPrefix;
+		if (typeof this._commandPrefix === 'undefined' || this._commandPrefix === null) return this.options.commandPrefix;
 		return this._commandPrefix;
 	}
 
@@ -81,8 +81,8 @@ module.exports = class CommandoClient extends Client {
 	 * @readonly
 	 */
 	get owners() {
-		if(!this.options.owner) return null;
-		if(typeof this.options.owner === 'string') return [this.users.cache.get(this.options.owner)];
+		if (!this.options.owner) return null;
+		if (typeof this.options.owner === 'string') return [this.users.cache.get(this.options.owner)];
 		const owners = [];
 		for(const owner of this.options.owner) owners.push(this.users.cache.get(owner));
 		return owners;
@@ -95,8 +95,8 @@ module.exports = class CommandoClient extends Client {
 	 * @readonly
 	 */
 	get support(){
-		if(!this.options.support) return null;
-		if(!Array.isArray(this.options.support)) return [];
+		if (!this.options.support) return null;
+		if (!Array.isArray(this.options.support)) return [];
 		let support = [];
 		for(const sup of this.options.support) support.push(this.users.cache.get(sup));
 		return support;
@@ -109,12 +109,12 @@ module.exports = class CommandoClient extends Client {
 	 */
 	isOwner(user) {
 		try{
-			if(!this.options.owner) return false;
+			if (!this.options.owner) return false;
 			user = this.users.resolve(user);
-			if(!user) throw new RangeError('Unable to resolve user.');
-			if(typeof this.options.owner === 'string') return user.id === this.options.owner;
-			if(this.options.owner instanceof Array) return this.options.owner.includes(user.id);
-			if(this.options.owner instanceof Set) return this.options.owner.has(user.id);
+			if (!user) throw new RangeError('Unable to resolve user.');
+			if (typeof this.options.owner === 'string') return user.id === this.options.owner;
+			if (this.options.owner instanceof Array) return this.options.owner.includes(user.id);
+			if (this.options.owner instanceof Set) return this.options.owner.has(user.id);
 			throw new RangeError('The client\'s "owner" option is an unknown value.');
 		}catch(err){
 			return false;
@@ -128,12 +128,12 @@ module.exports = class CommandoClient extends Client {
 
 	isSupport(user){
 		try{
-			if(!this.options.support) return false;
+			if (!this.options.support) return false;
 			user = this.users.resolve(user);
-			if(!user) throw new RangeError(`[isSupport] - Unable to resolve user.`);
-			if(this.options.support instanceof Array) return this.options.support.includes(user.id);
-			if(this.options.support instanceof Set) return this.options.support.has(user.id);
-			if(typeof this.options.support === "string") return user.id === this.options.support;
+			if (!user) throw new RangeError(`[isSupport] - Unable to resolve user.`);
+			if (this.options.support instanceof Array) return this.options.support.includes(user.id);
+			if (this.options.support instanceof Set) return this.options.support.has(user.id);
+			if (typeof this.options.support === "string") return user.id === this.options.support;
 			return false;	
 		}catch(err){
 			return false;
@@ -163,16 +163,16 @@ module.exports = class CommandoClient extends Client {
     */
     async fetchMessages(channel, limit = 50, before, after, around) {
 		this.emit("special:debug", `[CLIENT:fetchMessages]: Fetching ${limit} messages from ${channel.name} (${channel.id})`);
-        if(limit && limit > 100) {
+        if (limit && limit > 100) {
             let logs = [];
             const get = async (_before, _after) => {
                 const messages = [...(await channel.messages.fetch({ limit: 100, before: _before || undefined, after: _after || undefined }).catch(() => new Collection())).values()];
-                if(limit <= messages.length) {
+                if (limit <= messages.length) {
                     return (_after ? messages.slice(messages.length - limit, messages.length).map((message) => message).concat(logs) : logs.concat(messages.slice(0, limit).map((message) => message)));
                 }
                 limit -= messages.length;
                 logs = (_after ? messages.map((message) => message).concat(logs) : logs.concat(messages.map((message) => message)));
-                if(messages.length < 100)  return logs;
+                if (messages.length < 100)  return logs;
                 return get((_before || !_after) && messages[messages.length - 1].id, _after && messages[0].id);
             };
             return get(before, after);
@@ -181,10 +181,10 @@ module.exports = class CommandoClient extends Client {
     }
 
 	async deleteMessages(channel, messageIDs) {
-		if(messageIDs.length <= 0) throw new Error(`[CLIENT:deleteMessages]: No messages provided!`);
+		if (messageIDs.length <= 0) throw new Error(`[CLIENT:deleteMessages]: No messages provided!`);
 		messageIDs = messageIDs.filter(id => Date.now() - SnowflakeUtil.deconstruct(id).timestamp < 1209600000)
 		this.emit("special:debug", `[CLIENT:deleteMessages]: Deleting ${messageIDs.length} messages from ${channel.name} (${channel.id})`);
-		if(messageIDs.length <= 100) {
+		if (messageIDs.length <= 100) {
 			await channel.bulkDelete(messageIDs, true).catch(() => new Collection());
 			return messageIDs;
 		}
@@ -201,21 +201,21 @@ module.exports = class CommandoClient extends Client {
 
 	async purgeChannel(channelID, limit, filter, before, after) {
 		let channel = this.channels.resolve(channelID)
-		if(!channel) return 0;
-        if(typeof filter === "string") filter = (msg) => msg.content.includes(filter);
-        if(limit !== -1 && limit <= 0) return 0;
+		if (!channel) return 0;
+        if (typeof filter === "string") filter = (msg) => msg.content.includes(filter);
+        if (limit !== -1 && limit <= 0) return 0;
 		this.emit("special:debug", `[CLIENT:purgeChannel]: Running the purge in ${channel.name} (${channel.id})`);
         let [ toDelete, deleted, done ] = [ [], 0, false ];
         const checkToDelete = async () => {
             const messageIDs = (done && toDelete) || (toDelete.length >= 100 && toDelete.splice(0, 100));
-            if(messageIDs) {
+            if (messageIDs) {
                 deleted += messageIDs.length;
                 await this.deleteMessages(channel, messageIDs);
-                if(done) return deleted;
+                if (done) return deleted;
                 await sleep(1000);
                 return checkToDelete();
             }else 
-			if(done) {
+			if (done) {
                 return deleted;
             }else {
                 await sleep(250);
@@ -224,22 +224,22 @@ module.exports = class CommandoClient extends Client {
         };
         const del = async (_before, _after) => {
             const messages = await this.fetchMessages(channel, 100, _before, _after);
-            if(limit !== -1 && limit <= 0) {
+            if (limit !== -1 && limit <= 0) {
                 done = true;
                 return;
             }
             for(const message of messages) {
-                if(limit !== -1 && limit <= 0) {
+                if (limit !== -1 && limit <= 0) {
                     break;
                 }
-                if(message.timestamp < Date.now() - 1209600000) { // 14d * 24h * 60m * 60s * 1000ms
+                if (message.timestamp < Date.now() - 1209600000) { // 14d * 24h * 60m * 60s * 1000ms
                     done = true;
                     return;
                 }
-                if(!filter || filter(message)) toDelete.push(message.id);
-                if(limit !== -1) limit--;
+                if (!filter || filter(message)) toDelete.push(message.id);
+                if (limit !== -1) limit--;
             }
-            if((limit !== -1 && limit <= 0) || messages.length < 100) {
+            if ((limit !== -1 && limit <= 0) || messages.length < 100) {
                 done = true;
                 return;
             }

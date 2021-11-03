@@ -14,11 +14,11 @@ class ReactionHandler extends ReactionCollector {
 			this.resolve = resolve;
 		}) : Promise.resolve(null);
 		this.reactionsDone = false;
-		if(emojis.length) this._queueEmojiReactions(emojis);
+		if (emojis.length) this._queueEmojiReactions(emojis);
 		else return this.stop();
 		this.on('collect', (reaction, user) => {
-			if(user.bot) return null;
-			if(this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has(global.PERMS.manage.messages) && !this.message.deleted) reaction.users.remove(user.id).catch(() => null);
+			if (user.bot) return null;
+			if (this.message.guild && this.message.channel.permissionsFor(this.client.user.id).has(global.PERMS.manage.messages) && !this.message.deleted) reaction.users.remove(user.id).catch(() => null);
 			this[this.methodMap.get(reaction.emoji.name)](user);
 		});
 		setTimeout(() => this.emit("end"), this.time || 120000)
@@ -26,7 +26,7 @@ class ReactionHandler extends ReactionCollector {
 			if (this.reactionsDone && !this.message.deleted && this.message.guild) this.message.reactions.removeAll().catch(() => null);
 				setTimeout(async () => {
 					
-			if(!this.message.deleted) this.message.edit({
+			if (!this.message.deleted) this.message.edit({
 					embeds: [
 						{
 							author: {
@@ -140,14 +140,14 @@ class ReactionHandler extends ReactionCollector {
 	}
 
 	update() {
-		if(!this.message.deleted) this.message.edit({ embeds: [ this.display.pages[this.currentPage] ] }).catch(() => null);
+		if (!this.message.deleted) this.message.edit({ embeds: [ this.display.pages[this.currentPage] ] }).catch(() => null);
 	}
 
 	async _queueEmojiReactions(emojis) {
 		if (this.message.deleted) return this.stop();
 		if (this.ended) return this.message.reactions.removeAll().catch(() => null);
 		for (const e of emojis) {
-			if(!this.message.deleted) this.message.react(e).catch(() => null);
+			if (!this.message.deleted) this.message.react(e).catch(() => null);
 		}
 		this.reactionsDone = true;
 		return null;

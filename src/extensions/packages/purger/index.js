@@ -36,15 +36,15 @@ module.exports = class Purger {
 
     async init(filter, user = null, content = "") {
         let amount = this.amount;
-        if(amount > 500) amount = 500;
+        if (amount > 500) amount = 500;
         const f = (reg, name) => {
-            if(filter.match(new RegExp(reg, "i"))) filter = name;
+            if (filter.match(new RegExp(reg, "i"))) filter = name;
         }
-        if(this.cmd && this.channel.client.user.equals(user) && ["user", "users", "member", "members"].includes(filter)) filter = "none";
+        if (this.cmd && this.channel.client.user.equals(user) && ["user", "users", "member", "members"].includes(filter)) filter = "none";
 
-        if(!filter.match(/text|(link|url)(s)?|embed(s)?|(ro)?bot(s)?|image(s)?|photo(s)?|attachment(s)?|you|invite(s)?|user(s)?|member(s)?|contains|startswith/i)){
+        if (!filter.match(/text|(link|url)(s)?|embed(s)?|(ro)?bot(s)?|image(s)?|photo(s)?|attachment(s)?|you|invite(s)?|user(s)?|member(s)?|contains|startswith/i)){
             user = this.channel.client.users.cache.get(filter.replace(/<@!?|>/gi, "")) || await this.channel.client.users.fetch(filter.replace(/<@!?|>/gi, ""), true).catch(() => null);
-            if(user) filter = "user"; else filter = "no_filter";
+            if (user) filter = "user"; else filter = "no_filter";
         }
         
         f("member(s)?|user(s)?", "user");
@@ -70,22 +70,22 @@ module.exports = class Purger {
 
     async purge(filter, amount) {
         let messages = await this.fetch();
-        if(!messages) return Promise.resolve(this.cmd ? null : 0);
-        if(!amount || amount <= 0) amount = this.amount; 
+        if (!messages) return Promise.resolve(this.cmd ? null : 0);
+        if (!amount || amount <= 0) amount = this.amount; 
         return this.channel.client.deleteMessages(this.channel, messages.filter(filter).map(c => c.id).slice(0, amount))
         .then((m) => this.cmd ? null : m.length)
         .catch(() => this.cmd ? null : 0)
     }
 
     async fetch() {
-        if(!this.channel.permissionsFor(this.channel.client.user.id).has(this.permissions)) return Promise.resolve(null);
+        if (!this.channel.permissionsFor(this.channel.client.user.id).has(this.permissions)) return Promise.resolve(null);
         let amount = 0;
-        if(this.amount <= 500 && this.amount >= 100) amount = 500;
+        if (this.amount <= 500 && this.amount >= 100) amount = 500;
         else
-        if(this.amount <= 100 && this.amount >= 50) amount = 200;
+        if (this.amount <= 100 && this.amount >= 50) amount = 200;
         else amount = 100;
         let messages = await this.channel.client.fetchMessages(this.channel, amount).catch(() => []);
-        if(!messages.length) return Promise.resolve(null);
+        if (!messages.length) return Promise.resolve(null);
         return Promise.resolve(messages)
     }
 };

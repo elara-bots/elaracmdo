@@ -3,9 +3,9 @@ const { Collection } = require('discord.js');
 class CommandGroup {
 
 	constructor(client, id, name, guarded = false) {
-		if(!client) throw new Error('A client must be specified.');
-		if(typeof id !== 'string') throw new TypeError('Group ID must be a string.');
-		if(id !== id.toLowerCase()) id = id.toLowerCase();
+		if (!client) throw new Error('A client must be specified.');
+		if (typeof id !== 'string') throw new TypeError('Group ID must be a string.');
+		if (id !== id.toLowerCase()) id = id.toLowerCase();
 		this.client = client;
 		this.id = id;
 		this.name = name || id;
@@ -15,10 +15,10 @@ class CommandGroup {
 	}
 
 	setEnabledIn(guild, enabled) {
-		if(!guild) throw new TypeError("You need to provide a guild.");
-		if(typeof enabled !== 'boolean') throw new TypeError("Enabled isn't a boolean");
-		if(this.guarded) throw new Error('The group is guarded.');
-		if(!guild) {
+		if (!guild) throw new TypeError("You need to provide a guild.");
+		if (typeof enabled !== 'boolean') throw new TypeError("Enabled isn't a boolean");
+		if (this.guarded) throw new Error('The group is guarded.');
+		if (!guild) {
 			this._globalEnabled = enabled;
 			return;
 		}
@@ -27,8 +27,8 @@ class CommandGroup {
 	}
 
 	isEnabledIn(guild) {
-		if(this.guarded) return true;
-		if(!guild) return this._globalEnabled;
+		if (this.guarded) return true;
+		if (!guild) return this._globalEnabled;
 		return this.client.guilds.resolve(guild).isGroupEnabled(this);
 	}
 }

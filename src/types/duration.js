@@ -17,14 +17,14 @@ module.exports = class CurrencyType extends ArgumentType {
 	validate(value) {
 		const MATCHES_ALL = value.match(/\d+\s*[A-Za-z]+/g);
 
-		if(MATCHES_ALL) {
+		if (MATCHES_ALL) {
 			for(const match of MATCHES_ALL) {
 				const tempNum = match.match(/\d+/g);
 				const tempStr = match.match(/[A-Za-z]+/g);
-				if(!tempNum || (tempNum.length !== 1)) return false;
-				if(!tempStr || (tempStr.length !== 1)) return false;
-				if(!Number.isInteger(parseInt(tempNum[0]))) return false;
-				if(!this.timeIds.has(tempStr[0])) return false;
+				if (!tempNum || (tempNum.length !== 1)) return false;
+				if (!tempStr || (tempStr.length !== 1)) return false;
+				if (!Number.isInteger(parseInt(tempNum[0]))) return false;
+				if (!this.timeIds.has(tempStr[0])) return false;
 			}
 
 			return true;
@@ -35,18 +35,18 @@ module.exports = class CurrencyType extends ArgumentType {
 	parse(value) {
 		const MATCHES_ALL = value.match(/\d+\s*[A-Za-z]+/g);
 
-		if(MATCHES_ALL) {
+		if (MATCHES_ALL) {
 			let totalTime = 0;
 			MATCHES_ALL.forEach(dur => {
 				const tempNum = parseInt(dur.match(/\d+/g)[0]);
 				const tempStr = dur.match(/[A-Za-z]+/g)[0];
-				if(isNaN(tempNum)) {
+				if (isNaN(tempNum)) {
 					totalTime = 0;
 				} else {
 					totalTime += tempNum * this.determineTimeType(tempStr);
 				}
 			});
-			if(totalTime) {
+			if (totalTime) {
 				this.duration = totalTime;
 
 				return this.duration;

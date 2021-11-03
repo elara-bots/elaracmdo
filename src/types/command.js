@@ -8,8 +8,8 @@ class CommandArgumentType extends ArgumentType {
 
 	validate(val) {
 		const commands = this.client.registry.findCommands(val);
-		if(!commands.length) return false;
-		if(commands.length === 1) return true;
+		if (!commands.length) return false;
+		if (commands.length === 1) return true;
 		return commands.length <= 15 ?
 			`${this.disambiguation(commands.map(cmd => escapeMarkdown(cmd.name)), 'commands', null)}\n` :
 			'Multiple commands found. Please be more specific.';

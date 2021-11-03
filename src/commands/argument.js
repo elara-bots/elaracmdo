@@ -22,8 +22,8 @@ class Argument {
 
 	async obtain(msg, val, promptLimit = Infinity) {
 		let empty = this.isEmpty(val, msg);
-		if(empty && this.default !== null) return { value: typeof this.default === 'function' ? await this.default(msg, this) : this.default, cancelled: null, prompts: [], answers: [] };
-		if(this.infinite) return this.obtainInfinite(msg, val, promptLimit);
+		if (empty && this.default !== null) return { value: typeof this.default === 'function' ? await this.default(msg, this) : this.default, cancelled: null, prompts: [], answers: [] };
+		if (this.infinite) return this.obtainInfinite(msg, val, promptLimit);
 
 		const [ wait, prompts, answers ] = [
 			this.wait > 0 && this.wait !== Infinity ? this.wait * 1000 : undefined,
@@ -32,7 +32,7 @@ class Argument {
 		let valid = !empty ? await this.validate(val, msg) : false;
 
 		while(!valid || typeof valid === 'string') {
-			if(prompts.length >= promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
+			if (prompts.length >= promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
 
 			prompts.push(await msg.boop({ embeds: [ {
 				author: {
@@ -56,12 +56,12 @@ class Argument {
 			} ] }));
 
 			const responses = await msg.channel.awaitMessages({ filter: msg2 => msg2.author.id === msg.author.id, max: 1, time: wait });
-			if(responses && responses.size === 1) {
+			if (responses?.size === 1) {
 				answers.push(responses.first());
 				val = answers[answers.length - 1].content;
 			} else return { value: null, cancelled: 'time', prompts, answers };
 
-			if(val.toLowerCase() === 'cancel') return { value: null, cancelled: 'user', prompts, answers };
+			if (val.toLowerCase() === 'cancel') return { value: null, cancelled: 'user', prompts, answers };
 
 			empty = this.isEmpty(val, msg);
 			valid = await this.validate(val, msg);
@@ -84,7 +84,7 @@ class Argument {
 
 			while(!valid || typeof valid === 'string') {
 				attempts++;
-				if(attempts > promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
+				if (attempts > promptLimit) return { value: null, cancelled: 'promptLimit', prompts, answers };
 
 				const embed = {
 					author: { name: msg.client.user.tag, icon_url: msg.client.user.displayAvatarURL({ dynamic: true }), url: msg.client.options.invite },
@@ -101,17 +101,17 @@ class Argument {
 						}
 					]
 				};
-				if(val) {
+				if (val) {
 					const escaped = escapeMarkdown(val).replace(/@/g, '@\u200b');
 					embed.description = `	${valid ? valid : `You provided an invalid ${this.label}, "${escaped.length < 1850 ? escaped : '[too long to show]'}".\nPlease try again.`}`;
 					prompts.push(await msg.boop({ embeds: [ embed ] }));
-				} else if(results.length === 0) {
+				} else if (results.length === 0) {
 					embed.description = this.prompt;
 					prompts.push(await msg.boop({ embeds: [ embed ] }));
 				}
 
 				const responses = await msg.channel.awaitMessages({ filter: msg2 => msg2.author.id === msg.author.id, max: 1, time: wait });
-				if(responses && responses.size === 1) {
+				if (responses && responses.size === 1) {
 					answers.push(responses.first());
 					val = answers[answers.length - 1].content;
 				} else {
@@ -119,60 +119,60 @@ class Argument {
 				}
 
 				const lc = val.toLowerCase();
-				if(lc === 'finish') return { value: results.length > 0 ? results : null, cancelled: this.default ? null : results.length > 0 ? null : 'user', prompts, answers };
-				if(lc === 'cancel') return { value: null, cancelled: 'user', prompts, answers };
+				if (lc === 'finish') return { value: results.length > 0 ? results : null, cancelled: this.default ? null : results.length > 0 ? null : 'user', prompts, answers };
+				if (lc === 'cancel') return { value: null, cancelled: 'user', prompts, answers };
 				valid = await this.validate(val, msg);
 			}
 
 			results.push(await this.parse(val, msg));
 
-			if(vals) {
+			if (vals) {
 				currentVal++;
-				if(currentVal === vals.length) return { value: results, cancelled: null, prompts, answers };
+				if (currentVal === vals.length) return { value: results, cancelled: null, prompts, answers };
 			}
 		}
 	}
 
 	validate(val, msg) {
 		const valid = this.validator ? this.validator(val, msg, this) : this.type.validate(val, msg, this);
-		if(!valid || typeof valid === 'string') return this.error || valid;
-		if(valid instanceof Promise) return valid.then(vld => !vld || typeof vld === 'string' ? this.error || vld : vld);
+		if (!valid || typeof valid === 'string') return this.error || valid;
+		if (valid instanceof Promise) return valid.then(vld => !vld || typeof vld === 'string' ? this.error || vld : vld);
 		return valid;
 	}
 
 	parse(val, msg) {
-		if(this.parser) return this.parser(val, msg, this);
+		if (this.parser) return this.parser(val, msg, this);
 		return this.type.parse(val, msg, this);
 	}
 
 	isEmpty(val, msg) {
-		if(this.emptyChecker) return this.emptyChecker(val, msg, this);
-		if(this.type) return this.type.isEmpty(val, msg, this);
-		if(Array.isArray(val)) return val.length === 0;
+		if (this.emptyChecker) return this.emptyChecker(val, msg, this);
+		if (this.type) return this.type.isEmpty(val, msg, this);
+		if (Array.isArray(val)) return val.length === 0;
 		return !val;
 	}
 
 	static validateInfo(client, info) { // eslint-disable-line complexity
-		if(!client) throw new Error('The argument client must be specified.');
-		if(typeof info !== 'object') throw new TypeError('Argument info must be an Object.');
-		if(typeof info.key !== 'string') throw new TypeError('Argument key must be a string.');
-		if(info.label && typeof info.label !== 'string') throw new TypeError('Argument label must be a string.');
-		if(typeof info.prompt !== 'string') throw new TypeError('Argument prompt must be a string.');
-		if(info.error && typeof info.error !== 'string') throw new TypeError('Argument error must be a string.');
-		if(info.type && typeof info.type !== 'string') throw new TypeError('Argument type must be a string.');
-		if(info.type && !info.type.includes('|') && !client.registry.types.has(info.type)) throw new RangeError(`Argument type "${info.type}" isn't registered.`);
-		if(!info.type && !info.validate) throw new Error('Argument must have either "type" or "validate" specified.');
-		if(info.validate && typeof info.validate !== 'function') throw new TypeError('Argument validate must be a function.');
-		if(info.parse && typeof info.parse !== 'function') throw new TypeError('Argument parse must be a function.');
-		if(!info.type && (!info.validate || !info.parse)) throw new Error('Argument must have both validate and parse since it doesn\'t have a type.');
-		if(typeof info.wait !== 'undefined' && (typeof info.wait !== 'number' || Number.isNaN(info.wait))) throw new TypeError('Argument wait must be a number.');
+		if (!client) throw new Error('The argument client must be specified.');
+		if (typeof info !== 'object') throw new TypeError('Argument info must be an Object.');
+		if (typeof info.key !== 'string') throw new TypeError('Argument key must be a string.');
+		if (info.label && typeof info.label !== 'string') throw new TypeError('Argument label must be a string.');
+		if (typeof info.prompt !== 'string') throw new TypeError('Argument prompt must be a string.');
+		if (info.error && typeof info.error !== 'string') throw new TypeError('Argument error must be a string.');
+		if (info.type && typeof info.type !== 'string') throw new TypeError('Argument type must be a string.');
+		if (info.type && !info.type.includes('|') && !client.registry.types.has(info.type)) throw new RangeError(`Argument type "${info.type}" isn't registered.`);
+		if (!info.type && !info.validate) throw new Error('Argument must have either "type" or "validate" specified.');
+		if (info.validate && typeof info.validate !== 'function') throw new TypeError('Argument validate must be a function.');
+		if (info.parse && typeof info.parse !== 'function') throw new TypeError('Argument parse must be a function.');
+		if (!info.type && (!info.validate || !info.parse)) throw new Error('Argument must have both validate and parse since it doesn\'t have a type.');
+		if (typeof info.wait !== 'undefined' && (typeof info.wait !== 'number' || Number.isNaN(info.wait))) throw new TypeError('Argument wait must be a number.');
 	}
 
 	static determineType(client, id) {
-		if(!id) return null;
-		if(!id.includes('|')) return client.registry.types.get(id);
+		if (!id) return null;
+		if (!id.includes('|')) return client.registry.types.get(id);
 		let type = client.registry.types.get(id);
-		if(type) return type;
+		if (type) return type;
 		type = new ArgumentUnionType(client, id);
 		client.registry.registerType(type);
 		return type;

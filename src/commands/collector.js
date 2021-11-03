@@ -2,18 +2,18 @@ const Argument = require('./argument');
 
 class ArgumentCollector {
 	constructor(client, args, promptLimit = Infinity) {
-		if(!client) throw new TypeError('Collector client must be specified.');
-		if(!args || !Array.isArray(args)) throw new TypeError('Collector args must be an Array.');
-		if(promptLimit === null) promptLimit = Infinity;
+		if (!client) throw new TypeError('Collector client must be specified.');
+		if (!args || !Array.isArray(args)) throw new TypeError('Collector args must be an Array.');
+		if (promptLimit === null) promptLimit = Infinity;
 		this.client = client;
 		this.args = new Array(args.length);
 		let [ hasInfinite, hasOptional ] = [ false, false ];
 		for (let i = 0; i < args.length; i++) {
-			if(hasInfinite) throw new Error('No other argument may come after an infinite argument.');
-			if(args[i].default !== null) hasOptional = true;
-			else if(hasOptional) throw new Error('Required arguments may not come after optional arguments.');
+			if (hasInfinite) throw new Error('No other argument may come after an infinite argument.');
+			if (args[i].default !== null) hasOptional = true;
+			else if (hasOptional) throw new Error('Required arguments may not come after optional arguments.');
 			this.args[i] = new Argument(this.client, args[i]);
-			if(this.args[i].infinite) hasInfinite = true;
+			if (this.args[i].infinite) hasInfinite = true;
 		}
 
 		this.promptLimit = promptLimit;
@@ -30,7 +30,7 @@ class ArgumentCollector {
 				const result = await arg.obtain(msg, arg.infinite ? provided.slice(i) : provided[i], promptLimit);
 				results.push(result);
 
-				if(result.cancelled) {
+				if (result.cancelled) {
 					this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
 					return {
 						values: null, cancelled: result.cancelled,
