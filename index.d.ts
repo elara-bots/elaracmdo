@@ -12,7 +12,7 @@ declare module 'elaracmdo' {
 		GuildEmoji, Presence, CloseEvent, 
 		ColorResolvable, DeconstructedSnowflake, 
 		ThreadChannel, ThreadMember, StageInstance, 
-		ApplicationCommand, Interaction, Sticker, 
+		Interaction, Sticker,
 		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption
 	} from 'discord.js';
 	
@@ -179,6 +179,14 @@ declare module 'elaracmdo' {
 		public run(): Promise<CommandoMessage | CommandoMessage[]>;
 	}
 
+	interface APIRequest {
+		method: string;
+		route: string;
+		path: string;
+		options: object;
+		retries: number
+	}
+
 	export class CommandoClient extends Client {
 		public constructor(options?: CommandoClientOptions);
 
@@ -212,13 +220,13 @@ declare module 'elaracmdo' {
 		on(event: 'commandError', listener: (command: Command, err: Error, message: CommandoMessage, args: string[], fromPattern: true) => void): this;
 		on(event: 'commandRun', listener: (command: Command, promise: Promise<any>, message: CommandoMessage, args: object | string | string[], fromPattern: boolean) => void): this;
 
+		on(event: 'apiRequest', listener: (request: APIRequest) => void): this;
+		on(event: 'apiResponse', listener: (request: APIRequest, response: object) => void): this;
+		
 
 		// Discord.js Events 
 
 		on(event: 'interactionCreate', listener: (interaction: Interaction) => void): this;
-		on(event: 'applicationCommandCreate', listener: (command: ApplicationCommand) => void): this;
-		on(event: 'applicationCommandDelete', listener: (command: ApplicationCommand) => void): this;
-		on(event: 'applicationCommandUpdate', listener: (oldCommand: ApplicationCommand, newCommand: ApplicationCommand) => void): this;
 
 		on(event: 'channelCreate', listener: (channel: DMChannel|GuildChannel) => void): this;
 		on(event: 'channelDelete', listener: (channel: DMChannel|GuildChannel) => void): this;
