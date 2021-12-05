@@ -218,7 +218,7 @@ declare module 'elaracmdo' {
 		on(event: string, listener: Function): this;
 		on(event: 'commandError', listener: (command: Command, err: Error, message: CommandoMessage, args: object | string | string[], fromPattern: false) => void): this;
 		on(event: 'commandError', listener: (command: Command, err: Error, message: CommandoMessage, args: string[], fromPattern: true) => void): this;
-		on(event: 'commandRun', listener: (command: Command, promise: Promise<any>, message: CommandoMessage, args: object | string | string[], fromPattern: boolean) => void): this;
+		on(event: 'commandRun', listener: (command: Command, message: CommandoMessage, args: object | string | string[]) => void): this;
 
 		on(event: 'apiRequest', listener: (request: APIRequest) => void): this;
 		on(event: 'apiResponse', listener: (request: APIRequest, response: object) => void): this;

@@ -167,7 +167,7 @@ register("run", async function () { // eslint-disable-line complexity
     if (throttle) throttle.usages++;
     try {
         const promise = this.command.run(this, args, fromPattern, collResult);
-        this.client.emit('commandRun', this.command, promise, this, args, fromPattern, collResult);
+        this.client.emit('commandRun', this.command, this, args);
         return await promise;
     } catch(err) {
         this.client.emit('commandError', this.command, err, this, args, fromPattern, collResult);
