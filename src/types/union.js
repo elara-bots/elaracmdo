@@ -1,10 +1,6 @@
 const ArgumentType = require('./base');
 
-/**
- * A type for command arguments that handles multiple other types
- * @extends {ArgumentType}
- */
-class ArgumentUnionType extends ArgumentType {
+module.exports = class ArgumentUnionType extends ArgumentType {
 	constructor(client, id) {
 		super(client, id);
 
@@ -43,5 +39,3 @@ class ArgumentUnionType extends ArgumentType {
 		return !this.types.some(type => !type.isEmpty(val, msg, arg));
 	}
 }
-
-module.exports = ArgumentUnionType;

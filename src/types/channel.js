@@ -1,7 +1,9 @@
 const ArgumentType = require('./base'),
-	{ Util: { escapeMarkdown } } = require('discord.js');
+	{ Util: { escapeMarkdown } } = require('discord.js'),
+	nameFilterExact = (s) => t => t.name.toLowerCase() === s,
+	nameFilterInexact = (s) => t => t.name.toLowerCase().includes(s);
 
-class ChannelArgumentType extends ArgumentType {
+module.exports = class ChannelArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'channel');
 	}
@@ -39,13 +41,3 @@ class ChannelArgumentType extends ArgumentType {
 		return null;
 	}
 }
-
-function nameFilterExact(search) {
-	return thing => thing.name.toLowerCase() === search;
-}
-
-function nameFilterInexact(search) {
-	return thing => thing.name.toLowerCase().includes(search);
-}
-
-module.exports = ChannelArgumentType;

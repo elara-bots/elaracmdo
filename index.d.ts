@@ -121,7 +121,7 @@ declare module 'elaracmdo' {
 	export class CommandDispatcher {
 		public constructor(client: CommandoClient);
 
-		private _awaiting: Set<string>;
+		private pending: Set<string>;
 		private _commandPatterns: object;
 		private _results: Map<string, CommandoMessage>;
 
@@ -137,7 +137,6 @@ declare module 'elaracmdo' {
 		public inhibitors: Set<Function>;
 
 		public addInhibitor(inhibitor: Inhibitor): boolean;
-		public removeInhibitor(inhibitor: Inhibitor): boolean;
 	}
 	export class CommandGroup {
 		public constructor(client: CommandoClient, id: string, name?: string, guarded?: boolean, commands?: Command[]);

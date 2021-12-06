@@ -1,7 +1,7 @@
 const ArgumentType = require('./base'),
 	{ Util: { escapeMarkdown } } = require('discord.js');
 
-class GroupArgumentType extends ArgumentType {
+module.exports = class GroupArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'group');
 	}
@@ -19,5 +19,3 @@ class GroupArgumentType extends ArgumentType {
 		return this.client.registry.findGroups(val)[0];
 	}
 }
-
-module.exports = GroupArgumentType;

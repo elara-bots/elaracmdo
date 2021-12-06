@@ -1,7 +1,9 @@
 const ArgumentType = require('./base'),
-	{ Util: { escapeMarkdown } } = require('discord.js');
+	{ Util: { escapeMarkdown } } = require('discord.js'),
+	channelFilterExact = (s) => c => c.type === "GUILD_TEXT" && c.name.toLowerCase() === s,
+	channelFilterInexact = (s) => c => c.type === "GUILD_TEXT" && c.name.toLowerCase().includes(s);
 
-class TextChannelArgumentType extends ArgumentType {
+module.exports = class TextChannelArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'text-channel');
 	}
@@ -52,13 +54,3 @@ class TextChannelArgumentType extends ArgumentType {
 		return null;
 	}
 }
-
-function channelFilterExact(search) {
-	return chan => chan.type === 'GUILD_TEXT' && chan.name.toLowerCase() === search;
-}
-
-function channelFilterInexact(search) {
-	return chan => chan.type === 'GUILD_TEXT' && chan.name.toLowerCase().includes(search);
-}
-
-module.exports = TextChannelArgumentType;

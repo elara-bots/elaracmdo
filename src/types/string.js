@@ -1,6 +1,6 @@
 const ArgumentType = require('./base');
 
-class StringArgumentType extends ArgumentType {
+module.exports = class StringArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'string');
 	}
@@ -22,5 +22,3 @@ class StringArgumentType extends ArgumentType {
 		return val;
 	}
 }
-
-module.exports = StringArgumentType;

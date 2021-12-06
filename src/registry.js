@@ -70,12 +70,10 @@ class CommandoRegistry {
 	}
 
 	registerCommandsIn(options) {
-		const obj = all(options);
-		const commands = [];
-		for(const group of Object.values(obj)) {
+		const [ obj, commands ] = [ all(options), [] ];
+		for( const group of Object.values(obj) ) {
 			for(let command of Object.values(group)) {
-				if (typeof command.default === 'function') command = command.default;
-				commands.push(command);
+				commands.push(typeof command.default === "function" ? command.default : command);
 			}
 		}
 		if (typeof options === 'string' && !this.commandsPath) this.commandsPath = options;
@@ -103,8 +101,7 @@ class CommandoRegistry {
 	}
 
 	registerTypesIn(options) {
-		const obj = all(options);
-		const types = [];
+		const [ obj, types ] = [ all(options), [] ];
 		for(const type of Object.values(obj)) types.push(type);
 		return this.registerTypes(types, true);
 	}

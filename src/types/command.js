@@ -1,7 +1,7 @@
 const ArgumentType = require('./base'),
 	{ Util: { escapeMarkdown } } = require('discord.js');
 
-class CommandArgumentType extends ArgumentType {
+module.exports = class CommandArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'command');
 	}
@@ -19,5 +19,3 @@ class CommandArgumentType extends ArgumentType {
 		return this.client.registry.findCommands(val)[0];
 	}
 }
-
-module.exports = CommandArgumentType;

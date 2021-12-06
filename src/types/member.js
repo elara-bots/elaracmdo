@@ -1,7 +1,9 @@
 const ArgumentType = require('./base'),
-	{ Util: { escapeMarkdown } } = require('discord.js');
+	{ Util: { escapeMarkdown } } = require('discord.js'),
+	memberFilterExact = (s) => m => m.user.username.toLowerCase() === s || m.nickname?.toLowerCase?.() === s || m.user.tag === s,
+	memberFilterInexact = (s) => m => m.user.username.toLowerCase().includes(s) || m.nickname?.toLowerCase?.()?.includes?.(s) || m.user.tag.includes(s);
 
-class MemberArgumentType extends ArgumentType {
+module.exports = class MemberArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'member');
 	}
@@ -48,17 +50,3 @@ class MemberArgumentType extends ArgumentType {
 		return null;
 	}
 }
-
-function memberFilterExact(search) {
-	return mem => mem.user.username.toLowerCase() === search ||
-		(mem.nickname && mem.nickname.toLowerCase() === search) ||
-		`${mem.user.username.toLowerCase()}#${mem.user.discriminator}` === search;
-}
-
-function memberFilterInexact(search) {
-	return mem => mem.user.username.toLowerCase().includes(search) ||
-		(mem.nickname && mem.nickname.toLowerCase().includes(search)) ||
-		`${mem.user.username.toLowerCase()}#${mem.user.discriminator}`.includes(search);
-}
-
-module.exports = MemberArgumentType;

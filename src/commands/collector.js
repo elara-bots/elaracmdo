@@ -1,6 +1,6 @@
 const Argument = require('./argument');
 
-class ArgumentCollector {
+module.exports = class ArgumentCollector {
 	constructor(client, args, promptLimit = Infinity) {
 		if (!client) throw new TypeError('Collector client must be specified.');
 		if (!args || !Array.isArray(args)) throw new TypeError('Collector args must be an Array.');
@@ -20,7 +20,7 @@ class ArgumentCollector {
 	}
 
 	async obtain(msg, provided = [], promptLimit = this.promptLimit) {
-		this.client.dispatcher._awaiting.add(msg.author.id + msg.channel.id);
+		this.client.dispatcher.pending.add(`${msg.author.id}${msg.channel.id}`);
 		const [ values, results ] = [ {}, [] ];
 
 		try {
@@ -31,7 +31,7 @@ class ArgumentCollector {
 				results.push(result);
 
 				if (result.cancelled) {
-					this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
+					this.client.dispatcher.pending.delete(`${msg.author.id}${msg.channel.id}`);
 					return {
 						values: null, cancelled: result.cancelled,
 						prompts: [].concat(...results.map(res => res.prompts)), answers: [].concat(...results.map(res => res.answers)) 
@@ -42,10 +42,10 @@ class ArgumentCollector {
 			}
 		} catch(err) {
 			global.log(`[CMDO:COLLECTOR:OBTAIN]: ERROR`, err);
-			this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
+			this.client.dispatcher.pending.delete(`${msg.author.id}${msg.channel.id}`);
 			throw err;
 		}
-		this.client.dispatcher._awaiting.delete(msg.author.id + msg.channel.id);
+		this.client.dispatcher.pending.delete(`${msg.author.id}${msg.channel.id}`);
 		return {
 			values,
 			cancelled: null,
@@ -54,5 +54,3 @@ class ArgumentCollector {
 		};
 	}
 }
-
-module.exports = ArgumentCollector;

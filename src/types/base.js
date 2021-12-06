@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-class ArgumentType {
+module.exports = class ArgumentType {
 
 	constructor(client, id) {
 		if (!client) throw new Error('A client must be specified.');
@@ -26,5 +26,3 @@ class ArgumentType {
 		return `Multiple ${label} found, please be more specific: ${items.map(item => `"${(property ? item[property] : item).replace(/ /g, '\xa0')}"`).join(', ')}`
 	}
 }
-
-module.exports = ArgumentType;

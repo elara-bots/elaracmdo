@@ -6,7 +6,7 @@ class CommandDispatcher {
 		this.inhibitors = new Set();
 		this._commandPatterns = {};
 		this._results = new Map();
-		this._awaiting = new Set();
+		this.pending = new Set();
 	}
 
 	addInhibitor(inhibitor) {
@@ -14,11 +14,6 @@ class CommandDispatcher {
 		if (this.inhibitors.has(inhibitor)) return false;
 		this.inhibitors.add(inhibitor);
 		return true;
-	}
-
-	removeInhibitor(inhibitor) {
-		if (typeof inhibitor !== 'function') throw new TypeError('The inhibitor must be a function.');
-		return this.inhibitors.delete(inhibitor);
 	}
 
 	async handleMessage(message, oldMessage) {
@@ -41,8 +36,8 @@ class CommandDispatcher {
 			if (!inhibited) {
 				if (cmdMsg.command) {
 					if (!cmdMsg.command.isEnabledIn(message.guild)) {
-						responses = await cmdMsg.channel.send({ embeds: [ {title: `Command (${cmdMsg.command.name}) is disabled!`, color: global.util.colors.purple, author: {name: message.guild.name, icon_url: message.guild.iconURL()}} ] })
-						.then(msg => setTimeout(() => [ msg, cmdMsg ].map(c => c.del().catch(() => null)), 10000))
+						responses = await cmdMsg.error(`Command (\`${cmdMsg.command.name}\`) is disabled!`)
+						.then(msg => setTimeout(() => [ msg, cmdMsg ].map(c => c?.del?.()?.catch?.(() => null)), 10000))
 						.catch((e) => global.log(`[${global.__filename}|SEND]: Error`, e));
 					} else if (!oldMessage || typeof oldCmdMsg !== 'undefined') {
 						responses = await cmdMsg.run();
@@ -62,7 +57,7 @@ class CommandDispatcher {
 
 	shouldHandleMessage(message, oldMessage) {
 		if (message.partial || message.author.bot) return false;
-		if (this._awaiting.has(message.author.id + message.channel.id)) return false;
+		if (this.pending.has(`${message.author.id}${message.channel.id}`)) return false;
 		if (oldMessage && message.content === oldMessage.content) return false;
 		return true;
 	}
@@ -73,11 +68,7 @@ class CommandDispatcher {
 			if (inhibit) {
 				if (typeof inhibit !== 'object') inhibit = { reason: inhibit, response: undefined };
 
-				const valid = typeof inhibit.reason === 'string' && (
-					typeof inhibit.response === 'undefined' ||
-					inhibit.response === null ||
-					inhibit.response instanceof Promise
-				);
+				const valid = typeof inhibit.reason === 'string' && ( typeof inhibit.response === 'undefined' || inhibit.response === null || inhibit.response instanceof Promise );
 				if (!valid) throw new TypeError(`Inhibitor "${inhibitor.name}" had an invalid result; must be a string or an Inhibition object.`);
 				return inhibit;
 			}

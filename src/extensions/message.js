@@ -134,8 +134,7 @@ register("run", async function () { // eslint-disable-line complexity
     // Throttle the command
     const throttle = this.command.throttle(this.author.id);
     if (throttle && ((throttle.usages + 1) > this.command.throttling.usages)) {
-        const remaining = (throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000;
-        return this.command.onBlock(this, 'throttling', { throttle, remaining });
+        return this.command.onBlock(this, 'throttling', { throttle, remaining: ((throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000) });
     }
 
     // Figure out the command arguments
@@ -149,14 +148,14 @@ register("run", async function () { // eslint-disable-line complexity
         if (collResult.cancelled) {
             if (!collResult.prompts.length ) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
             if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
-                let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
+                let IDS = [ ...collResult.prompts.filter(c => !c.deleted).map(c => c.id) ];
                 if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
                 this.channel.bulkDelete(IDS, true).catch(() => {});
             }
             return this.error(`Command Cancelled`);
         }
         if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
-            let IDS = [...collResult.prompts.filter(c => !c.deleted).map(c => c.id)];
+            let IDS = [ ...collResult.prompts.filter(c => !c.deleted).map(c => c.id) ];
             if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
             this.channel.bulkDelete(IDS, true).catch(() => {});
         }
@@ -253,7 +252,7 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
     if (type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has(global.PERMS.messages.send)) type = "direct";
 
     content = typeof content === "string" ? content : null;
-    content = content?.replace(new RegExp(this.client.token, "g"), "[N/A]");
+    content = content?.replace?.(new RegExp(this.client.token, "g"), "[N/A]");
     switch(type) {
         case 'plain':
             if (!shouldEdit) return this.channel.send({ content, ...options }).catch(e => global.log(`[MESSAGE:RESPOND:ERROR]: ${global.__filename}`, e))

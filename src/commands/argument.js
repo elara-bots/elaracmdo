@@ -1,7 +1,7 @@
 const { Util: { escapeMarkdown } } = require('discord.js'),
 		ArgumentUnionType = require('../types/union');
 
-class Argument {
+module.exports = class Argument {
 	constructor(client, info) {
 		this.constructor.validateInfo(client, info);
 		this.key = info.key;
@@ -178,5 +178,3 @@ class Argument {
 		return type;
 	}
 }
-
-module.exports = Argument;

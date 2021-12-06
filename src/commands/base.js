@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js'),
 		ArgumentCollector = require('./collector');
 
-class Command {
+module.exports = class Command {
 	constructor(client, info) {
 		this.constructor.validateInfo(client, info);
 		this.client = client;
@@ -220,5 +220,3 @@ class Command {
 		if (info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) throw new TypeError('Command patterns must be an Array of regular expressions.');
 	}
 }
-
-module.exports = Command;

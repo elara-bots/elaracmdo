@@ -1,7 +1,9 @@
 const ArgumentType = require('./base'),
-	{ Util: { escapeMarkdown } } = require('discord.js');
+	{ Util: { escapeMarkdown } } = require('discord.js'),
+	nameFilterExact = (s) => t => t.name.toLowerCase() === s,
+	nameFilterInexact = (s) => t => t.name.toLowerCase().includes(s);
 
-class RoleArgumentType extends ArgumentType {
+module.exports = class RoleArgumentType extends ArgumentType {
 	constructor(client) {
 		super(client, 'role');
 	}
@@ -39,13 +41,3 @@ class RoleArgumentType extends ArgumentType {
 		return null;
 	}
 }
-
-function nameFilterExact(search) {
-	return thing => thing.name.toLowerCase() === search;
-}
-
-function nameFilterInexact(search) {
-	return thing => thing.name.toLowerCase().includes(search);
-}
-
-module.exports = RoleArgumentType;

@@ -2,25 +2,8 @@ const { Client, Collection, SnowflakeUtil, Util: { resolveColor } } = require('d
 		CommandoRegistry = require('./registry'),
 		CommandDispatcher = require('./dispatcher'),
 		sleep = (ms) => new Promise((res) => setTimeout(res, ms))
-/**
- * Discord.js Client with a command framework
- * @extends {Client}
- */
-module.exports = class CommandoClient extends Client {
-	/**
-	 * Options for a CommandoClient
-	 * @typedef {ClientOptions} CommandoClientOptions
-	 * @property {string} [commandPrefix=!] - Default command prefix
-	 * @property {number} [commandEditableDuration=30] - Time in seconds that command messages should be editable
-	 * @property {boolean} [nonCommandEditable=true] - Whether messages without commands can be edited to a command
-	 * @property {string|string[]|Set<string>} [owner] - ID of the bot owner's Discord user, or multiple IDs
-	 * @property {string|string[]|Set<string>} [support] - ID of the bot support's Discord user, or multiple IDs
-	 * @property {string} [invite] - Invite URL to the bot's support server
-	 */
 
-	/**
-	 * @param {CommandoClientOptions} [options] - Options for the client
-	 */
+module.exports = class CommandoClient extends Client {
 	constructor(options = {}) {
 		if (!options.commandPrefix) options.commandPrefix = '!';
 		if (typeof options.commandEditableDuration === 'undefined') options.commandEditableDuration = 30;

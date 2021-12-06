@@ -1,6 +1,6 @@
 const { Collection } = require('discord.js');
 
-class CommandGroup {
+module.exports = class CommandGroup {
 
 	constructor(client, id, name, guarded = false) {
 		if (!client) throw new Error('A client must be specified.');
@@ -32,5 +32,3 @@ class CommandGroup {
 		return this.client.guilds.resolve(guild).isGroupEnabled(this);
 	}
 }
-
-module.exports = CommandGroup;
