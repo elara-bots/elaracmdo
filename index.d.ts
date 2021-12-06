@@ -410,6 +410,7 @@ declare module 'elaracmdo' {
 			channel(client: CommandoClient, id: string): Promise<Channel|null>;
 			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<GuildMember|null>;
 			coinsCheck(guild: CommandoGuild): Promise<boolean>;
+			user(client: CommandoClient, args: string, options?: { fetch?: boolean, mock?: boolean }): Promise<User|null>;
 		};
 		public getTimeLeft(date: Date, type: string): boolean;
 		public getTimeRemaining(date: Date, type: string): string;
@@ -420,6 +421,8 @@ declare module 'elaracmdo' {
 		public convertMS(seconds: number): string;
 		public button(options: ButtonOptionsCustom): ButtonOptions;
 		public dropdown(options: DropdownCustom): MessageSelectOptionData;
+		public buttonIds(users: User[], db: object, client: CommandoClient): string[];
+
 	}
 
 	export type DropdownCustom = {
