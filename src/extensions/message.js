@@ -17,13 +17,11 @@ register("initCommand", function(command, argString, patternMatches) {
 });
 
 register("del", async function (options = { timeout: 0, reason: "" }) {
-    if (this.deleted) return Promise.resolve(`The message was deleted.`);
     if (typeof options !== "object") options = { timeout: 0, reason: "" };
     const { timeout = 0, reason } = options;
     if (timeout <= 0) return this.channel.messages.delete(this.id, reason).then(() => this);
     return new Promise(r => {
         setTimeout(() => {
-            if (this.deleted) return r(`The message was already deleted.`);
             return r(this.del({ reason }));
         }, timeout)
     })
@@ -148,15 +146,15 @@ register("run", async function () { // eslint-disable-line complexity
         if (collResult.cancelled) {
             if (!collResult.prompts.length ) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
             if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
-                let IDS = [ ...collResult.prompts.filter(c => !c.deleted).map(c => c.id) ];
-                if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
+                let IDS = [ ...collResult.prompts.map(c => c.id) ];
+                if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
                 this.channel.bulkDelete(IDS, true).catch(() => {});
             }
             return this.error(`Command Cancelled`);
         }
         if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
-            let IDS = [ ...collResult.prompts.filter(c => !c.deleted).map(c => c.id) ];
-            if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.filter(c => !c.deleted).map(c => c.id))
+            let IDS = [ ...collResult.prompts.map(c => c.id) ];
+            if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
             this.channel.bulkDelete(IDS, true).catch(() => {});
         }
         args = collResult.values;
