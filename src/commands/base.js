@@ -17,7 +17,6 @@ module.exports = class Command {
 		this.group = null;
 		this.description = info.description || "No Description Set";
 		this.format = info.format || null;
-		this.details = info.details || null;
 		this.examples = info.examples || null;
 		this.guildOnly = Boolean(info.guildOnly);
 		this.ownerOnly = Boolean(info.ownerOnly);
@@ -180,7 +179,6 @@ module.exports = class Command {
 		if (info.group !== info.group.toLowerCase()) throw new RangeError('Command group must be lowercase.');
 		if (typeof info.description !== 'string') throw new TypeError('Command description must be a string.');
 		if ('format' in info && typeof info.format !== 'string') throw new TypeError('Command format must be a string.');
-		if ('details' in info && typeof info.details !== 'string') throw new TypeError('Command details must be a string.');
 		if (info.flags && !Array.isArray(info.flags)) throw new TypeError("Command flags must be an array.");
 		if (info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) throw new TypeError('Command examples must be an Array of strings.');
 		if (info.clientPermissions) {

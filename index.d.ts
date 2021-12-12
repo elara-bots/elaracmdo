@@ -89,7 +89,6 @@ declare module 'elaracmdo' {
 		public clientGuildPermissions: PermissionResolvable[];
 		public defaultHandling: boolean;
 		public description: string;
-		public details: string;
 		public examples: string[];
 		public format: string;
 		public group: CommandGroup;
@@ -631,7 +630,6 @@ declare module 'elaracmdo' {
 		group: string;
 		description: string;
 		format?: string;
-		details?: string;
 		examples?: string[];
 		guildOnly?: boolean;
 		ownerOnly?: boolean;
