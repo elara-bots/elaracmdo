@@ -10,7 +10,7 @@ declare module 'elaracmdo' {
 		Snowflake, TextChannel, User, 
 		UserResolvable, VoiceState, Invite, 
 		GuildEmoji, Presence, CloseEvent, 
-		ColorResolvable, DeconstructedSnowflake, 
+		ColorResolvable, 
 		ThreadChannel, ThreadMember, StageInstance, 
 		Interaction, Sticker,
 		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption,
@@ -401,22 +401,18 @@ declare module 'elaracmdo' {
 		public fetch(): Promise<CommandoMessage[]>;
 	}
 	export class FunctionsList {
-		public snowflake(id: Snowflake): DeconstructedSnowflake;
-		
 		public misc: {
 			bin(title: string, args: string, ext: string, bin: 'mine' | 'mine-f' | 'haste' | 'pizza' | string): Promise<string|null>;
 			mention(client: CommandoClient, args: string): Promise<User|null>;
 			role(guild: CommandoGuild, id: string): Promise<Role|null>;
 			channel(client: CommandoClient, id: string): Promise<Channel|null>;
 			member(guild: CommandoGuild, args: string, fetch: boolean): Promise<GuildMember|null>;
-			coinsCheck(guild: CommandoGuild): Promise<boolean>;
 			user(client: CommandoClient, args: string, options?: { fetch?: boolean, mock?: boolean }): Promise<User|null>;
 		};
 		public getTimeLeft(date: Date, type: string): boolean;
 		public getTimeRemaining(date: Date, type: string): string;
 		public time(date?: Date, discordFormat?: boolean, format?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): string;
 		public ms(ms: number, long: boolean): string;
-		public isBooster(client: CommandoClient, userID: string): boolean;
 		public proper(name: string): string;
 		public convertMS(seconds: number): string;
 		public button(options: ButtonOptionsCustom): ButtonOptions;
