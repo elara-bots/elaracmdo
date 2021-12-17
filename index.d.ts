@@ -13,7 +13,8 @@ declare module 'elaracmdo' {
 		ColorResolvable, DeconstructedSnowflake, 
 		ThreadChannel, ThreadMember, StageInstance, 
 		Interaction, Sticker,
-		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption
+		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption,
+		PermissionString
 	} from 'discord.js';
 	
 	export class Argument {
@@ -421,7 +422,7 @@ declare module 'elaracmdo' {
 		public button(options: ButtonOptionsCustom): ButtonOptions;
 		public dropdown(options: DropdownCustom): MessageSelectOptionData;
 		public buttonIds(users: User[], db: object, client: CommandoClient): string[];
-
+		public candoaction(message: CommandoMessage, member: GuildMember, permissions: PermissionString[]): boolean;
 	}
 
 	export type DropdownCustom = {
