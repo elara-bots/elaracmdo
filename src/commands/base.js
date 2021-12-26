@@ -47,9 +47,9 @@ module.exports = class Command {
 		if (this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
 		if (message.channel.type === 'GUILD_TEXT' && this.userPermissions) {
             let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
-            if (guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[guild_missing[0]]}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${global.util.perms[c]}\``).join("\n")}`
+            if (guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${this.client.f.proper(guild_missing[0])}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n")}`
             const missing = message.channel.permissionsFor(message.author).missing(this.userPermissions);
-            if (missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${global.util.perms[missing[0]]}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${global.util.perms[pm]}\``).join("\n")}`
+            if (missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${this.client.f.proper(missing[0])}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${this.client.f.proper(pm)}\``).join("\n")}`
 		}
 		return true;
 	}
@@ -62,14 +62,14 @@ module.exports = class Command {
 		const send = (content, data = []) => {
             if (!message.guild) return message.error(content);
             if (message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed)) return message.error(content);
-            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${global.util.perms[c]}\``).join("\n") : [ global.PERMS.messages.embed ].map(c => `▫ \`${c}\``).join("\n")}` })
+            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n") : [ global.PERMS.messages.embed ].map(c => `▫ \`${c}\``).join("\n")}` })
 			.catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
         }
 		switch(reason) {
 			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
 			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
 			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed) ? 
-			message.error(data.missing.length === 1 ? `I need ${global.util.perms[data.missing[0]]} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(p => `▫ \`${global.util.perms[p]}\``).join("\n")}`) : 
+			message.error(data.missing.length === 1 ? `I need ${this.client.f.proper(data.missing[0])} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n")}`) : 
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
 			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
 			
@@ -183,27 +183,15 @@ module.exports = class Command {
 		if (info.examples && (!Array.isArray(info.examples) || info.examples.some(ex => typeof ex !== 'string'))) throw new TypeError('Command examples must be an Array of strings.');
 		if (info.clientPermissions) {
 			if (!Array.isArray(info.clientPermissions)) throw new TypeError('Command clientPermissions must be an Array of permission key strings.');
-			for(const perm of info.clientPermissions) {
-				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientPermission: ${perm}`);
-			}
 		}
 		if (info.clientGuildPermissions) {
 			if (!Array.isArray(info.clientGuildPermissions)) throw new TypeError('Command clientGuildPermissions must be an Array of permission key strings.');
-			for(const perm of info.clientGuildPermissions) {
-				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command clientGuildPermissions: ${perm}`);
-			}
 		}
 		if (info.userGuildPermissions) {
 			if (!Array.isArray(info.userGuildPermissions)) throw new TypeError('Command userGuildPermissions must be an Array of permission key strings.');
-			for(const perm of info.userGuildPermissions) {
-				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userGuildPermissions: ${perm}`);
-			}
 		}
 		if (info.userPermissions) {
 			if (!Array.isArray(info.userPermissions)) throw new TypeError('Command userPermissions must be an Array of permission key strings.');
-			for(const perm of info.userPermissions) {
-				if (!global.util.perms[perm] && typeof perm !== "number") throw new RangeError(`Invalid command userPermission: ${perm}`);
-			}
 		}
 		if (info.throttling) {
 			if (typeof info.throttling !== 'object') throw new TypeError('Command throttling must be an Object.');
