@@ -5,7 +5,7 @@ declare module 'elaracmdo' {
 		Channel, Client, ClientOptions, 
 		Collection, DMChannel, Guild, 
 		GuildChannel, GuildMember, GuildResolvable, 
-		Message, MessageEmbed, MessageOptions, 
+		Message, , MessageOptions, 
 		MessageReaction, PermissionResolvable, Role, 
 		Snowflake, TextChannel, User, 
 		UserResolvable, VoiceState, Invite, 
@@ -16,6 +16,9 @@ declare module 'elaracmdo' {
 		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption,
 		PermissionString
 	} from 'discord.js';
+
+	// @ts-ignore
+	import Embed from "@elara/Embed";
 	
 	export class Argument {
 		private constructor(client: CommandoClient, info: ArgumentInfo);
@@ -572,7 +575,7 @@ declare module 'elaracmdo' {
 		};
 		public template(): object;
 		public setFooterPrefix(prefix: string): void;
-		public addPage(callback: (embed: MessageEmbed) => void): void;
+		public addPage(callback: (embed: Embed) => void): void;
 		public run(message: CommandoMessage, options: {
 			filter(reaction: MessageReaction, user: User): Function;
 			stop: string;
@@ -668,7 +671,7 @@ declare module 'elaracmdo' {
 	}
 	export type SayOptions = {
 		content?: string|null;
-		embeds?: MessageEmbed[];
+		embeds?: Embed[];
 		components?: MessageComponentOptions[];
 		embed?: {
 			title: string;

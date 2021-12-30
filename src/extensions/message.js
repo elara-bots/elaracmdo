@@ -1,4 +1,5 @@
-const { Message, MessageEmbed, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
+const { Message, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
+        Embed = require("@elara/Embed"),
         blacklist = (message) => {
             if (message.client.registry.block.users.includes(message.author.id)) return true;
             if (!message.guild) return false;
@@ -57,7 +58,7 @@ register("boop", async function (options, ...messageOptions){
     if (options.embed && typeof options.embed === "object") {
         if (options.embed?.image && typeof options.embed?.image === "string") options.embed.image = { url: options.embed.image };
 		if (options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
-		send.embed = new MessageEmbed(options.embed).toJSON();
+		send.embed = new Embed(options.embed).toJSON();
     }
     if (this.channel.type !== "DM" && !this.channel.permissionsFor(this.client.user).has(global.PERMS.basic)) return null;
     return this.inlineReply(send.content ?? "", { ...send, reply: true });
