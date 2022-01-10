@@ -1,5 +1,4 @@
 const { Message, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
-        Embed = require("@elara/Embed"),
         blacklist = (message) => {
             if (message.client.registry.block.users.includes(message.author.id)) return true;
             if (!message.guild) return false;
@@ -7,6 +6,13 @@ const { Message, Util: { escapeMarkdown, splitMessage } } = require("discord.js"
             return false;
         },
         register = (name, value) => Message.prototype[name] = value;
+let Embed;
+
+try {
+    Embed = require("@elara/Embed");
+} catch {
+    Embed = require("discord.js").MessageEmbed;
+}
 
 for (const name of [ "command", "argString", "patternMatches", "responses", "responsePositions" ]) register(name, null);
 
