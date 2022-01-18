@@ -5,7 +5,7 @@ declare module 'elaracmdo' {
 		Channel, Client, ClientOptions, 
 		Collection, DMChannel, Guild, 
 		GuildChannel, GuildMember, GuildResolvable, 
-		Message, , MessageOptions, 
+		Message, MessageOptions, 
 		MessageReaction, PermissionResolvable, Role, 
 		Snowflake, TextChannel, User, 
 		UserResolvable, VoiceState, Invite, 
@@ -640,7 +640,6 @@ declare module 'elaracmdo' {
 		defaultHandling?: boolean;
 		throttling?: ThrottlingOptions;
 		args?: ArgumentInfo[];
-		argsPromptLimit?: number;
 		argsType?: string;
 		argsCount?: number;
 		argsSingleQuotes?: boolean;

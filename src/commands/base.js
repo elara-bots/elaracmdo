@@ -26,7 +26,7 @@ module.exports = class Command {
 		this.defaultHandling = 'defaultHandling' in info ? info.defaultHandling : true;
 		this.throttling = info.throttling || null;
 		this.flags = info.flags || [];
-		this.argsCollector = info.args && info.args.length ? new ArgumentCollector(client, info.args, info.argsPromptLimit) : null;
+		this.argsCollector = info.args && info.args.length ? new ArgumentCollector(client, info.args, 5) : null;
 		if (this.argsCollector && typeof info.format === 'undefined') {
 			this.format = this.argsCollector.args.reduce((prev, arg) => `${prev}${prev ? ' ' : ''}${arg.default !== null ? '[' : '<'}${arg.label}${arg.infinite ? '...' : ''}${arg.default !== null ? ']' : '>'}`, '');
 		}
@@ -198,8 +198,6 @@ module.exports = class Command {
 			if (info.throttling.duration < 1) throw new RangeError('Command throttling duration must be at least 1.');
 		}
 		if (info.args && !Array.isArray(info.args)) throw new TypeError('Command args must be an Array.');
-		if ('argsPromptLimit' in info && typeof info.argsPromptLimit !== 'number') throw new TypeError('Command argsPromptLimit must be a number.');
-		if ('argsPromptLimit' in info && info.argsPromptLimit < 0) throw new RangeError('Command argsPromptLimit must be at least 0.');
 		if (info.argsType && !['single', 'multiple'].includes(info.argsType)) throw new RangeError('Command argsType must be one of "single" or "multiple".');
 		if (info.argsType === 'multiple' && info.argsCount && info.argsCount < 2) throw new RangeError('Command argsCount must be at least 2.');
 		if (info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) throw new TypeError('Command patterns must be an Array of regular expressions.');
