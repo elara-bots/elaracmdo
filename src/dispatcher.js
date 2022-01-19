@@ -94,10 +94,10 @@ class CommandDispatcher {
 		}
 		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix;
 		let regexPrefix = this.client.options.regexPrefix;
-		if (Array.isArray(regexPrefix) && regexPrefix?.length) {
+		if (regexPrefix?.some(e => e)) {
 			for (const regex of regexPrefix) {
 				let match = content.match(regex);
-				if (match?.[0] && content.toLowerCase().startsWith(match[0])) prefix = match[0].toLowerCase();
+				if (match && content.toLowerCase().startsWith(match[0])) prefix = match[0].toLowerCase();
 			}
 		}
 		if (!this._commandPatterns[prefix]) this.buildCommandPattern(prefix);
