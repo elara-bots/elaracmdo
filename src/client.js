@@ -1,13 +1,14 @@
 const { Client, Collection, SnowflakeUtil, Util: { resolveColor } } = require('discord.js'),
 		CommandoRegistry = require('./registry'),
 		CommandDispatcher = require('./dispatcher'),
-		sleep = (ms) => new Promise((res) => setTimeout(res, ms))
+		sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
 module.exports = class CommandoClient extends Client {
 	constructor(options = {}) {
 		if (!options.commandPrefix) options.commandPrefix = '!';
 		if (typeof options.commandEditableDuration === 'undefined') options.commandEditableDuration = 30;
 		if (typeof options.nonCommandEditable === 'undefined') options.nonCommandEditable = true;
+		if (!Array.isArray(options?.regexPrefix)) options.regexPrefix = [];
 		super(options);
 		this.registry = new CommandoRegistry(this);
 		this.dispatcher = new CommandDispatcher(this);

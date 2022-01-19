@@ -195,6 +195,7 @@ declare module 'elaracmdo' {
 		private _commandPrefix: string;
 		private setup(): Promise<void>;
 		public commandPrefix: string;
+		public regexPrefix: RegExp[];
 		public dispatcher: CommandDispatcher;
 		public options: CommandoClientOptions;
 		public readonly owners: User[];

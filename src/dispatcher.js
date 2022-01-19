@@ -1,7 +1,5 @@
 class CommandDispatcher {
-
 	constructor(client) {
-		
 		this.client = client;
 		this.inhibitors = new Set();
 		this._commandPatterns = {};
@@ -94,16 +92,13 @@ class CommandDispatcher {
 				if (matches) return message.initCommand(command, null, matches);
 			}
 		}
-		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix,
-			extra = this.client.user.id !== "455166272339181589" && this.client.user.username.toLowerCase() === "elara" ? " 2" : ""
-
-		if (!message.guild?.members?.cache?.has?.("455166272339181589")) extra = ""
-		for (const pre of [
-			`hey ${this.client.user.username}${extra}`,
-			`hey ${this.client.user.username}${extra},`,
-			`${this.client.user.username}${extra},` 
-		]) {
-			if (content?.toLowerCase()?.startsWith(pre.toLowerCase())) prefix = pre.toLowerCase();
+		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix;
+		let regexPrefix = this.client.options.regexPrefix;
+		if (Array.isArray(regexPrefix) && regexPrefix?.length) {
+			for (const regex of regexPrefix) {
+				let match = content.match(regex);
+				if (match?.[0] && content.toLowerCase().startsWith(match[0])) prefix = match[0].toLowerCase();
+			}
 		}
 		if (!this._commandPatterns[prefix]) this.buildCommandPattern(prefix);
 		let cmdMsg = this.matchDefault(message, this._commandPatterns[prefix], 2);
