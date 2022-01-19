@@ -655,6 +655,7 @@ declare module 'elaracmdo' {
 		owner?: string | string[] | Set<string>;
 		support?: string | string[] | Set<string>; 
 		invite?: string;
+		regexPrefix?: RegExp[];
 	};
 
 	type CommandResolvable = Command | string;
