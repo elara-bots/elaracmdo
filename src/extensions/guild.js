@@ -3,7 +3,6 @@ const { Guild } = require("discord.js"),
 
 let list = [
     [ "currency", "$" ],
-    [ "Invites", [] ],
     [ "Commands", "" ],
     [ "_commandPrefix", null ],
     [ "color", null ],

@@ -515,8 +515,6 @@ declare module 'elaracmdo' {
 		private _commandsEnabled: object;
 		private _groupsEnabled: object;
 		public client: CommandoClient;
-		
-		public Invites: string[];
 		public commandPrefix: string;
 		public Commands: string;
 		public color: string;
