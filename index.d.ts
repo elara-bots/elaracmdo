@@ -423,6 +423,8 @@ declare module 'elaracmdo' {
 		public dropdown(options: DropdownCustom): MessageSelectOptionData;
 		public buttonIds(users: User[], db: object, client: CommandoClient): string[];
 		public candoaction(message: CommandoMessage, member: GuildMember, permissions: PermissionString[]): boolean;
+
+		public task(options: { id: string, time: string, shouldCancel?: boolean }, run: Function): Promise<any>;
 	}
 
 	export type DropdownCustom = {
