@@ -322,6 +322,33 @@ declare module 'elaracmdo' {
 		createdAt: Date;
 		expire: Date;
 	}
+
+	export type Modal = {
+		type: 4 | number;
+		custom_id: string;
+		style: 1 | 2,
+		label: string;
+		min_length?: number;
+		max_length?: number;
+		required?: boolean;
+		value?: string;
+		placeholder?: string;
+	}
+
+	export type ModalCustom = {
+		id?: string;
+		custom_id?: string;
+		title?: string;
+		label?: string;
+		components: ModalData["components"]
+	}
+
+	export type ModalData = {
+		title: string;
+		custom_id: string;
+		components: { type: 1 | number, components: Modal[] }[];
+	}
+
 	export type MessageDBData = {
 		ids: { message: string, user: string, guild: string, channel: string },
 		type: string,
@@ -421,6 +448,7 @@ declare module 'elaracmdo' {
 		public convertMS(seconds: number): string;
 		public button(options: ButtonOptionsCustom): ButtonOptions;
 		public dropdown(options: DropdownCustom): MessageSelectOptionData;
+		public modal(options: ModalCustom): ModalData;
 		public buttonIds(users: User[], db: object, client: CommandoClient): string[];
 		public candoaction(message: CommandoMessage, member: GuildMember, permissions: PermissionString[]): boolean;
 
