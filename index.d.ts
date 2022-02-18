@@ -452,8 +452,11 @@ declare module 'elaracmdo' {
 		public buttonIds(users: User[], db: object, client: CommandoClient): string[];
 		public candoaction(message: CommandoMessage, member: GuildMember, permissions: PermissionString[]): boolean;
 
-		public task(options: { id: string, time: string, shouldCancel?: boolean }, run: Function): Promise<void>;
-		public endTask(id: string): void;
+		public tasks: {
+			create(options: { id: string, time: string, shouldCancel?: boolean }, run: Function): Promise<void>;
+			delete(id: string): void;
+			giveaway(options: { client: CommandoClient, id: string, time: string, channelId: string, forceEnded: boolean }, runOnly?: boolean): Promise<void>;
+		}
 	}
 
 	export type DropdownCustom = {
