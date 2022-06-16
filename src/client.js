@@ -66,9 +66,9 @@ module.exports = class CommandoClient extends Client {
 	 */
 	get owners() {
 		if (!this.options.owner) return null;
-		if (typeof this.options.owner === 'string') return [this.users.cache.get(this.options.owner)];
+		if (typeof this.options.owner === 'string') return [this.users.resolve(this.options.owner)];
 		const owners = [];
-		for(const owner of this.options.owner) owners.push(this.users.cache.get(owner));
+		for(const owner of this.options.owner) owners.push(this.users.resolve(owner));
 		return owners;
 	}
 	/**
@@ -82,7 +82,7 @@ module.exports = class CommandoClient extends Client {
 		if (!this.options.support) return null;
 		if (!Array.isArray(this.options.support)) return [];
 		let support = [];
-		for(const sup of this.options.support) support.push(this.users.cache.get(sup));
+		for(const sup of this.options.support) support.push(this.users.resolve(sup));
 		return support;
 	}
 

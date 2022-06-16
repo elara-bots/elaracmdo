@@ -31,7 +31,7 @@ module.exports = class ChannelArgumentType extends ArgumentType {
 
 	parse(val, msg) {
 		const matches = val.match(/^(?:<#)?([0-9]+)>?$/);
-		if (matches) return msg.guild.channels.cache.get(matches[1]) || null;
+		if (matches) return msg.guild.channels.resolve(matches[1]) || null;
 		const search = val.toLowerCase();
 		const channels = msg.guild.channels.cache.filter(nameFilterInexact(search));
 		if (!channels.size) return null;

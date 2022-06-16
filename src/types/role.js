@@ -31,7 +31,7 @@ module.exports = class RoleArgumentType extends ArgumentType {
 
 	parse(val, msg) {
 		const matches = val.match(/^(?:<@&)?([0-9]+)>?$/);
-		if (matches) return msg.guild.roles.cache.get(matches[1]) || null;
+		if (matches) return msg.guild.roles.resolve(matches[1]) || null;
 		const search = val.toLowerCase();
 		const roles = msg.guild.roles.cache.filter(nameFilterInexact(search));
 		if (!roles.size) return null;

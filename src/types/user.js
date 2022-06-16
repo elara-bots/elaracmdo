@@ -12,7 +12,7 @@ module.exports = class UserArgumentType extends ArgumentType {
 		const matches = val.match(/^(?:<@!?)?([0-9]+)>?$/);
 		if (matches) {
 			try {
-				const user = msg.client.users.cache.get(matches[1]) || await msg.client.users.fetch(matches[1]).catch(() => null);
+				const user = msg.client.users.resolve(matches[1]) || await msg.client.users.fetch(matches[1]).catch(() => null);
 				if (!user) return false;
 				if (arg.oneOf && !arg.oneOf.includes(user.id)) return false;
 				return true;
@@ -43,7 +43,7 @@ module.exports = class UserArgumentType extends ArgumentType {
 
 	parse(val, msg) {
 		const matches = val.match(/^(?:<@!?)?([0-9]+)>?$/);
-		if (matches) return msg.client.users.cache.get(matches[1]) || null;
+		if (matches) return msg.client.users.resolve(matches[1]) || null;
 		if (!msg.guild) return null;
 		const search = val.toLowerCase();
 		const members = msg.guild.members.cache.filter(memberFilterInexact(search));
