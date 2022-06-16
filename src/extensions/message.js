@@ -66,7 +66,7 @@ register("boop", async function (options, ...messageOptions){
 		if (options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
 		send.embed = new Embed(options.embed).toJSON();
     }
-    if (this.channel.type !== "DM" && !this.channel.permissionsFor(this.client.user).has(global.PERMS.basic)) return null;
+    if (this.channel.type !== "DM" && !this.channel.permissionsFor(this.client.user).has(global.perms.basic)) return null;
     return this.inlineReply(send.content ?? "", { ...send, reply: true });
 });
 
@@ -102,7 +102,7 @@ register("run", async function () { // eslint-disable-line complexity
     if (this.guild) {
         if (!this.member || !this.guild.members.cache.has(this.author.id)) return;
         if (global.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
-        if (this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.PERMS.manage.messages) && !owner) return this.command.onBlock(this, "channel");
+        if (this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.perms.manage.messages) && !owner) return this.command.onBlock(this, "channel");
         if (global.dbs?.getSettings) db = await global.dbs.getSettings(this.guild);
     }else {
         if (this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
@@ -154,14 +154,14 @@ register("run", async function () { // eslint-disable-line complexity
             if (!collResult.prompts.length ) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
             if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
                 let IDS = [ ...collResult.prompts.map(c => c.id) ];
-                if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
+                if (this.channel.permissionsFor(this.guild.me).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
                 this.channel.bulkDelete(IDS, true).catch(() => {});
             }
             return this.error(`Command Cancelled`);
         }
         if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
             let IDS = [ ...collResult.prompts.map(c => c.id) ];
-            if (this.channel.permissionsFor(this.guild.me).has(global.PERMS.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
+            if (this.channel.permissionsFor(this.guild.me).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
             this.channel.bulkDelete(IDS, true).catch(() => {});
         }
         args = collResult.values;
@@ -254,7 +254,7 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
     const shouldEdit = this.responses && !fromEdit;
     if (shouldEdit && typeof options?.split !== "object") options.split = {};
     if (type === 'reply' && this.channel.type === 'DM') type = 'plain';
-    if (type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has(global.PERMS.messages.send)) type = "direct";
+    if (type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has(global.perms.messages.send)) type = "direct";
 
     content = typeof content === "string" ? content : null;
     content = content?.replace?.(new RegExp(this.client.token, "g"), "[N/A]");

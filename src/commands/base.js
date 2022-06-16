@@ -60,14 +60,14 @@ module.exports = class Command {
 	onBlock(message, reason, data) {
 		const send = (content, data = []) => {
             if (!message.guild) return message.error(content);
-            if (message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed)) return message.error(content);
-            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n") : [ global.PERMS.messages.embed ].map(c => `▫ \`${c}\``).join("\n")}` })
+            if (message.channel.permissionsFor(message.client.user).has(global.perms.messages.embed)) return message.error(content);
+            return message.channel.send({ content: `I need the following permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.length !== 0 ? data.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n") : [ global.perms.messages.embed ].map(c => `▫ \`${c}\``).join("\n")}` })
 			.catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
         }
 		switch(reason) {
 			case 'guildOnly': return send(`Command (\`${this.name}\`) can only be used in servers.`); 
 			case 'permission': return send(`${data.response ? data.response : `Command (\`${this.name}\`) you don't have permission to use.`}`);
-			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(global.PERMS.messages.embed) ? 
+			case 'clientPermissions': return message.channel.permissionsFor(message.client.user).has(global.perms.messages.embed) ? 
 			message.error(data.missing.length === 1 ? `I need ${this.client.f.proper(data.missing[0])} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n")}`) : 
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
 			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);

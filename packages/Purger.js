@@ -9,7 +9,7 @@ module.exports = class Purger {
         this.channel = channel;
         this.amount = Number(amount ?? 1);
         this.cmd = Boolean(cmd ?? false);
-        this.permissions = [ ...global.PERMS.basic, global.PERMS.manage.messages ];
+        this.permissions = [ ...global.perms.basic, global.perms.manage.messages ];
     }
 
     links(amount) { return this.purge(m => !m.pinned && !m.content?.match(LINK), amount) }
