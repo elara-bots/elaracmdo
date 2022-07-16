@@ -41,7 +41,7 @@ module.exports = class Argument {
 					url: msg.client.options.invite
 				},
 				title: `INFO`,
-				color: msg.client.getColor(msg.guild),
+				color: global.util.colors.purple,
 				description: `${empty ? this.prompt : valid ? valid : `You provided an invalid ${this.label}. Please try again.`}`,
 				footer: {
 					text: wait ? `This will be automatically be cancelled in ${this.wait} seconds` : '',
@@ -89,7 +89,7 @@ module.exports = class Argument {
 				const embed = {
 					author: { name: msg.client.user.tag, icon_url: msg.client.user.displayAvatarURL({ dynamic: true }), url: msg.client.options.invite },
 					title: 'INFO',
-					color: msg.client.getColor(msg.guild),
+					color: global.util.colors.purple,
 					footer: {
 						text: wait ? `This will be automatically be cancelled in ${this.wait} seconds` : '',
 						icon_url: wait ? `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1` : ''

@@ -2,10 +2,7 @@ const { Guild } = require("discord.js"),
         register = (name, value) => Guild.prototype[name] = value;
 
 let list = [
-    [ "currency", "$" ],
-    [ "Commands", "" ],
     [ "_commandPrefix", null ],
-    [ "color", null ],
     [ "setPrefix", function (args) {
         this.commandPrefix = args;
         this._commandPrefix = args;

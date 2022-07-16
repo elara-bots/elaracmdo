@@ -75,19 +75,6 @@ module.exports = class Command {
 			case 'maintenance': return message.custom(`${global.util.emojis.warn} The bot is currently under maintenance, no commands can be used at this time.`, null, { components: [ { type: 1, components: [ global.util.support() ] } ] })
 			?.then?.(m => m?.del?.({ timeout: 10000 })
 			?.catch?.((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
-			case "channel": return message.channel.send({
-				reply: { messageReference: message, failIfNotExists: false },
-				embeds: [
-					{
-						title: `INFO`,
-						author: {name: message.guild.name, icon_url: message.guild.iconURL({dynamic: true}), url: message.client.options.invite},
-						color: message.client.getColor(message.guild),
-						footer: {text: `This message will be deleted in 10s`, icon_url: `https://cdn.discordapp.com/emojis/733729770180706345.png?v=1`},
-						description: `You can't use commands in this channel.\n**Go to <#${message.guild.Commands}> to use commands!**`,
-						timestamp: new Date()
-					}
-				]
-			}).then(m => m.del({ timeout: 10000 })).catch((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e));
 			case "GlobalDisable": return send(`Command (\`${this.name}\`) has been disabled by the bot developer(s), join the [support server](${message.client.options.invite})`);
 			default: return null;
 		}

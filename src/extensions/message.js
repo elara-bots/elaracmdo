@@ -1,4 +1,4 @@
-const { Message, Util: { escapeMarkdown, splitMessage } } = require("discord.js"),
+const { Message, Util: { escapeMarkdown, splitMessage }, MessageEmbed: Embed } = require("discord.js"),
         blacklist = (message) => {
             if (message.client.registry.block.users.includes(message.author.id)) return true;
             if (!message.guild) return false;
@@ -6,13 +6,6 @@ const { Message, Util: { escapeMarkdown, splitMessage } } = require("discord.js"
             return false;
         },
         register = (name, value) => Message.prototype[name] = value;
-let Embed;
-
-try {
-    Embed = require("@elara/Embed");
-} catch {
-    Embed = require("discord.js").MessageEmbed;
-}
 
 for (const name of [ "command", "argString", "patternMatches", "responses", "responsePositions" ]) register(name, null);
 
@@ -27,11 +20,7 @@ register("del", async function (options = { timeout: 0, reason: "" }) {
     if (typeof options !== "object") options = { timeout: 0, reason: "" };
     const { timeout = 0, reason } = options;
     if (timeout <= 0) return this.channel.messages.delete(this.id, reason).then(() => this);
-    return new Promise(r => {
-        setTimeout(() => {
-            return r(this.del({ reason }));
-        }, timeout)
-    })
+    return new Promise(r => setTimeout(() => r(this.del({ reason })), timeout))
 });
 
 register("parseArgs", function () {
@@ -79,7 +68,7 @@ register("custom", function (content, text = null, options){
             {
                 title: `INFO`,
                 description: content, 
-                color: this.client.getColor(this.guild),
+                color: global.util.colors.purple,
                 timestamp: new Date(),
                 author: { name: this.author.tag, icon_url: this.author.displayAvatarURL({dynamic: true}), url: this.client.options.invite }
             }
@@ -102,7 +91,6 @@ register("run", async function () { // eslint-disable-line complexity
     if (this.guild) {
         if (!this.member || !this.guild.members.cache.has(this.author.id)) return;
         if (global.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
-        if (this.guild.Commands && (this.guild.Commands !== this.channel.id) && !this.member.permissions.has(global.perms.manage.messages) && !owner) return this.command.onBlock(this, "channel");
         if (global.dbs?.getSettings) db = await global.dbs.getSettings(this.guild);
     }else {
         if (this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
@@ -151,7 +139,7 @@ register("run", async function () { // eslint-disable-line complexity
 
         collResult = await this.command.argsCollector.obtain(this, provided);
         if (collResult.cancelled) {
-            if (!collResult.prompts.length ) return this.error(`Invalid command usage. Use \`${this.client.getPrefix(this.guild)}help ${this.command.name}\` for more information.`);
+            if (!collResult.prompts.length ) return this.error(`Invalid command usage.`);
             if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
                 let IDS = [ ...collResult.prompts.map(c => c.id) ];
                 if (this.channel.permissionsFor(this.guild.me).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))

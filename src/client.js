@@ -131,9 +131,6 @@ module.exports = class CommandoClient extends Client {
 	}
 
 	getPrefix(guild){ return guild?.commandPrefix ?? this.commandPrefix; }
-
-	getColor(guild) { return resolveColor(guild?.color ?? global.util.colors.purple); }
-
 	async destroy() { await super.destroy(); }
 
 	/**

@@ -200,7 +200,6 @@ declare module 'elaracmdo' {
 		public options: CommandoClientOptions;
 		public readonly owners: User[];
 		public readonly support: User[];
-		public getColor(guild: CommandoGuild): string;
 		public getPrefix(guild: CommandoGuild): string;
 		public messages: MessageService;
 		public chunk(array: string|string[], sliceAt: number): string[];
@@ -214,6 +213,7 @@ declare module 'elaracmdo' {
 		public slash: {
 			client: CommandoClient,
 			commands: Collection<string, object>;
+			rawCommands: Collection<string, object>;
 			load(dirs: string[]): void;
 			run(data: object): Promise<void>;
 		};
@@ -371,46 +371,7 @@ declare module 'elaracmdo' {
 		public findAndRemoveExpired(dryRun?: boolean): Promise<number>;
 		public formatMessage(data: MessageDBData): Promise<MessageDB>;
 	}
-	export class ConfigFile{
-		public clientOptions: CommandoClientOptions;
-		public look: string;
-		private token: string;
-		private webhooks: object;
-		public user: { name: string, icon: string };
-		public ignore: { guilds: string[], users: string[], allowed: string[], voting: string[], cooldown: string[]; };
-		public apis: {
-			paladins: { devID: string, key: string },
-			IMDB: string,
-			fortnite: string,
-			giphy: string,
-			twitch: string,
-			youtube: string,
-			lists: object
-		};
-		public roles: {
-			unhandled: { rejection: string, exeption: string },
-			errors: { commands: string, logger: string, events: string, webhook: string, slash: string }
-		};
-		public misc: {
-			prefix: string,
-			owners: string[],
-			support: string[],
-			invite: string,
-			logs: boolean,
-			disable: boolean,
-			caching: boolean,
-			locked: boolean,
-			webhooks: boolean,
-			messages: boolean,
-			debug: boolean,
-			express: boolean,
-			commandfolders: string[],
-			commandGroups: string[],
-			website: { url: string, cdn: string, services: string, api: string, stats: string, admin: string };
-		}
-		private api(num: number): string;
-		private g(id: string, name: string, guarded?: boolean): string[];
-	}	
+	
 	export class Purger {
 		public constructor(channel: TextChannel, amount?: number, cmd?: boolean);
 		public readonly channel: TextChannel;
@@ -489,60 +450,7 @@ declare module 'elaracmdo' {
 		url?: string;
 		emoji?: { name?: string, id?: string, animated?: boolean }
 	}
-	
-	export class ServicesList{
-		public support: string;
-		public docs: string;
-		public ping(): Promise<object>;
-		public paste: {
-			get(id: string): Promise<object>;
-			post(title: string, content: string, privatePaste: boolean): Promise<object>;
-		};
-		public haste: {
-			get(id: string, url: string): Promise<object>;
-			post(content: string, options: {url: string, extension: string}): Promise<object>;
-		};
-		public api: {
-			dbl: {
-				get(token: string, id: string): Promise<object>;
-				post(token: string, id: string, servers: number, shards: number): Promise<object>;
-			},
-			photos(image: string): Promise<object>;
-			math(problem: string): Promise<object>;
-			special(image: string): Promise<object>;
-			translate(toLang: string, text: string): Promise<object>;
-			invites(type: string): Promise<object>;
-			facts(type: string): Promise<object>;
-			memes(clean: boolean): Promise<object>;
-			ball(): Promise<object>;
-			dogbreed(type: string, breed: string): Promise<object>;
-			npm(name: string): Promise<object>;
-			time(place: string, all: boolean): Promise<object>;
-			docs(search: string, project: string, branch: string): Promise<object>;
-			platform: {
-				ytstats(token: string, IDOrName: string): Promise<object>;
-				twitch(token: string, name: string): Promise<object>;
-				roblox(id: string): Promise<object>;
-				robloxgroup(id: string): Promise<object>;
-				fortnite(token: string, name: string, platform: string): Promise<object>;
-				paladins(devID: string, auth: string, username: string, platform: string): Promise<object>;
-				imdb(token: string, show: string): Promise<object>;
-				ytsearch(token: string, name: string, type: string): Promise<object>;
-				picarto(nameOrID: string): Promise<object>;
-			}
-		};
-		public automod: {
-			images(token: string, urls: string[], percent: number): Promise<object>;
-			words(message: string, filteredWords: string[], filterEmojis: string[]): Promise<object>;
-			links(message: string): Promise<object>;
-		};
-		public dev: {
-			blacklists: {
-				servers(id: string, type: string, data: {name: string, reason: string, mod: string}): Promise<object>;
-				users(id: string, type: string, data: {username: string, tag: string, reason: string, mod: string}): Promise<object>;
-			}
-		}
-	}
+
 	export { CommandoClient as Client };
 	export class CommandoGuild extends Guild {
 		private _commandPrefix: string;
@@ -550,11 +458,6 @@ declare module 'elaracmdo' {
 		private _groupsEnabled: object;
 		public client: CommandoClient;
 		public commandPrefix: string;
-		public Commands: string;
-		public color: string;
-		public currency: string;
-
-		public getPrefix(): string;
 		public setPrefix(prefix: string): void;
 
 		public isCommandEndabled(command: CommandResolvable): boolean;
