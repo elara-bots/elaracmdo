@@ -1,4 +1,4 @@
-const { Client, Collection, SnowflakeUtil, Util: { resolveColor } } = require('discord.js'),
+const { Client, Collection, SnowflakeUtil } = require('discord.js'),
 		CommandoRegistry = require('./registry'),
 		CommandDispatcher = require('./dispatcher'),
 		sleep = (ms) => new Promise((res) => setTimeout(res, ms));
