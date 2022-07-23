@@ -207,9 +207,6 @@ declare module 'elaracmdo' {
 		public f: FunctionsList;
 		public isOwner(user: UserResolvable): boolean;
 		public isSupport(user: UserResolvable): boolean;
-		public fetchMessages(channel: TextChannel, limit?: number, before?: string, after?: string, around?: string): Promise<CommandoMessage[]>;
-		public deleteMessages(channel: TextChannel, messageIDs: string[]): Promise<string[]>;
-		public purgeChannel(channelID: Snowflake, limit: number, filter?: Function|string, before?: Snowflake, after?: Snowflake): Promise<Number>;
 		public slash: {
 			client: CommandoClient,
 			commands: Collection<string, object>;
@@ -372,26 +369,6 @@ declare module 'elaracmdo' {
 		public formatMessage(data: MessageDBData): Promise<MessageDB>;
 	}
 	
-	export class Purger {
-		public constructor(channel: TextChannel, amount?: number, cmd?: boolean);
-		public readonly channel: TextChannel;
-		public readonly amount: number;
-		public readonly cmd: boolean;
-		public links(amount?: number): Promise<number>;
-		public bots(amount?: number): Promise<number>;
-		public images(amount?: number): Promise<number>;
-		public text(amount?: number): Promise<number>;
-		public embeds(amount?: number): Promise<number>;
-		public client(amount?: number): Promise<number>;
-		public invites(amount?: number): Promise<number>;
-		public user(user: User, amount?: number): Promise<number>;
-		public contains(content: string, amount?: number): Promise<number>;
-		public startsWith(content: string, amount?: number): Promise<number>;
-		public normal(amount?: number): Promise<number>;
-		public init(filter?: string, user?: User|null, content?: string): Promise<number>;
-		public purge(filter: Function, amount: number): Promise<number|null>;
-		public fetch(): Promise<CommandoMessage[]>;
-	}
 	export class FunctionsList {
 		public misc: {
 			bin(title: string, args: string, ext: string, bin: 'mine' | 'mine-f' | 'haste' | 'pizza' | string): Promise<string|null>;

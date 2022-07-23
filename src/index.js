@@ -7,6 +7,5 @@ module.exports = {
 	CommandGroup: require('./commands/group'),
 	ArgumentCollector: require('./commands/collector'),
 	Argument: require('./commands/argument'),
-	ArgumentType: require('./types/base'),
-	Purger: require('../packages/Purger')
+	ArgumentType: require('./types/base')
 };
