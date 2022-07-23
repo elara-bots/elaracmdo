@@ -119,7 +119,7 @@ register("run", async function () { // eslint-disable-line complexity
         }
 
         if (this.command.clientGuildPermissions) {
-            const missing = this.guild.me.permissions.missing(this.command.clientGuildPermissions);
+            const missing = (this.guild.members?.me || this.guild.me).permissions.missing(this.command.clientGuildPermissions);
             if (missing.length) return this.command.onBlock(this, 'clientPermissions', { missing });
         }
     }
@@ -142,14 +142,14 @@ register("run", async function () { // eslint-disable-line complexity
             if (!collResult.prompts.length ) return this.error(`Invalid command usage.`);
             if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
                 let IDS = [ ...collResult.prompts.map(c => c.id) ];
-                if (this.channel.permissionsFor(this.guild.me).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
+                if (this.channel.permissionsFor(this.client.user).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
                 this.channel.bulkDelete(IDS, true).catch(() => {});
             }
             return this.error(`Command Cancelled`);
         }
         if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
             let IDS = [ ...collResult.prompts.map(c => c.id) ];
-            if (this.channel.permissionsFor(this.guild.me).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
+            if (this.channel.permissionsFor(this.client.user).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
             this.channel.bulkDelete(IDS, true).catch(() => {});
         }
         args = collResult.values;
