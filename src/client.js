@@ -1,7 +1,6 @@
-const { Client, Collection, SnowflakeUtil } = require('discord.js'),
+const { Client } = require('discord.js'),
 		CommandoRegistry = require('./registry'),
-		CommandDispatcher = require('./dispatcher'),
-		sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+		CommandDispatcher = require('./dispatcher');
 
 module.exports = class CommandoClient extends Client {
 	constructor(options = {}) {

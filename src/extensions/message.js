@@ -114,7 +114,7 @@ register("run", async function () { // eslint-disable-line complexity
     // Ensure the client user has the required permissions
     if (this.guild) {
         if (this.command.clientPermissions) {
-            const missing = this.channel.permissionsFor(this.client.user).missing(this.command.clientPermissions);
+            const missing = this.channel.permissionsFor?.(this.client.user)?.missing?.(this.command.clientPermissions);
             if (missing.length) return this.command.onBlock(this, 'clientPermissions', { missing });
         }
 
@@ -142,14 +142,14 @@ register("run", async function () { // eslint-disable-line complexity
             if (!collResult.prompts.length ) return this.error(`Invalid command usage.`);
             if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
                 let IDS = [ ...collResult.prompts.map(c => c.id) ];
-                if (this.channel.permissionsFor(this.client.user).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
+                if (this.channel.permissionsFor?.(this.client.user)?.has?.(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
                 this.channel.bulkDelete(IDS, true).catch(() => {});
             }
             return this.error(`Command Cancelled`);
         }
         if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
             let IDS = [ ...collResult.prompts.map(c => c.id) ];
-            if (this.channel.permissionsFor(this.client.user).has(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
+            if (this.channel.permissionsFor?.(this.client.user)?.has?.(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
             this.channel.bulkDelete(IDS, true).catch(() => {});
         }
         args = collResult.values;
@@ -242,7 +242,7 @@ register("respond", function ({ type = 'reply', content, options, lang, fromEdit
     const shouldEdit = this.responses && !fromEdit;
     if (shouldEdit && typeof options?.split !== "object") options.split = {};
     if (type === 'reply' && this.channel.type === 'DM') type = 'plain';
-    if (type !== 'direct' && this.guild && !this.channel.permissionsFor(this.client.user).has(global.perms.messages.send)) type = "direct";
+    if (type !== 'direct' && this.guild && !this.channel.permissionsFor?.(this.client.user)?.has?.(global.perms.messages.send)) type = "direct";
 
     content = typeof content === "string" ? content : null;
     content = content?.replace?.(new RegExp(this.client.token, "g"), "[N/A]");
