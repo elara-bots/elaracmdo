@@ -45,10 +45,10 @@ module.exports = class Command {
 		if (ownerOverride && this.client.isOwner(message.author)) return true;
 		if (this.ownerOnly && (ownerOverride || !this.client.isOwner(message.author))) return `Command (\`${this.name}\`) can only be used by the bot developer${this.client.owners.length === 1 ? "" : "s"}`;
 		if (message.channel.type === 'GUILD_TEXT' && this.userPermissions) {
-            let guild_missing = message.member.permissions.missing(this.userGuildPermissions);
-            if (guild_missing.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${this.client.f.proper(guild_missing[0])}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n")}`
+            let guild_missing = message.member.permissions?.missing?.(this.userGuildPermissions) || [];
+            if (guild_missing?.length !== 0) return guild_missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${this.client.f.proper(guild_missing[0])}\` permission in the server.` : `Command (\`${this.name}\`) requires you to have the following permissions in the server\n${guild_missing.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n")}`
             const missing = message.channel.permissionsFor?.(message.author)?.missing?.(this.userPermissions) || [];
-            if (missing.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${this.client.f.proper(missing[0])}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${this.client.f.proper(pm)}\``).join("\n")}`
+            if (missing?.length > 0) return missing.length === 1 ? `Command (\`${this.name}\`) requires you to have \`${this.client.f.proper(missing[0])}\` permission in this channel` : `Command (\`${this.name}\`) requires you to have the following permissions in this channel.\n${missing.map(pm => `▫ \`${this.client.f.proper(pm)}\``).join("\n")}`
 		}
 		return true;
 	}

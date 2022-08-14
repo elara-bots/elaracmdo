@@ -55,7 +55,7 @@ register("boop", async function (options, ...messageOptions){
 		if (options.embed?.thumbnail && typeof options.embed?.thumbnail === "string") options.embed.thumbnail = { url: options.embed.thumbnail };
 		send.embed = new Embed(options.embed).toJSON();
     }
-    if (this.channel.type !== "DM" && !this.channel.permissionsFor(this.client.user).has(global.perms.basic)) return null;
+    if (this.channel.type !== "DM" && !this.channel?.permissionsFor?.(this.client.user)?.has?.(global.perms.basic)) return null;
     return this.inlineReply(send.content ?? "", { ...send, reply: true });
 });
 
