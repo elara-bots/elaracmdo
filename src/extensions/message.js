@@ -84,29 +84,20 @@ register("error", function (content, text, options) { return this.custom(`${glob
 
 register("run", async function () { // eslint-disable-line complexity
     if (!this.author || this.author.bot || this.webhookID || !this.client || !this.client.user) return;
-    let [ owner, support, db ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id), null ];
+    let [ owner, support ] = [ this.client.isOwner(this.author.id), this.client.isSupport(this.author.id) ];
     if (blacklist(this) && !support) return;
     if (this.client.registry.maintenance && !support) return this.command.onBlock(this, "maintenance");
     if (this.client.registry.block.commands.includes(this.command.name) && !owner) return this.command.onBlock(this, "GlobalDisable");
     if (this.guild) {
         if (!this.member || !this.guild.members.cache.has(this.author.id)) return;
         if (global.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
-        if (global.dbs?.getSettings) db = await global.dbs.getSettings(this.guild);
     }else {
         if (this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
     }
-    const checkPerms = () => {
-        if (!this.member.roles.cache.filter(c => c.id !== this.guild.id).size || !db || this.client.isOwner(this.author.id) || !Array.isArray(db.commands)) return false;
-        let find = db.commands.find(c => c.name === this.command.name);
-        if (!find) return false;
-        if (this.member.roles.cache.filter(c => find.roles.includes(c)).size) return true;
-        return false; 
-    };
     // Ensure the user has permission to use the command
     const hasPermission = this.command.hasPermission(this);
     if (!hasPermission || typeof hasPermission === 'string') {
-        let perm = this.guild ? checkPerms() : false;
-        if (!perm) return this.command.onBlock(this, 'permission', { 
+        if (!owner) return this.command.onBlock(this, 'permission', { 
             response: typeof hasPermission === 'string' ? hasPermission : undefined
         });
     }
@@ -115,12 +106,12 @@ register("run", async function () { // eslint-disable-line complexity
     if (this.guild) {
         if (this.command.clientPermissions) {
             const missing = this.channel.permissionsFor?.(this.client.user)?.missing?.(this.command.clientPermissions);
-            if (missing.length) return this.command.onBlock(this, 'clientPermissions', { missing });
+            if (missing?.length) return this.command.onBlock(this, 'clientPermissions', { missing });
         }
 
         if (this.command.clientGuildPermissions) {
             const missing = (this.guild.members?.me || this.guild.me).permissions.missing(this.command.clientGuildPermissions);
-            if (missing.length) return this.command.onBlock(this, 'clientPermissions', { missing });
+            if (missing?.length) return this.command.onBlock(this, 'clientPermissions', { missing });
         }
     }
 
@@ -139,18 +130,8 @@ register("run", async function () { // eslint-disable-line complexity
 
         collResult = await this.command.argsCollector.obtain(this, provided);
         if (collResult.cancelled) {
-            if (!collResult.prompts.length ) return this.error(`Invalid command usage.`);
-            if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
-                let IDS = [ ...collResult.prompts.map(c => c.id) ];
-                if (this.channel.permissionsFor?.(this.client.user)?.has?.(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
-                this.channel.bulkDelete(IDS, true).catch(() => {});
-            }
+            if (!collResult.prompts.length) return this.error(`Invalid command usage.`);
             return this.error(`Command Cancelled`);
-        }
-        if (this.guild && db && db.toggles.prompts && collResult.prompts.length && collResult.answers.length){
-            let IDS = [ ...collResult.prompts.map(c => c.id) ];
-            if (this.channel.permissionsFor?.(this.client.user)?.has?.(global.perms.manage.messages)) IDS.push(...collResult.answers.map(c => c.id))
-            this.channel.bulkDelete(IDS, true).catch(() => {});
         }
         args = collResult.values;
     }
