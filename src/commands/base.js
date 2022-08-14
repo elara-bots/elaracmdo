@@ -6,24 +6,16 @@ module.exports = class Command {
 		this.client = client;
 		this.name = info.name;
 		this.aliases = info.aliases || [];
-		if (typeof info.autoAliases === 'undefined' || info.autoAliases) {
-			if (this.name.includes('-') && !this.name.endsWith('-')) this.aliases.push(this.name.replace(/-/g, ''));
-			for (const alias of this.aliases) {
-				if (alias.includes('-') && !alias.endsWith('-')) this.aliases.push(alias.replace(/-/g, ''));
-			}
-		}
 		this.groupID = info.group;
 		this.group = null;
 		this.description = info.description || "No Description Set";
 		this.format = info.format || null;
 		this.examples = info.examples || null;
-		this.guildOnly = Boolean(info.guildOnly);
 		this.ownerOnly = Boolean(info.ownerOnly);
 		this.clientPermissions = info.clientPermissions || [];
 		this.clientGuildPermissions = info.clientGuildPermissions || [];
 		this.userGuildPermissions = info.userGuildPermissions || [];
 		this.userPermissions = info.userPermissions || [];
-		this.defaultHandling = 'defaultHandling' in info ? info.defaultHandling : true;
 		this.throttling = info.throttling || null;
 		this.flags = info.flags || [];
 		this.argsCollector = info.args && info.args.length ? new ArgumentCollector(client, info.args, 5) : null;
@@ -33,7 +25,6 @@ module.exports = class Command {
 		this.argsType = info.argsType || 'single';
 		this.argsCount = info.argsCount || 0;
 		this.argsSingleQuotes = 'argsSingleQuotes' in info ? info.argsSingleQuotes : true;
-		this.patterns = info.patterns || null;
 		this.guarded = Boolean(info.guarded);
 		this.hidden = Boolean(info.hidden);
 		this._globalEnabled = true;
@@ -129,7 +120,7 @@ module.exports = class Command {
 
 	isUsable(message = null) {
 		if (!message) return this._globalEnabled;
-		if (this.guildOnly && !message?.guild) return false;
+		if (!message?.guild) return false;
 		const hasPermission = this.hasPermission(message);
 		return this.isEnabledIn(message.guild) && hasPermission && typeof hasPermission !== 'string';
 	}
@@ -187,6 +178,5 @@ module.exports = class Command {
 		if (info.args && !Array.isArray(info.args)) throw new TypeError('Command args must be an Array.');
 		if (info.argsType && !['single', 'multiple'].includes(info.argsType)) throw new RangeError('Command argsType must be one of "single" or "multiple".');
 		if (info.argsType === 'multiple' && info.argsCount && info.argsCount < 2) throw new RangeError('Command argsCount must be at least 2.');
-		if (info.patterns && (!Array.isArray(info.patterns) || info.patterns.some(pat => !(pat instanceof RegExp)))) throw new TypeError('Command patterns must be an Array of regular expressions.');
 	}
 }

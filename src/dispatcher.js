@@ -85,13 +85,6 @@ class CommandDispatcher {
 
 	parseMessage(message) {
 		let content = message.content.replace(new RegExp(/”|“/, "gi"), '"')
-		for(const command of this.client.registry.commands.values()) {
-			if (!command.patterns) continue;
-			for(const pattern of command.patterns) {
-				const matches = pattern.exec(content);
-				if (matches) return message.initCommand(command, null, matches);
-			}
-		}
 		let prefix = message.guild ? message.guild.commandPrefix : this.client.commandPrefix;
 		let regexPrefix = this.client.options.regexPrefix;
 		if (regexPrefix?.some(e => e)) {
@@ -112,7 +105,7 @@ class CommandDispatcher {
 		const matches = pattern.exec(content);
 		if (!matches) return null;
 		const commands = this.client.registry.findCommands(matches[commandNameIndex], true);
-		if (commands.length !== 1 || !commands[0].defaultHandling) return null;
+		if (commands.length !== 1) return null;
 		const argString = content.substring(matches[1].length + (matches[2] ? matches[2].length : 0));
 		return message.initCommand(commands[0], argString);
 	}

@@ -91,7 +91,6 @@ declare module 'elaracmdo' {
 		public clientPermissions: PermissionResolvable[];
 		public userGuildPermissions: PermissionResolvable[];
 		public clientGuildPermissions: PermissionResolvable[];
-		public defaultHandling: boolean;
 		public description: string;
 		public examples: string[];
 		public format: string;
@@ -100,8 +99,6 @@ declare module 'elaracmdo' {
 		public guarded: boolean;
 		public hidden: boolean;
 		public ownerOnly: boolean;
-		public guildOnly: boolean;
-		public patterns: RegExp[];
 		public throttling: ThrottlingOptions;
 		public userPermissions: PermissionResolvable[];
 
@@ -109,7 +106,6 @@ declare module 'elaracmdo' {
 		public isEnabledIn(guild: GuildResolvable, bypassGroup?: boolean): boolean;
 		public isUsable(message: CommandoMessage): boolean;
 		public onBlock(message: CommandoMessage, reason: string, data?: Object): Promise<Message | Message[]>;
-		public onBlock(message: CommandoMessage, reason: 'guildOnly'): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'permission', data: { response?: string }): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'clientPermissions', data: { missing: string }): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'throttling', data: { throttle: Object, remaining: number }): Promise<Message | Message[]>;
@@ -539,24 +535,20 @@ declare module 'elaracmdo' {
 	type CommandInfo = {
 		name: string;
 		aliases?: string[];
-		autoAliases?: boolean;
 		group: string;
 		description: string;
 		format?: string;
 		examples?: string[];
-		guildOnly?: boolean;
 		ownerOnly?: boolean;
 		clientPermissions?: PermissionResolvable[];
 		userPermissions?: PermissionResolvable[];
 		userGuildPermissions: PermissionResolvable[];
 		clientGuildPermissions: PermissionResolvable[];
-		defaultHandling?: boolean;
 		throttling?: ThrottlingOptions;
 		args?: ArgumentInfo[];
 		argsType?: string;
 		argsCount?: number;
 		argsSingleQuotes?: boolean;
-		patterns?: RegExp[];
 		guarded?: boolean;
 		hidden?: boolean;
 	};

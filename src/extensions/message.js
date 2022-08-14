@@ -91,9 +91,7 @@ register("run", async function () { // eslint-disable-line complexity
     if (this.guild) {
         if (!this.member || !this.guild.members.cache.has(this.author.id)) return;
         if (global.config?.ignore?.guilds?.includes(this.guild.id) && !support) return;
-    }else {
-        if (this.command.guildOnly) return this.command.onBlock(this, "guildOnly");
-    }
+    }else return this.command.onBlock(this, "guildOnly");
     // Ensure the user has permission to use the command
     const hasPermission = this.command.hasPermission(this);
     if (!hasPermission || typeof hasPermission === 'string') {
