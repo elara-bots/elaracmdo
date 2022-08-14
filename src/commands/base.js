@@ -16,7 +16,6 @@ module.exports = class Command {
 		this.clientGuildPermissions = info.clientGuildPermissions || [];
 		this.userGuildPermissions = info.userGuildPermissions || [];
 		this.userPermissions = info.userPermissions || [];
-		this.throttling = info.throttling || null;
 		this.flags = info.flags || [];
 		this.argsCollector = info.args && info.args.length ? new ArgumentCollector(client, info.args, 5) : null;
 		if (this.argsCollector && typeof info.format === 'undefined') {
@@ -28,7 +27,6 @@ module.exports = class Command {
 		this.guarded = Boolean(info.guarded);
 		this.hidden = Boolean(info.hidden);
 		this._globalEnabled = true;
-		this._throttles = new Map();
 	}
 
 	hasPermission(message, ownerOverride = true) {
@@ -61,8 +59,7 @@ module.exports = class Command {
 			case 'clientPermissions': return message.channel.permissionsFor?.(message.client.user)?.has?.(global.perms.messages.embed) ? 
 			message.error(data.missing.length === 1 ? `I need ${this.client.f.proper(data.missing[0])} permission for (\`${this.name}\`) command to work properly.` : `I need the follow permissions for the (\`${this.name}\`) command to work properly.\n\n__Required Permissions__\n${data.missing.map(c => `▫ \`${this.client.f.proper(c)}\``).join("\n")}`) : 
 			message.channel.send({ content: `${global.util.emojis.nemoji} I need "Embed Links" in this channel, for my messages to show up properly.` }).catch(() => null)
-			case 'throttling': return message.custom(`${global.util.emojis.eload} You can't use (\`${this.name}\`) for another ${data.remaining.toFixed(1)} seconds.`);
-			
+
 			case 'maintenance': return message.custom(`${global.util.emojis.warn} The bot is currently under maintenance, no commands can be used at this time.`, null, { components: [ { type: 1, components: [ global.util.support() ] } ] })
 			?.then?.(m => m?.del?.({ timeout: 10000 })
 			?.catch?.((e) => global.log(`[CMD:ONBLOCK:SEND:${reason}]: Error`, e)));
@@ -86,17 +83,6 @@ module.exports = class Command {
 			],
 			components: [ { type: 1, components: [ global.util.support() ] } ]
 		})
-	}
-
-	throttle(userID) {
-		if (!this.throttling || this.client.isOwner(userID) || global.config?.ignore?.cooldown?.includes(userID)) return null;
-		let throttle = this._throttles.get(userID);
-		if (!throttle) {
-			throttle = { start: Date.now(), usages: 0, timeout: setTimeout(() => this._throttles.delete(userID), this.throttling.duration * 1000) };
-			this._throttles.set(userID, throttle);
-		}
-
-		return throttle;
 	}
 
 	setEnabledIn(guild, enabled) {
@@ -169,11 +155,6 @@ module.exports = class Command {
 		}
 		if (info.userPermissions) {
 			if (!Array.isArray(info.userPermissions)) throw new TypeError('Command userPermissions must be an Array of permission key strings.');
-		}
-		if (info.throttling) {
-			if (typeof info.throttling !== 'object') throw new TypeError('Command throttling must be an Object.');
-			if (info.throttling.usages < 1) throw new RangeError('Command throttling usages must be at least 1.');
-			if (info.throttling.duration < 1) throw new RangeError('Command throttling duration must be at least 1.');
 		}
 		if (info.args && !Array.isArray(info.args)) throw new TypeError('Command args must be an Array.');
 		if (info.argsType && !['single', 'multiple'].includes(info.argsType)) throw new RangeError('Command argsType must be one of "single" or "multiple".');

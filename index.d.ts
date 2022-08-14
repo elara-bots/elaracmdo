@@ -76,10 +76,6 @@ declare module 'elaracmdo' {
 		public constructor(client: CommandoClient, info: CommandInfo);
 
 		private _globalEnabled: boolean;
-		private _throttles: Map<string, object>;
-
-		private throttle(userID: string): object;
-
 		private static validateInfo(client: CommandoClient, info: CommandInfo);
 		public client: CommandoClient;
 		public name: string;
@@ -99,7 +95,6 @@ declare module 'elaracmdo' {
 		public guarded: boolean;
 		public hidden: boolean;
 		public ownerOnly: boolean;
-		public throttling: ThrottlingOptions;
 		public userPermissions: PermissionResolvable[];
 
 		public hasPermission(message: CommandoMessage): boolean | string;
@@ -108,7 +103,6 @@ declare module 'elaracmdo' {
 		public onBlock(message: CommandoMessage, reason: string, data?: Object): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'permission', data: { response?: string }): Promise<Message | Message[]>;
 		public onBlock(message: CommandoMessage, reason: 'clientPermissions', data: { missing: string }): Promise<Message | Message[]>;
-		public onBlock(message: CommandoMessage, reason: 'throttling', data: { throttle: Object, remaining: number }): Promise<Message | Message[]>;
 		public onError(err: Error, message: CommandoMessage, args: object | string | string[], fromPattern: false): Promise<Message | Message[]>;
 		public onError(err: Error, message: CommandoMessage, args: string[], fromPattern: true): Promise<Message | Message[]>;
 		public run(message: CommandoMessage, args: object | string | string[], fromPattern: boolean): Promise<Message | Message[] | null> | null;
@@ -544,7 +538,6 @@ declare module 'elaracmdo' {
 		userPermissions?: PermissionResolvable[];
 		userGuildPermissions: PermissionResolvable[];
 		clientGuildPermissions: PermissionResolvable[];
-		throttling?: ThrottlingOptions;
 		args?: ArgumentInfo[];
 		argsType?: string;
 		argsCount?: number;

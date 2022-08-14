@@ -113,12 +113,6 @@ register("run", async function () { // eslint-disable-line complexity
         }
     }
 
-    // Throttle the command
-    const throttle = this.command.throttle(this.author.id);
-    if (throttle && ((throttle.usages + 1) > this.command.throttling.usages)) {
-        return this.command.onBlock(this, 'throttling', { throttle, remaining: ((throttle.start + (this.command.throttling.duration * 1000) - Date.now()) / 1000) });
-    }
-
     // Figure out the command arguments
     let [ args, collResult ] = [ this.patternMatches, null ];
     if (!args && this.command.argsCollector) {
@@ -135,7 +129,6 @@ register("run", async function () { // eslint-disable-line complexity
     }
     if (!args) args = this.parseArgs();
     const fromPattern = Boolean(this.patternMatches);
-    if (throttle) throttle.usages++;
     try {
         const promise = this.command.run(this, args, fromPattern, collResult);
         this.client.emit('commandRun', this.command, this, args);
