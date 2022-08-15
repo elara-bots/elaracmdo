@@ -14,7 +14,7 @@ declare module 'elaracmdo' {
 		ThreadChannel, ThreadMember, StageInstance, 
 		Interaction, Sticker,
 		MessageComponentOptions, MessageSelectOptionData, MessageSelectOption,
-		PermissionString
+		PermissionString, AutoModerationActionExecution, AutoModerationRule
 	} from 'discord.js';
 
 	// @ts-ignore
@@ -213,6 +213,10 @@ declare module 'elaracmdo' {
 		on(event: 'apiRequest', listener: (request: APIRequest) => void): this;
 		on(event: 'apiResponse', listener: (request: APIRequest, response: object) => void): this;
 		
+		on(event: 'autoModerationActionExecution', listener: (autoModerationActionExecution: AutoModerationActionExecution) => void): this;
+		on(event: 'autoModerationRuleCreate', listener: (autoModerationRule: AutoModerationRule) => void): this;
+		on(event: 'autoModerationRuleDelete', listener: (autoModerationRule: AutoModerationRule) => void): this;
+		on(event: 'autoModerationRuleUpdate', listener: (oldAutoModerationRule: AutoModerationRule | null, newAutoModerationRule: AutoModerationRule) => void): this;
 
 		// Discord.js Events 
 
